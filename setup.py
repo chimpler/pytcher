@@ -2,7 +2,32 @@
 
 import sys
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
+import subprocess
+from setuptools.command.install import install
+from setuptools.command.develop import develop
+from datetime import datetime
+
+
+class CustomInstallCommand(install):
+    def run(self):
+        create_version_file()
+        self.do_egg_install()
+
+
+class CustomDevelopCommand(develop):
+    def run(self):
+        create_version_file()
+        super(CustomDevelopCommand, self).run()
+
+
+def create_version_file():
+    app_version = subprocess.Popen(sys.argv[0] + " --version", shell=True, stdout=subprocess.PIPE).stdout.read().strip().decode()
+    commit_hash = subprocess.Popen("git rev-parse HEAD", shell=True, stdout=subprocess.PIPE).stdout.read().strip().decode()
+
+    with open('pytcher/_version.py', 'wt') as fd:
+            fd.write("git_version = '%s'\n" % commit_hash)
+            fd.write("app_version = '%s'\n" % app_version)
+            fd.write("built_at = '%s'\n" % datetime.now())
 
 
 setup(
@@ -29,6 +54,8 @@ setup(
         'pytcher',
     ],
     install_requires=[],
-    tests_require=['pytest', 'mock'],
-    test_suite='tests'
+    cmdclass={
+        'install': CustomInstallCommand,
+        'develop': CustomDevelopCommand
+    }
 )

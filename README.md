@@ -11,8 +11,14 @@ pypy 3      | :white_check_mark:
 
 ## TODO
 
-Items                       | Status
-----------------------------| :-----:
+Items                                     | Status
+------------------------------------------| :-----:
+Support AND (&)                           | :x:
+Support OR (|)                            | :x:
+Support GET                               | :x:
+Support PUT                               | :x:
+Support POST                              | :x:
+Support PATCH                             | :x:
 Automatically generate route path for doc | :x:
 
 

@@ -1,13 +1,54 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pytcher.request import Request
 import json
+import logging
+from pytcher import _version
+
+
+logger = logging.getLogger('pytcher')
 
 
 class App(object):
+    def motd(self):
+        print(
+"""
+             _       _
+ _ __  _   _| |_ ___| |__   ___ _ __ 
+| '_ \| | | | __/ __| '_ \ / _ \ '__|
+| |_) | |_| | || (__| | | |  __/ |   
+| .__/ \__, |\__\___|_| |_|\___|_|   
+|_|    |___/                         
+
+v{app_version} built on {build_on} ({commit})
+""".format(
+    app_version=_version.app_version,
+    build_on=_version.built_at,
+    commit=_version.git_version
+)
+        )
+
     def start(self, route_handler, interface='0.0.0.0', port=5000, server_class=HTTPServer, output_serializer=json.dumps):
         class HTTPRequestHandler(BaseHTTPRequestHandler):
-            def call_method(self, command):
-                request = Request(command, self.path, self.headers)
+            def __init__(self, request, client_address, server):
+                super(HTTPRequestHandler, self).__init__(request, client_address, server)
+
+            def do_GET(self):
+                return self.call_command()
+
+            def do_POST(self):
+                return self.call_command()
+
+            def do_PUT(self):
+                return self.call_command()
+
+            def do_PATCH(self):
+                return self.call_command()
+
+            def do_DELETE(self):
+                return self.call_command()
+
+            def call_command(self):
+                request = Request(self.command, self.path, self.headers)
                 route_output = route_handler(request)
 
                 if route_output is None:
@@ -21,22 +62,6 @@ class App(object):
                 self.end_headers()
                 self.wfile.write(serialized_output.encode('utf-8'))
 
-            def do_GET(self):
-                return self.call_method(self.command)
-
+        self.motd()
         httpd = server_class((interface, port), HTTPRequestHandler)
         httpd.serve_forever()
-
-
-def route_handler(r):
-    with r.path('authors'):
-        return {'authors': []}
-
-    with r.path('books'):
-        with r.path(int) as book_id:
-            return {'book': {'id': book_id}}
-
-        with r.end():
-            return {'books': [{'id': 2}]}
-
-App().start(route_handler)

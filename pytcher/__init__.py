@@ -12,5 +12,6 @@ def is_type(new_type, n):
         new_type(n)
         return True
     except Exception as e:
-        print(e)
         return False
+
+from pytcher.app import App

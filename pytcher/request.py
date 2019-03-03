@@ -2,6 +2,12 @@ import sys
 from pytcher import to_type, is_type
 
 class Request(object):
+    GET = 'GET'
+    POST = 'POST'
+    PUT = 'PUT'
+    PATCH = 'PATCH'
+    DELETE = 'DELETE'
+
     def __init__(self, command, url, headers):
         self.url = url
         self.headers = headers
@@ -9,17 +15,39 @@ class Request(object):
         self._path_stack = []
         self._command_stack = []
         self._remaining_stack = list(reversed(url.split('/')[1:]))  # skip first '/'
-        self.current_command = None
         self._header_stack = []
 
     def __str__(self):
-        return 'e'
+        return '[Request: command={command} url={url}]'.format(
+            command=self.command,
+            url=self.url
+        )
 
     def __repr__(self):
-        return '[' +']'
+        return self.__str__()
 
     def end(self, *args):
         return RequestMatch(self, not self._remaining_stack, [], [])
+
+    def get(self, *args):
+        is_match = self.command == self.GET
+        return RequestMatch(self, is_match, [], [])
+
+    def put(self, *args):
+        is_match = self.command == self.PUT
+        return RequestMatch(self, is_match, [], [])
+
+    def post(self, *args):
+        is_match = self.command == self.POST
+        return RequestMatch(self, is_match, [], [])
+
+    def patch(self, *args):
+        is_match = self.command == self.PATCH
+        return RequestMatch(self, is_match, [], [])
+
+    def delete(self, *args):
+        is_match = self.command == self.DELETE
+        return RequestMatch(self, is_match, [], [])
 
     def path(self, *args):
         matched_path, matched_vars = self.matched_path(args)
@@ -56,31 +84,37 @@ class Request(object):
 
         return matched_path, matched_vars
 
-    def _enter(self, path_matched):
+    def _enter(self, path_matched, command):
         for e in path_matched:
             self._remaining_stack.pop()
             self._path_stack.append(e)
 
-    def _exit(self, path_matched):
+        if command:
+            self._command_stack.append(command)
+
+    def _exit(self, path_matched, command):
         for e in path_matched:
             self._path_stack.pop()
             self._remaining_stack.append(e)
 
+        if command:
+            self._command_stack.pop()
 
 class SkipWithBlock(Exception):
     pass
 
 class RequestMatch(object):
-    def __init__(self, request, is_match, matched_path, matched_vars):
+    def __init__(self, request, is_match, matched_path, matched_vars, command=None):
         self._request = request
         self._is_match = is_match
         self._matched_path = matched_path
         self._matched_vars = matched_vars
+        self._command=command
 
     def __enter__(self):
         # If it's a match, execute normally otherwise skip what is inside the with context
         if self._is_match:
-            self._request._enter(self._matched_path)
+            self._request._enter(self._matched_path, self._command)
             return self._matched_vars
         else:
             sys.settrace(lambda *args, **keys: None)
@@ -91,7 +125,7 @@ class RequestMatch(object):
         raise SkipWithBlock()
 
     def __exit__(self, type, value, traceback):
-        self._request._exit(self._matched_path)
+        self._request._exit(self._matched_path, self._command)
 
         if type is None:
             return  # No exception
