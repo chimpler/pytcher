@@ -53,7 +53,8 @@ setup(
     packages=[
         'pytcher',
     ],
-    install_requires=[],
+    install_requires=[
+    ],
     cmdclass={
         'install': CustomInstallCommand,
         'develop': CustomDevelopCommand

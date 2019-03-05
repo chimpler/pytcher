@@ -1,10 +1,15 @@
 from pytcher import App
 
+def exception_handler(request, e):
+    pass
 
 def route_handler(r):
 
     with r.path('authors'):
         return {'authors': []}
+
+    with r / 'novels' / int / 'authors' / int as [novel_id, author_id]:
+        return {'novel': novel_id, 'author': author_id}
 
     with r.path('books'):
         with r.path(int) as [book_id]:

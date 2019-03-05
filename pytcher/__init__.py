@@ -14,4 +14,7 @@ def is_type(new_type, n):
     except Exception as e:
         return False
 
+class NotFoundException(Exception):
+    pass
+
 from pytcher.app import App

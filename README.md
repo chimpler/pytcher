@@ -15,6 +15,8 @@ Items                                     | Status
 ------------------------------------------| :-----:
 Support AND (&)                           | :x:
 Support OR (|)                            | :x:
+Support /                                 | :x:
+Support //                                | :x:
 Support GET                               | :x:
 Support PUT                               | :x:
 Support POST                              | :x:

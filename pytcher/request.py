@@ -49,12 +49,23 @@ class Request(object):
         is_match = self.command == self.DELETE
         return RequestMatch(self, is_match, [], [])
 
-    def path(self, *args):
-        matched_path, matched_vars = self.matched_path(args)
-        return RequestMatch(self, matched_path != [], matched_path, matched_vars)
+    def path(self, *path_elements):
+        matched_path, matched_vars = self.match_path(self._remaining_stack, path_elements)
+        print('========>', matched_path, path_elements, self._remaining_stack)
+        return RequestMatch(self, matched_path != [], matched_path, matched_vars, self._remaining_stack[:-len(matched_path)])
 
-    def matched_path(self, path_elements):
-        if len(path_elements) > len(self._remaining_stack):
+    def root(self):
+        pass
+
+    def param(self, key, value, comp_function=lambda x,y: x == y):
+        # TODO create built-in functions
+        pass
+
+    @classmethod
+    def match_path(cls, remaining_stack, path_elements):
+        # TODO maybe move to utility method
+        # TODO optimize it
+        if len(path_elements) > len(list(remaining_stack)):
             return [], []
 
         # TODO: accept captures of multiple segments at once
@@ -62,7 +73,7 @@ class Request(object):
         matched_path = []
         matched_vars = []
 
-        for p_elt, r_elt in zip(path_elements, reversed(self._remaining_stack)):
+        for p_elt, r_elt in zip(path_elements, reversed(remaining_stack)):
             if isinstance(p_elt, str) and p_elt == r_elt:
                 pass
             elif isinstance(p_elt, int) and p_elt == to_type(int, r_elt):
@@ -80,9 +91,13 @@ class Request(object):
             else:
                 return [], []
 
-            matched_path.append(p_elt)
+            matched_path.append(r_elt)
 
+        print('T======>', matched_path)
         return matched_path, matched_vars
+
+    def __truediv__(self, other):
+        return self.path(other)
 
     def _enter(self, path_matched, command):
         for e in path_matched:
@@ -100,15 +115,30 @@ class Request(object):
         if command:
             self._command_stack.pop()
 
+
+class ParameterOperator(object):
+    def __init__(self, key, parameter_dict):
+        self._key = key
+        self._parameter_dict = parameter_dict
+
+
+class RequestHeader(object):
+
+    def __getattribute__(self, key):
+        pass
+
+
 class SkipWithBlock(Exception):
     pass
 
+
 class RequestMatch(object):
-    def __init__(self, request, is_match, matched_path, matched_vars, command=None):
+    def __init__(self, request, is_match, matched_path, matched_vars, remaining_path=None, command=None):
         self._request = request
         self._is_match = is_match
         self._matched_path = matched_path
         self._matched_vars = matched_vars
+        self._remaining_path = remaining_path
         self._command=command
 
     def __enter__(self):
@@ -119,21 +149,44 @@ class RequestMatch(object):
         else:
             sys.settrace(lambda *args, **keys: None)
             frame = sys._getframe(1)
-            frame.f_trace = self.trace
 
-    def trace(self, frame, event, arg):
-        raise SkipWithBlock()
+            def trace(frame, event, arg):
+                raise SkipWithBlock()
+
+            frame.f_trace = trace
 
     def __exit__(self, type, value, traceback):
-        self._request._exit(self._matched_path, self._command)
-
         if type is None:
+            self._request._exit(self._matched_path, self._command)
             return  # No exception
         if issubclass(type, SkipWithBlock):
             return True  # Suppress special SkipWithBlock exception
 
     def __and__(self, other):
-        pass
+        return self(
+            self._request,
+            self._is_match and other.is_match,
+            self._matched_path,
+            self._matched_vars,
+            self._command
+        )
 
     def __or__(self, other):
-        pass
+        if self._is_match:
+            return self
+        elif other._is_match:
+            return other
+
+    def __truediv__(self, other):
+        matched_path, matched_var = Request.match_path(self._remaining_path, [other])
+        if matched_path:
+            self._matched_path += [other]
+            self._matched_vars += matched_var
+            self._remaining_path.pop()
+        else:
+            self._is_match = False
+
+        return self
+
+class InvalidPathValue(Exception):
+    pass
