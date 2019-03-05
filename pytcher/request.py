@@ -13,7 +13,6 @@ class Request(object):
         self.headers = headers
         self.command = command
         self._path_stack = []
-        self._command_stack = []
         self._remaining_stack = list(reversed(url.split('/')[1:]))  # skip first '/'
         self._header_stack = []
 
@@ -26,33 +25,36 @@ class Request(object):
     def __repr__(self):
         return self.__str__()
 
-    def end(self, *args):
-        return RequestMatch(self, not self._remaining_stack, [], [])
+    def h(self, key):
+        return ParameterOperator(self, self.headers.get(key))
 
-    def get(self, *args):
-        is_match = self.command == self.GET
-        return RequestMatch(self, is_match, [], [])
+    @property
+    def end(self):
+        return RequestMatch(self, not self._remaining_stack, self._remaining_stack)
 
-    def put(self, *args):
-        is_match = self.command == self.PUT
-        return RequestMatch(self, is_match, [], [])
+    @property
+    def get(self):
+        return RequestMatch(self, self.command == self.GET, self._remaining_stack)
 
-    def post(self, *args):
-        is_match = self.command == self.POST
-        return RequestMatch(self, is_match, [], [])
+    @property
+    def put(self):
+        return RequestMatch(self, self.command == self.PUT, self._remaining_stack)
 
-    def patch(self, *args):
-        is_match = self.command == self.PATCH
-        return RequestMatch(self, is_match, [], [])
+    @property
+    def post(self):
+        return RequestMatch(self, self.command == self.POST, self._remaining_stack)
 
-    def delete(self, *args):
-        is_match = self.command == self.DELETE
-        return RequestMatch(self, is_match, [], [])
+    @property
+    def patch(self):
+        return RequestMatch(self, self.command == self.PATCH, self._remaining_stack)
+
+    @property
+    def delete(self):
+        return RequestMatch(self, self.command == self.DELETE, self._remaining_stack)
 
     def path(self, *path_elements):
         matched_path, matched_vars = self.match_path(self._remaining_stack, path_elements)
-        print('========>', matched_path, path_elements, self._remaining_stack)
-        return RequestMatch(self, matched_path != [], matched_path, matched_vars, self._remaining_stack[:-len(matched_path)])
+        return RequestMatch(self, matched_path != [], self._remaining_stack[:-len(matched_path)], matched_path, matched_vars)
 
     def root(self):
         pass
@@ -99,33 +101,58 @@ class Request(object):
     def __truediv__(self, other):
         return self.path(other)
 
-    def _enter(self, path_matched, command):
+    def _enter(self, path_matched):
+        print('========')
+        print(path_matched)
+        print(self._remaining_stack)
+        print('========')
         for e in path_matched:
             self._remaining_stack.pop()
             self._path_stack.append(e)
 
-        if command:
-            self._command_stack.append(command)
-
-    def _exit(self, path_matched, command):
+    def _exit(self, path_matched):
         for e in path_matched:
             self._path_stack.pop()
             self._remaining_stack.append(e)
 
-        if command:
-            self._command_stack.pop()
-
 
 class ParameterOperator(object):
-    def __init__(self, key, parameter_dict):
-        self._key = key
-        self._parameter_dict = parameter_dict
+    def __init__(self, request, value, negative=False):
+        self._request = request
+        self._value = value
+        self._trans = lambda x: x if negative else not(x)
 
+    def __eq__(self, other):
+        return RequestMatch(self._request, self._trans(self._value == other))
 
-class RequestHeader(object):
+    def __lt__(self, other):
+        return RequestMatch(self._request, self._trans(self._value < other))
 
-    def __getattribute__(self, key):
-        pass
+    def __le__(self, other):
+        return RequestMatch(self._request, self._trans(self._value <= other))
+
+    def __gt__(self, other):
+        return RequestMatch(self._request, self._trans(self._value > other))
+
+    def __ge__(self, other):
+        return RequestMatch(self._request, self._trans(self._value >= other))
+
+    def __ne__(self, other):
+        return RequestMatch(self._request, self._trans(self._value != other))
+
+    def __contains__(self, item):
+        return RequestMatch(self._request, self._trans(item in self._value))
+
+# class RequestHeader(object):
+#
+#     def __init__(self, request):
+#         self._request = request
+#
+#     def __add__(self, key):
+#         return ParameterOperator(self._request, self._request.headers.get(key))
+#
+#     def __sub__(self, key):
+#         return ParameterOperator(self._request, self._request.headers.get(key), negative=True)
 
 
 class SkipWithBlock(Exception):
@@ -133,18 +160,17 @@ class SkipWithBlock(Exception):
 
 
 class RequestMatch(object):
-    def __init__(self, request, is_match, matched_path, matched_vars, remaining_path=None, command=None):
+    def __init__(self, request, is_match, remaining_path=[], matched_path=[], matched_vars=[]):
         self._request = request
         self._is_match = is_match
-        self._matched_path = matched_path
-        self._matched_vars = matched_vars
-        self._remaining_path = remaining_path
-        self._command=command
+        self._remaining_path = list(remaining_path)
+        self._matched_path = list(matched_path)
+        self._matched_vars = list(matched_vars)
 
     def __enter__(self):
         # If it's a match, execute normally otherwise skip what is inside the with context
         if self._is_match:
-            self._request._enter(self._matched_path, self._command)
+            self._request._enter(self._matched_path)
             return self._matched_vars
         else:
             sys.settrace(lambda *args, **keys: None)
@@ -157,7 +183,7 @@ class RequestMatch(object):
 
     def __exit__(self, type, value, traceback):
         if type is None:
-            self._request._exit(self._matched_path, self._command)
+            self._request._exit(self._matched_path)
             return  # No exception
         if issubclass(type, SkipWithBlock):
             return True  # Suppress special SkipWithBlock exception
@@ -187,6 +213,15 @@ class RequestMatch(object):
             self._is_match = False
 
         return self
+
+    def __repr__(self):
+        return '[RequestMatch request={request}, is_match={is_match}, remaining_path=[{remaining_path}], matched_path=[{matched_path}], matched_vars=[{matched_vars}]]'.format(
+            request=self._request,
+            is_match=self._is_match,
+            remaining_path=', '.join(self._remaining_path),
+            matched_path=', '.join([str(s) for s in self._matched_path]),
+            matched_vars=', '.join([str(s) for s in self._matched_vars])
+        )
 
 class InvalidPathValue(Exception):
     pass

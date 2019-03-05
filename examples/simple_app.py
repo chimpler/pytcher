@@ -1,25 +1,24 @@
-from pytcher import App
+from pytcher import App, Request
 
-def exception_handler(request, e):
+def exception_handler(request: Request, e: Exception):
     pass
 
-def route_handler(r):
-
-    with r.path('authors'):
+def route_handler(r: Request):
+    with r / 'authors':
         return {'authors': []}
 
-    with r / 'novels' / int / 'authors' / int as [novel_id, author_id]:
+    with r.get / 'novels' / int / 'authors' / int as [novel_id, author_id]:
         return {'novel': novel_id, 'author': author_id}
 
     with r.path('books'):
         with r.path(int) as [book_id]:
-            with r.get():
+            with r.get:
                 return {'book': {'id': book_id}}
 
-            with r.post():
+            with r.post:
                 return {'posts': []}
 
-        with r.end():
+        with r.end:
             return {'books': [{'id': 2}]}
 
 

@@ -3,6 +3,7 @@ from pytcher.request import Request
 import json
 import logging
 from pytcher import _version, NotFoundException
+import traceback
 
 
 logger = logging.getLogger('pytcher')
@@ -13,7 +14,7 @@ def debug_exception_handler(request, exception):
     if isinstance(exception, NotFoundException):
         return 'Page not found', 404
     else:
-        return 'Internal Error: {exception}'.format(exception=exception), 500
+        return 'Internal Error: {exception}\n{stack_trace}'.format(exception=exception, stack_trace=traceback.format_exc()), 500
 
 
 def default_exception_handler(request, exception):

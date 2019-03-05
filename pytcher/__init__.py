@@ -17,4 +17,4 @@ def is_type(new_type, n):
 class NotFoundException(Exception):
     pass
 
-from pytcher.app import App
+from pytcher.app import App, Request
