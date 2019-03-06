@@ -7,7 +7,7 @@ def exception_handler(request: Request, e: Exception):
 def route_handler(r: Request):
 
     with r / 'books' / int as [book_id]:
-        with r.get:
+        with r.get | r.put:
             return {'book': {'id': book_id}}
 
         with r.post:

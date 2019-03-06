@@ -212,6 +212,8 @@ class RequestMatch(object):
             return self
         elif other._is_match:
             return other
+        else:
+            return self
 
     def __ror__(self, other):
         return self.__ror__(other)
