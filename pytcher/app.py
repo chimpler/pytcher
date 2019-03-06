@@ -4,7 +4,7 @@ import json
 import logging
 from pytcher import _version, NotFoundException
 import traceback
-
+import urllib.parse
 
 logger = logging.getLogger('pytcher')
 
@@ -49,7 +49,7 @@ v{app_version} built on {build_on} ({commit})
         self,
         route_handler,
         interface='0.0.0.0',
-        port=5000,
+        port=8000,
         server_class=HTTPServer,
         output_serializer=json.dumps,
         exception_handler=None,
@@ -62,6 +62,7 @@ v{app_version} built on {build_on} ({commit})
         class HTTPRequestHandler(BaseHTTPRequestHandler):
             def __init__(self, request, client_address, server):
                 super(HTTPRequestHandler, self).__init__(request, client_address, server)
+
 
             def do_GET(self):
                 return self.call_command()
@@ -80,7 +81,9 @@ v{app_version} built on {build_on} ({commit})
 
             def call_command(self):
                 try:
-                    request = Request(self.command, self.path, self.headers)
+                    parse_result = urllib.parse.urlparse(self.path)
+                    params = urllib.parse.parse_qs(parse_result.query) if parse_result.query else {}
+                    request = Request(self.command, parse_result.path, self.headers, params)
                     route_output = route_handler(request)
 
                     if route_output is None:
@@ -97,5 +100,6 @@ v{app_version} built on {build_on} ({commit})
                 self.wfile.write(serialized_output.encode('utf-8'))
 
         self.motd()
+        print('Started server http://{host}:{port}'.format(host=interface, port=port))
         httpd = server_class((interface, port), HTTPRequestHandler)
         httpd.serve_forever()

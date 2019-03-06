@@ -8,10 +8,11 @@ class Request(object):
     PATCH = 'PATCH'
     DELETE = 'DELETE'
 
-    def __init__(self, command, url, headers):
+    def __init__(self, command, url, headers, params):
         self.url = url
         self.headers = headers
         self.command = command
+        self.params = params
         self._path_stack = []
         self._remaining_stack = list(reversed(url.split('/')[1:]))  # skip first '/'
         self._header_stack = []
@@ -25,8 +26,11 @@ class Request(object):
     def __repr__(self):
         return self.__str__()
 
-    def h(self, key):
-        return ParameterOperator(self, self.headers.get(key))
+    def h(self, key, default_value=None):
+        return ParameterOperator(self, self.headers.get(key.lower(), default_value))
+
+    def p(self, key, default_value=None):
+        return ParameterOperator(self, self.params.get(key, default_value))
 
     @property
     def end(self):
@@ -95,17 +99,12 @@ class Request(object):
 
             matched_path.append(r_elt)
 
-        print('T======>', matched_path)
         return matched_path, matched_vars
 
     def __truediv__(self, other):
         return self.path(other)
 
     def _enter(self, path_matched):
-        print('========')
-        print(path_matched)
-        print(self._remaining_stack)
-        print('========')
         for e in path_matched:
             self._remaining_stack.pop()
             self._path_stack.append(e)
@@ -120,40 +119,52 @@ class ParameterOperator(object):
     def __init__(self, request, value, negative=False):
         self._request = request
         self._value = value
-        self._trans = lambda x: x if negative else not(x)
+        self._trans = lambda x: not(x) if negative else x
+
+    def _convert(self, other):
+        if isinstance(other, int):
+            return int(self._value)
+        elif isinstance(other, float):
+            return float(self._value)
+        elif isinstance(other, list):
+            return list(self._value)
+        elif isinstance(other, set):
+            return set(self._value)
+        else:
+            return self._value[-1]
 
     def __eq__(self, other):
-        return RequestMatch(self._request, self._trans(self._value == other))
+        return RequestMatch(self._request, self._trans(self._convert(other) == other))
 
     def __lt__(self, other):
-        return RequestMatch(self._request, self._trans(self._value < other))
+        return RequestMatch(self._request, self._trans(self._convert(other) < other))
 
     def __le__(self, other):
-        return RequestMatch(self._request, self._trans(self._value <= other))
+        return RequestMatch(self._request, self._trans(self._convert(other) <= other))
 
     def __gt__(self, other):
-        return RequestMatch(self._request, self._trans(self._value > other))
+        return RequestMatch(self._request, self._trans(self._convert(other) > other))
 
     def __ge__(self, other):
-        return RequestMatch(self._request, self._trans(self._value >= other))
+        return RequestMatch(self._request, self._trans(self._convert(other) >= other))
 
     def __ne__(self, other):
-        return RequestMatch(self._request, self._trans(self._value != other))
+        return RequestMatch(self._request, self._trans(self._convert(other) != other))
 
     def __contains__(self, item):
         return RequestMatch(self._request, self._trans(item in self._value))
 
-# class RequestHeader(object):
-#
-#     def __init__(self, request):
-#         self._request = request
-#
-#     def __add__(self, key):
-#         return ParameterOperator(self._request, self._request.headers.get(key))
-#
-#     def __sub__(self, key):
-#         return ParameterOperator(self._request, self._request.headers.get(key), negative=True)
+    def str(self):
+        return self._value[-1] if self._value else None
 
+    def int(self):
+        return int(self._value[-1]) if self._value else None
+
+    def float(self):
+        return float(self._value[-1]) if self._value else None
+
+    def list(self):
+        return self._value if self._value else None
 
 class SkipWithBlock(Exception):
     pass
@@ -189,19 +200,21 @@ class RequestMatch(object):
             return True  # Suppress special SkipWithBlock exception
 
     def __and__(self, other):
-        return self(
-            self._request,
-            self._is_match and other.is_match,
-            self._matched_path,
-            self._matched_vars,
-            self._command
-        )
+        self._matched_vars += other._matched_vars if other._is_match else []
+        self._is_match &= other._is_match
+        return self
+
+    def __rand__(self, other):
+        return self.__and__(other)
 
     def __or__(self, other):
         if self._is_match:
             return self
         elif other._is_match:
             return other
+
+    def __ror__(self, other):
+        return self.__ror__(other)
 
     def __truediv__(self, other):
         matched_path, matched_var = Request.match_path(self._remaining_path, [other])
