@@ -78,7 +78,6 @@ class Request(object):
             return [], []
 
         # TODO: accept captures of multiple segments at once
-        # TODO: accept Regexp
         matched_path = []
         matched_vars = []
 
@@ -152,6 +151,7 @@ class ParameterDict(object):
     def hasnot(self, key):
         final_key = key.lower() if self._ignore_case else key
         return RequestMatch(self._request, final_key not in self._parameters)
+
 
 class ParameterOperator(object):
     __slots__ = ['_request', '_value', '_trans']
