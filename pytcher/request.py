@@ -1,5 +1,6 @@
 import sys
 from pytcher import to_type, is_type
+from pytcher.matchers import PathMatcher, NoMatch
 
 class Request(object):
     GET = 'GET'
@@ -26,11 +27,13 @@ class Request(object):
     def __repr__(self):
         return self.__str__()
 
-    def h(self, key, default_value=None):
-        return ParameterOperator(self, self.headers.get(key.lower(), default_value))
+    @property
+    def h(self):
+        return ParameterDict(self, self.headers, True)
 
-    def p(self, key, default_value=None):
-        return ParameterOperator(self, self.params.get(key, default_value))
+    @property
+    def p(self):
+        return ParameterDict(self, self.params)
 
     @property
     def end(self):
@@ -80,17 +83,21 @@ class Request(object):
         matched_vars = []
 
         for p_elt, r_elt in zip(path_elements, reversed(remaining_stack)):
-            if isinstance(p_elt, str) and p_elt == r_elt:
+            if isinstance(p_elt, PathMatcher):
+                value = p_elt.match(r_elt)
+                if value == NoMatch:
+                    return [], []
+                else:
+                    matched_vars.append(value)
+            elif isinstance(p_elt, str) and p_elt == r_elt:
                 pass
             elif isinstance(p_elt, int) and p_elt == to_type(int, r_elt):
                 pass
             elif isinstance(p_elt, float) and p_elt == to_type(float, r_elt):
                 pass
             elif p_elt == str:
-                pass
                 matched_vars.append(r_elt)
             elif p_elt == int and is_type(int, r_elt):
-                pass
                 matched_vars.append(int(r_elt))
             elif p_elt == float and is_type(float, r_elt):
                 matched_vars.append(float(r_elt))
@@ -115,17 +122,52 @@ class Request(object):
             self._remaining_stack.append(e)
 
 
+class ParameterDict(object):
+    __slots__ = ['_request', '_parameters', '_ignore_case']
+
+    def __init__(self, request, parameters, ignore_case=False):
+        self._request = request
+        self._parameters = {k.lower(): v for k, v in parameters.items()} if ignore_case else parameters
+        self._ignore_case = ignore_case
+
+    def __getitem__(self, key):
+        final_key = key.lower() if self._ignore_case else key
+        if final_key in self._parameters:
+            return ParameterOperator(self._request, self._parameters.get(final_key))
+        else:
+            return RequestMatch(self._request, False)
+
+        value = self.get(key, NoMatch)
+        if value == NoMatch:
+            return
+
+    def get(self, key, default=None):
+        final_key = key.lower() if self._ignore_case else key
+        return ParameterOperator(self._request, self._parameters.get(final_key, default))
+
+    def has(self, key):
+        final_key = key.lower() if self._ignore_case else key
+        return RequestMatch(self._request, final_key in self._parameters)
+
+    def hasnot(self, key):
+        final_key = key.lower() if self._ignore_case else key
+        return RequestMatch(self._request, final_key not in self._parameters)
+
 class ParameterOperator(object):
+    __slots__ = ['_request', '_value', '_trans']
+
     def __init__(self, request, value, negative=False):
         self._request = request
         self._value = value
         self._trans = lambda x: not(x) if negative else x
 
     def _convert(self, other):
-        if isinstance(other, int):
-            return int(self._value)
+        if self._value is None:
+            return None
+        elif isinstance(other, int):
+            return int(self._value[-1])
         elif isinstance(other, float):
-            return float(self._value)
+            return float(self._value[-1])
         elif isinstance(other, list):
             return list(self._value)
         elif isinstance(other, set):
@@ -154,15 +196,19 @@ class ParameterOperator(object):
     def __contains__(self, item):
         return RequestMatch(self._request, self._trans(item in self._value))
 
+    @property
     def str(self):
         return self._value[-1] if self._value else None
 
+    @property
     def int(self):
         return int(self._value[-1]) if self._value else None
 
+    @property
     def float(self):
         return float(self._value[-1]) if self._value else None
 
+    @property
     def list(self):
         return self._value if self._value else None
 
@@ -171,6 +217,9 @@ class SkipWithBlock(Exception):
 
 
 class RequestMatch(object):
+
+    __slots__ = ['_request', '_is_match', '_remaining_path', '_matched_path', '_matched_vars']
+
     def __init__(self, request, is_match, remaining_path=[], matched_path=[], matched_vars=[]):
         self._request = request
         self._is_match = is_match

@@ -89,11 +89,16 @@ v{app_version} built on {build_on} ({commit})
                     if route_output is None:
                         raise NotFoundException()
                     else:
-                        serialized_output = output_serializer(route_output)
-                        status_code = 200
+                        output_and_status_code = route_output
+                        if isinstance(output_and_status_code, tuple):
+                            output, status_code = output_and_status_code
+                        else:
+                            output = output_and_status_code
+                            status_code = 200
                 except Exception as e:
-                    serialized_output, status_code = exception_handler(request, e)
+                    output, status_code = exception_handler(request, e)
 
+                serialized_output = output_serializer(output)
                 self.send_response(status_code)
                 self.send_header('Content-type', 'application/json')
                 self.end_headers()
