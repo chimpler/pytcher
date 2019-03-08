@@ -6,7 +6,7 @@ import re
 def to_type(new_type, n):
     try:
         return new_type(n)
-    except Exception as e:
+    except ValueError:
         return NoMatch
 
 
@@ -14,7 +14,7 @@ def is_type(new_type, n):
     try:
         new_type(n)
         return True
-    except Exception as e:
+    except ValueError:
         return False
 
 
@@ -48,7 +48,7 @@ class String(PathMatcher):
 
 
 class Choice(PathMatcher):
-    def __init__(self, *choices, ignore_case=True):
+    def __init__(self, ignore_case=True, *choices):
         self.choices = choices
         self.ignore_case = ignore_case
 

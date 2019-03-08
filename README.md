@@ -16,22 +16,21 @@ def route_handler(r: Request):
         with r.get | r.put:
             with r.h.has('X-Organization-Id'):
                 return {'book': {'id': book_id}}
-            with r.h.hasnot('X-Organization-Id'):
-                return {'message': 'restricted access'}
+
+            return {'message': 'restricted access'}
 
         with r.post:
             return {'books': [{'id': 2}]}
 
     with (r.get / 'novels' / Integer() / 'authors' / Integer()) & (r.p['g'] == 3) as [novel_id, author_id]:
-        print(r.p['g'].int)
-        return {'novel': novel_id, 'author': author_id}
+        return {'novel': novel_id, 'author': author_id, 'g': r.p['g'].int}
 
 
 if __name__ == '__main__':
     App().start(route_handler)
 ```
 
-# Compatiblity
+# Compatibility
 
 Python      | Compatible
 ------------|:------:
@@ -53,4 +52,5 @@ Support PATCH                             | :white_check_mark:
 Support parameter                         | :white_check_mark:
 Support header                            | :white_check_mark:
 Automatically generate route path for doc | :x:
-
+WSGI                                      | :x:
+tests                                     | :x:

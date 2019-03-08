@@ -1,7 +1,8 @@
 import sys
-from pytcher import to_type, is_type
-from pytcher.matchers import PathMatcher, NoMatch
 from abc import abstractmethod
+
+from pytcher.matchers import PathMatcher, NoMatch
+from pytcher.matchers import to_type, is_type
 
 
 class Request(object):
@@ -63,12 +64,13 @@ class Request(object):
 
     def path(self, *path_elements):
         matched_path, matched_vars = self.match_path(self._remaining_stack, path_elements)
-        return RequestMatch(self, matched_path != [], self._remaining_stack[:-len(matched_path)], matched_path, matched_vars)
+        return RequestMatch(self, matched_path != [], self._remaining_stack[:-len(matched_path)], matched_path,
+                            matched_vars)
 
     def root(self):
         pass
 
-    def param(self, key, value, comp_function=lambda x,y: x == y):
+    def param(self, key, value, comp_function=lambda x, y: x == y):
         # TODO create built-in functions
         pass
 
@@ -138,6 +140,9 @@ class ParameterDict(object):
             return self._parameter_operator_clazz(self._request, self._parameters.get(final_key))
         else:
             return RequestMatch(self._request, False)
+
+    def __getattr__(self, key):
+        return self.__getitem__(key)
 
     def get(self, key, default=None):
         final_key = key.lower() if self._ignore_case else key
@@ -221,6 +226,7 @@ class ParameterOperator(AbstractParameterOperator):
     def list(self):
         return self._value if self._value else None
 
+
 class HeaderOperator(AbstractParameterOperator):
     __slots__ = ['_request', '_value']
 
@@ -255,7 +261,6 @@ class SkipWithBlock(Exception):
 
 
 class RequestMatch(object):
-
     __slots__ = ['_request', '_is_match', '_remaining_path', '_matched_path', '_matched_vars']
 
     def __init__(self, request, is_match, remaining_path=[], matched_path=[], matched_vars=[]):
@@ -317,13 +322,16 @@ class RequestMatch(object):
         return self
 
     def __repr__(self):
-        return '[RequestMatch request={request}, is_match={is_match}, remaining_path=[{remaining_path}], matched_path=[{matched_path}], matched_vars=[{matched_vars}]]'.format(
-            request=self._request,
-            is_match=self._is_match,
-            remaining_path=', '.join(self._remaining_path),
-            matched_path=', '.join([str(s) for s in self._matched_path]),
-            matched_vars=', '.join([str(s) for s in self._matched_vars])
-        )
+        return '[RequestMatch request={request}, is_match={is_match}, ' \
+               'remaining_path=[{remaining_path}], matched_path=[{matched_path}], ' \
+               'matched_vars=[{matched_vars}]]'.format(
+                   request=self._request,
+                   is_match=self._is_match,
+                   remaining_path=', '.join(self._remaining_path),
+                   matched_path=', '.join([str(s) for s in self._matched_path]),
+                   matched_vars=', '.join([str(s) for s in self._matched_vars])
+               )
+
 
 class InvalidPathValue(Exception):
     pass

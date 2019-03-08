@@ -1,10 +1,11 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from pytcher.request import Request
 import json
 import logging
-from pytcher import _version, NotFoundException
 import traceback
 import urllib.parse
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+from pytcher import _version, NotFoundException
+from pytcher.request import Request
 
 logger = logging.getLogger('pytcher')
 
@@ -14,7 +15,8 @@ def debug_exception_handler(request, exception):
     if isinstance(exception, NotFoundException):
         return 'Page not found', 404
     else:
-        return 'Internal Error: {exception}\n{stack_trace}'.format(exception=exception, stack_trace=traceback.format_exc()), 500
+        return 'Internal Error: {exception}\n{stack_trace}'.format(exception=exception,
+                                                                   stack_trace=traceback.format_exc()), 500
 
 
 def default_exception_handler(request, exception):
@@ -24,36 +26,35 @@ def default_exception_handler(request, exception):
     else:
         return 'Internal Error', 500
 
+
 class App(object):
     def motd(self):
-        print(
-"""
-             _       _
- _ __  _   _| |_ ___| |__   ___ _ __ 
+        print(r"""             _       _
+ _ __  _   _| |_ ___| |__   ___ _ __
 | '_ \| | | | __/ __| '_ \ / _ \ '__|
-| |_) | |_| | || (__| | | |  __/ |   
-| .__/ \__, |\__\___|_| |_|\___|_|   
-|_|    |___/                         
+| |_) | |_| | || (__| | | |  __/ |
+| .__/ \__, |\__\___|_| |_|\___|_|
+|_|    |___/
 
 v{app_version} built on {build_on} ({commit})
 {debugger_message}
 """.format(
-    app_version=_version.app_version,
-    build_on=_version.built_at,
-    commit=_version.git_version,
-    debugger_message='\n***WARNING: DEBUG MODE IS ON!' if self._debug else ''
-)
+            app_version=_version.app_version,
+            build_on=_version.built_at,
+            commit=_version.git_version,
+            debugger_message='\n***WARNING: DEBUG MODE IS ON!' if self._debug else ''
+        )
         )
 
     def start(
-        self,
-        route_handler,
-        interface='0.0.0.0',
-        port=8000,
-        server_class=HTTPServer,
-        output_serializer=json.dumps,
-        exception_handler=None,
-        debug=True
+            self,
+            route_handler,
+            interface='0.0.0.0',
+            port=8000,
+            server_class=HTTPServer,
+            output_serializer=json.dumps,
+            exception_handler=None,
+            debug=True
     ):
         self._debug = debug
         if exception_handler is None:
@@ -62,7 +63,6 @@ v{app_version} built on {build_on} ({commit})
         class HTTPRequestHandler(BaseHTTPRequestHandler):
             def __init__(self, request, client_address, server):
                 super(HTTPRequestHandler, self).__init__(request, client_address, server)
-
 
             def do_GET(self):
                 return self.call_command()
