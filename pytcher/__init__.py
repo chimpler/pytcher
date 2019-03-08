@@ -12,6 +12,7 @@ def is_type(new_type, n):
         new_type(n)
         return True
     except Exception as e:
+<<<<<<< HEAD
         return False
 
 class NotFoundException(Exception):
@@ -19,3 +20,7 @@ class NotFoundException(Exception):
 
 from pytcher.app import App, Request
 from pytcher.matchers import *
+=======
+        print(e)
+        return False
+>>>>>>> initial files

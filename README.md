@@ -2,6 +2,7 @@
 
 STILL A WORK IN PROGRESS
 
+<<<<<<< HEAD
 Pytcher is an HTTP routing DSL for Python. The main focus of Pytcher is to provide a human readable router syntax that supports complex path matching, parameter matching and header matching using nested routes.
 
 To achieve this, we use a custom implementation of context manager (more info: https://stackoverflow.com/questions/12594148/skipping-execution-of-with-block/54765496#54765496) that makes a context manager skippable. This proposal has been rejected (https://www.python.org/dev/peps/pep-0377/)
@@ -31,6 +32,8 @@ if __name__ == '__main__':
     App().start(route_handler)
 ```
 
+=======
+>>>>>>> initial files
 # Compatiblity
 
 Python      | Compatible
@@ -40,6 +43,7 @@ pypy 3      | :white_check_mark:
 
 ## TODO
 
+<<<<<<< HEAD
 Items                                     | Status
 ------------------------------------------| :-----:
 Support AND (&)                           | :white_check_mark:
@@ -54,3 +58,10 @@ Support parameter                         | :white_check_mark:
 Support header                            | :white_check_mark:
 Automatically generate route path for doc | :x:
 
+=======
+Items                       | Status
+----------------------------| :-----:
+Automatically generate route path for doc | :x:
+
+
+>>>>>>> initial files
