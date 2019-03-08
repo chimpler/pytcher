@@ -4,7 +4,7 @@ STILL A WORK IN PROGRESS
 
 Pytcher is an HTTP routing DSL for Python. The main focus of Pytcher is to provide a human readable router syntax that supports complex path matching, parameter matching and header matching using nested routes.
 
-To achieve this, we use a custom implementation of context manager (more info: https://stackoverflow.com/questions/12594148/skipping-execution-of-with-block/54765496#54765496) that makes a context manager skippable.
+To achieve this, we use a custom implementation of context manager (more info: https://stackoverflow.com/questions/12594148/skipping-execution-of-with-block/54765496#54765496) that makes a context manager skippable. This proposal has been rejected (https://www.python.org/dev/peps/pep-0377/)
 
 This allows us to write an HTTP request router tree as follows:
 ```python

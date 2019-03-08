@@ -1,6 +1,8 @@
 import sys
 from pytcher import to_type, is_type
 from pytcher.matchers import PathMatcher, NoMatch
+from abc import abstractmethod
+
 
 class Request(object):
     GET = 'GET'
@@ -29,11 +31,11 @@ class Request(object):
 
     @property
     def h(self):
-        return ParameterDict(self, self.headers, True)
+        return ParameterDict(self, self.headers, HeaderOperator, True)
 
     @property
     def p(self):
-        return ParameterDict(self, self.params)
+        return ParameterDict(self, self.params, ParameterOperator)
 
     @property
     def end(self):
@@ -122,27 +124,24 @@ class Request(object):
 
 
 class ParameterDict(object):
-    __slots__ = ['_request', '_parameters', '_ignore_case']
+    __slots__ = ['_request', '_parameters', '_parameter_operator_clazz', '_ignore_case']
 
-    def __init__(self, request, parameters, ignore_case=False):
+    def __init__(self, request, parameters, parameter_operator_clazz, ignore_case=False):
         self._request = request
         self._parameters = {k.lower(): v for k, v in parameters.items()} if ignore_case else parameters
+        self._parameter_operator_clazz = parameter_operator_clazz
         self._ignore_case = ignore_case
 
     def __getitem__(self, key):
         final_key = key.lower() if self._ignore_case else key
         if final_key in self._parameters:
-            return ParameterOperator(self._request, self._parameters.get(final_key))
+            return self._parameter_operator_clazz(self._request, self._parameters.get(final_key))
         else:
             return RequestMatch(self._request, False)
 
-        value = self.get(key, NoMatch)
-        if value == NoMatch:
-            return
-
     def get(self, key, default=None):
         final_key = key.lower() if self._ignore_case else key
-        return ParameterOperator(self._request, self._parameters.get(final_key, default))
+        return self._parameter_operator_clazz(self._request, self._parameters.get(final_key, default))
 
     def has(self, key):
         final_key = key.lower() if self._ignore_case else key
@@ -153,13 +152,44 @@ class ParameterDict(object):
         return RequestMatch(self._request, final_key not in self._parameters)
 
 
-class ParameterOperator(object):
-    __slots__ = ['_request', '_value', '_trans']
+class AbstractParameterOperator(object):
+    __slots__ = ['_request', '_value']
 
-    def __init__(self, request, value, negative=False):
+    def __init__(self, request, value):
         self._request = request
         self._value = value
-        self._trans = lambda x: not(x) if negative else x
+
+    def __eq__(self, other):
+        return RequestMatch(self._request, self._convert(other) == other)
+
+    def __lt__(self, other):
+        return RequestMatch(self._request, self._convert(other) < other)
+
+    def __le__(self, other):
+        return RequestMatch(self._request, self._convert(other) <= other)
+
+    def __gt__(self, other):
+        return RequestMatch(self._request, self._convert(other) > other)
+
+    def __ge__(self, other):
+        return RequestMatch(self._request, self._convert(other) >= other)
+
+    def __ne__(self, other):
+        return RequestMatch(self._request, self._convert(other) != other)
+
+    def __contains__(self, item):
+        return RequestMatch(self._request, item in self._value)
+
+    @abstractmethod
+    def _convert(self, other):
+        pass
+
+
+class ParameterOperator(AbstractParameterOperator):
+    __slots__ = ['_request', '_value']
+
+    def __init__(self, request, value):
+        super(ParameterOperator, self).__init__(request, value)
 
     def _convert(self, other):
         if self._value is None:
@@ -174,27 +204,6 @@ class ParameterOperator(object):
             return set(self._value)
         else:
             return self._value[-1]
-
-    def __eq__(self, other):
-        return RequestMatch(self._request, self._trans(self._convert(other) == other))
-
-    def __lt__(self, other):
-        return RequestMatch(self._request, self._trans(self._convert(other) < other))
-
-    def __le__(self, other):
-        return RequestMatch(self._request, self._trans(self._convert(other) <= other))
-
-    def __gt__(self, other):
-        return RequestMatch(self._request, self._trans(self._convert(other) > other))
-
-    def __ge__(self, other):
-        return RequestMatch(self._request, self._trans(self._convert(other) >= other))
-
-    def __ne__(self, other):
-        return RequestMatch(self._request, self._trans(self._convert(other) != other))
-
-    def __contains__(self, item):
-        return RequestMatch(self._request, self._trans(item in self._value))
 
     @property
     def str(self):
@@ -211,6 +220,35 @@ class ParameterOperator(object):
     @property
     def list(self):
         return self._value if self._value else None
+
+class HeaderOperator(AbstractParameterOperator):
+    __slots__ = ['_request', '_value']
+
+    def __init__(self, request, value):
+        super(HeaderOperator, self).__init__(request, value)
+
+    def _convert(self, other):
+        if self._value is None:
+            return None
+        elif isinstance(other, int):
+            return int(self._value)
+        elif isinstance(other, float):
+            return float(self._value)
+        else:
+            return self._value
+
+    @property
+    def str(self):
+        return self._value
+
+    @property
+    def int(self):
+        return int(self._value)
+
+    @property
+    def float(self):
+        return float(self._value)
+
 
 class SkipWithBlock(Exception):
     pass
