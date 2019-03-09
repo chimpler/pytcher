@@ -14,6 +14,7 @@ def exception_handler(request: Request, e: Exception):
             'details': str(e)
         }, http.client.INTERNAL_SERVER_ERROR
 
+
 def route_handler(r: Request):
     with r / 'admin' / 'books' / Regex('c.*r') / 'admin' / Integer() as [book_id, admin_id]:
         with r.get | r.put:

@@ -1,8 +1,8 @@
 import sys
-from pytcher import to_type, is_type
-<<<<<<< HEAD
-from pytcher.matchers import PathMatcher, NoMatch
 from abc import abstractmethod
+
+from pytcher.matchers import PathMatcher, NoMatch
+from pytcher.matchers import to_type, is_type
 
 
 class Request(object):
@@ -64,12 +64,13 @@ class Request(object):
 
     def path(self, *path_elements):
         matched_path, matched_vars = self.match_path(self._remaining_stack, path_elements)
-        return RequestMatch(self, matched_path != [], self._remaining_stack[:-len(matched_path)], matched_path, matched_vars)
+        return RequestMatch(self, matched_path != [], self._remaining_stack[:-len(matched_path)], matched_path,
+                            matched_vars)
 
     def root(self):
         pass
 
-    def param(self, key, value, comp_function=lambda x,y: x == y):
+    def param(self, key, value, comp_function=lambda x, y: x == y):
         # TODO create built-in functions
         pass
 
@@ -92,66 +93,20 @@ class Request(object):
                 else:
                     matched_vars.append(value)
             elif isinstance(p_elt, str) and p_elt == r_elt:
-=======
-
-class Request(object):
-    def __init__(self, command, url, headers):
-        self.url = url
-        self.headers = headers
-        self.command = command
-        self._path_stack = []
-        self._command_stack = []
-        self._remaining_stack = list(reversed(url.split('/')[1:]))  # skip first '/'
-        self.current_command = None
-        self._header_stack = []
-
-    def __str__(self):
-        return 'e'
-
-    def __repr__(self):
-        return '[' +']'
-
-    def end(self, *args):
-        return RequestMatch(self, not self._remaining_stack, [], [])
-
-    def path(self, *args):
-        matched_path, matched_vars = self.matched_path(args)
-        return RequestMatch(self, matched_path != [], matched_path, matched_vars)
-
-    def matched_path(self, path_elements):
-        if len(path_elements) > len(self._remaining_stack):
-            return [], []
-
-        # TODO: accept captures of multiple segments at once
-        # TODO: accept Regexp
-        matched_path = []
-        matched_vars = []
-
-        for p_elt, r_elt in zip(path_elements, reversed(self._remaining_stack)):
-            if isinstance(p_elt, str) and p_elt == r_elt:
->>>>>>> initial files
                 pass
             elif isinstance(p_elt, int) and p_elt == to_type(int, r_elt):
                 pass
             elif isinstance(p_elt, float) and p_elt == to_type(float, r_elt):
                 pass
             elif p_elt == str:
-<<<<<<< HEAD
                 matched_vars.append(r_elt)
             elif p_elt == int and is_type(int, r_elt):
-=======
-                pass
-                matched_vars.append(r_elt)
-            elif p_elt == int and is_type(int, r_elt):
-                pass
->>>>>>> initial files
                 matched_vars.append(int(r_elt))
             elif p_elt == float and is_type(float, r_elt):
                 matched_vars.append(float(r_elt))
             else:
                 return [], []
 
-<<<<<<< HEAD
             matched_path.append(r_elt)
 
         return matched_path, matched_vars
@@ -159,12 +114,6 @@ class Request(object):
     def __truediv__(self, other):
         return self.path(other)
 
-=======
-            matched_path.append(p_elt)
-
-        return matched_path, matched_vars
-
->>>>>>> initial files
     def _enter(self, path_matched):
         for e in path_matched:
             self._remaining_stack.pop()
@@ -176,7 +125,6 @@ class Request(object):
             self._remaining_stack.append(e)
 
 
-<<<<<<< HEAD
 class ParameterDict(object):
     __slots__ = ['_request', '_parameters', '_parameter_operator_clazz', '_ignore_case']
 
@@ -189,6 +137,9 @@ class ParameterDict(object):
     def __getitem__(self, key):
         final_key = key.lower() if self._ignore_case else key
         return self._parameter_operator_clazz(self._request, self._parameters.get(final_key))
+
+    def __getattr__(self, key):
+        return self.__getitem__(key)
 
     def get(self, key, default=None):
         final_key = key.lower() if self._ignore_case else key
@@ -272,6 +223,7 @@ class ParameterOperator(AbstractParameterOperator):
     def list(self):
         return self._value if self._value else None
 
+
 class HeaderOperator(AbstractParameterOperator):
     __slots__ = ['_request', '_value']
 
@@ -306,7 +258,6 @@ class SkipWithBlock(Exception):
 
 
 class RequestMatch(object):
-
     __slots__ = ['_request', '_is_match', '_remaining_path', '_matched_path', '_matched_vars']
 
     def __init__(self, request, is_match, remaining_path=[], matched_path=[], matched_vars=[]):
@@ -315,17 +266,6 @@ class RequestMatch(object):
         self._remaining_path = list(remaining_path)
         self._matched_path = list(matched_path)
         self._matched_vars = list(matched_vars)
-=======
-class SkipWithBlock(Exception):
-    pass
-
-class RequestMatch(object):
-    def __init__(self, request, is_match, matched_path, matched_vars):
-        self._request = request
-        self._is_match = is_match
-        self._matched_path = matched_path
-        self._matched_vars = matched_vars
->>>>>>> initial files
 
     def __enter__(self):
         # If it's a match, execute normally otherwise skip what is inside the with context
@@ -335,7 +275,6 @@ class RequestMatch(object):
         else:
             sys.settrace(lambda *args, **keys: None)
             frame = sys._getframe(1)
-<<<<<<< HEAD
 
             def trace(frame, event, arg):
                 raise SkipWithBlock()
@@ -345,23 +284,11 @@ class RequestMatch(object):
     def __exit__(self, type, value, traceback):
         if type is None:
             self._request._exit(self._matched_path)
-=======
-            frame.f_trace = self.trace
-
-    def trace(self, frame, event, arg):
-        raise SkipWithBlock()
-
-    def __exit__(self, type, value, traceback):
-        self._request._exit(self._matched_path)
-
-        if type is None:
->>>>>>> initial files
             return  # No exception
         if issubclass(type, SkipWithBlock):
             return True  # Suppress special SkipWithBlock exception
 
     def __and__(self, other):
-<<<<<<< HEAD
         self._matched_vars += other._matched_vars if other._is_match else []
         self._is_match &= other._is_match
         return self
@@ -392,19 +319,16 @@ class RequestMatch(object):
         return self
 
     def __repr__(self):
-        return '[RequestMatch request={request}, is_match={is_match}, remaining_path=[{remaining_path}], matched_path=[{matched_path}], matched_vars=[{matched_vars}]]'.format(
-            request=self._request,
-            is_match=self._is_match,
-            remaining_path=', '.join(self._remaining_path),
-            matched_path=', '.join([str(s) for s in self._matched_path]),
-            matched_vars=', '.join([str(s) for s in self._matched_vars])
-        )
+        return '[RequestMatch request={request}, is_match={is_match}, ' \
+               'remaining_path=[{remaining_path}], matched_path=[{matched_path}], ' \
+               'matched_vars=[{matched_vars}]]'.format(
+                   request=self._request,
+                   is_match=self._is_match,
+                   remaining_path=', '.join(self._remaining_path),
+                   matched_path=', '.join([str(s) for s in self._matched_path]),
+                   matched_vars=', '.join([str(s) for s in self._matched_vars])
+               )
+
 
 class InvalidPathValue(Exception):
     pass
-=======
-        pass
-
-    def __or__(self, other):
-        pass
->>>>>>> initial files

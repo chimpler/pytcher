@@ -2,7 +2,6 @@
 
 import sys
 from setuptools import setup
-<<<<<<< HEAD
 import subprocess
 from setuptools.command.install import install
 from setuptools.command.develop import develop
@@ -29,9 +28,6 @@ def create_version_file():
             fd.write("git_version = '%s'\n" % commit_hash)
             fd.write("app_version = '%s'\n" % app_version)
             fd.write("built_at = '%s'\n" % datetime.now())
-=======
-from setuptools.command.test import test as TestCommand
->>>>>>> initial files
 
 
 setup(
@@ -57,16 +53,10 @@ setup(
     packages=[
         'pytcher',
     ],
-<<<<<<< HEAD
     install_requires=[
     ],
     cmdclass={
         'install': CustomInstallCommand,
         'develop': CustomDevelopCommand
     }
-=======
-    install_requires=[],
-    tests_require=['pytest', 'mock'],
-    test_suite='tests'
->>>>>>> initial files
 )
