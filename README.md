@@ -1,12 +1,10 @@
 ### Pytcher
 
-STILL A WORK IN PROGRESS
+
 
 Pytcher is an HTTP routing DSL for Python. The main focus of Pytcher is to provide a human readable router syntax that supports complex path matching, parameter matching and header matching using nested routes.
 
-To achieve this, we use a custom implementation of context manager (more info: https://stackoverflow.com/questions/12594148/skipping-execution-of-with-block/54765496#54765496) that makes a context manager skippable. This proposal has been rejected (https://www.python.org/dev/peps/pep-0377/)
-
-This allows us to write an HTTP request router tree as follows:
+For example:
 ```python
 from pytcher import App, Request, Integer, Regex
 import http
@@ -28,6 +26,27 @@ def route_handler(r: Request):
 
 if __name__ == '__main__':
     App().start(route_handler)
+```
+
+This is achieved by using custom implementation of context manager ([more info](https://stackoverflow.com/questions/12594148/skipping-execution-of-with-block/54765496#54765496)) that makes a context manager skippable.
+This is known as [PEP-377](https://www.python.org/dev/peps/pep-0377/) which has been [rejected](https://www.python.org/dev/peps/pep-0377/).
+
+We also offer another implementation that is not using any hack:
+```python
+def route_handler(r: Request):
+    for book_id, admin_id in r / 'admin' / 'books' / Regex('c.*r') / 'admin' / Integer():
+        for _ in r.get | r.put:
+            for _ in r.h['X-Organization'] == 'chimpler':
+                return {'book': {'id': book_id, 'admin_id': admin_id}}
+
+            return {'message': 'restricted access'}
+
+        for _ in r.post:
+            return {'books': [{'id': 2}]}
+
+    for novel_id in r.get / 'novels' / Integer():
+        for author_id in (r / 'authors' / Integer()) & (r.p['g'] == 3):
+            return {'novel': novel_id, 'author': author_id}
 ```
 
 # Compatibility

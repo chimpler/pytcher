@@ -258,7 +258,7 @@ class SkipWithBlock(Exception):
 
 
 class RequestMatch(object):
-    __slots__ = ['_request', '_is_match', '_remaining_path', '_matched_path', '_matched_vars']
+    __slots__ = ['_request', '_is_match', '_remaining_path', '_matched_path', '_matched_vars', '_first_time']
 
     def __init__(self, request, is_match, remaining_path=[], matched_path=[], matched_vars=[]):
         self._request = request
@@ -266,6 +266,8 @@ class RequestMatch(object):
         self._remaining_path = list(remaining_path)
         self._matched_path = list(matched_path)
         self._matched_vars = list(matched_vars)
+
+        self._first_time = True
 
     def __enter__(self):
         # If it's a match, execute normally otherwise skip what is inside the with context
@@ -329,6 +331,17 @@ class RequestMatch(object):
                    matched_vars=', '.join([str(s) for s in self._matched_vars])
                )
 
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._first_time:
+            self._request._enter(self._matched_path)
+            self._first_time = False
+            return self._matched_vars
+        else:
+            self._request._exit(self._matched_path)
+            raise StopIteration
 
 class InvalidPathValue(Exception):
     pass
