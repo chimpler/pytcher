@@ -188,10 +188,7 @@ class ParameterDict(object):
 
     def __getitem__(self, key):
         final_key = key.lower() if self._ignore_case else key
-        if final_key in self._parameters:
-            return self._parameter_operator_clazz(self._request, self._parameters.get(final_key))
-        else:
-            return RequestMatch(self._request, False)
+        return self._parameter_operator_clazz(self._request, self._parameters.get(final_key))
 
     def get(self, key, default=None):
         final_key = key.lower() if self._ignore_case else key
