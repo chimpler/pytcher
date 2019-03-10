@@ -1,3 +1,4 @@
+import json
 import sys
 from abc import abstractmethod
 
@@ -12,7 +13,7 @@ class Request(object):
     PATCH = 'PATCH'
     DELETE = 'DELETE'
 
-    def __init__(self, command, url, headers, params):
+    def __init__(self, command, url, headers, params, payload):
         self.url = url
         self.headers = headers
         self.command = command
@@ -20,6 +21,7 @@ class Request(object):
         self._path_stack = []
         self._remaining_stack = list(reversed(url.split('/')[1:]))  # skip first '/'
         self._header_stack = []
+        self._payload = payload
 
     def __str__(self):
         return '[Request: command={command} url={url}]'.format(
@@ -37,6 +39,11 @@ class Request(object):
     @property
     def p(self):
         return ParameterDict(self, self.params, ParameterOperator)
+
+    @property
+    def json(self):
+        # TODO: make it lazy load
+        return json.loads(self._payload)
 
     @property
     def end(self):

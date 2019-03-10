@@ -45,12 +45,12 @@ class MyWebApp(object):
 
     def _route_handler(self, r: Request):
         with r.get / 'items':
+            with r / Integer() as [item_index]:
+                return self._inventory[item_index]
 
             with r.end:
                 return self._inventory
 
-            with r / Integer() as [item_index]:
-                return self._inventory[item_index]
 
     def run(self):
         print()

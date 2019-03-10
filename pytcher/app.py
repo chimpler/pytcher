@@ -93,7 +93,10 @@ v{app_version} built on {build_on} ({commit})
                 try:
                     parse_result = urllib.parse.urlparse(self.path)
                     params = urllib.parse.parse_qs(parse_result.query) if parse_result.query else {}
-                    request = Request(self.command, parse_result.path, self.headers, params)
+
+                    content_len = int(self.headers.get('Content-Length', 0))
+                    body = self.rfile.read(content_len) if content_len else None
+                    request = Request(self.command, parse_result.path, self.headers, params, body)
                     route_output = route_handler(request)
 
                     if route_output is None:
