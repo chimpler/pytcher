@@ -45,7 +45,8 @@ class MyApp(object):
 
 
 if __name__ == '__main__':
-    MyApp().run()```
+    MyApp().run()
+```
 
 This is achieved by using custom implementation of context manager ([more info](https://stackoverflow.com/questions/12594148/skipping-execution-of-with-block/54765496#54765496))
 that makes a context manager skip the body of the `with` if a condition is not fulfilled.
