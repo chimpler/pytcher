@@ -56,6 +56,16 @@ v{app_version} built on {build_on} ({commit})
             exception_handler=None,
             debug=True
     ):
+        """
+        :param route_handler:
+        :param interface:
+        :param port:
+        :param server_class:
+        :param output_serializer:
+        :param exception_handler:
+        :param debug:
+        :return:
+        """
         self._debug = debug
         if exception_handler is None:
             exception_handler = debug_exception_handler if debug else default_exception_handler

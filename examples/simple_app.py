@@ -1,3 +1,4 @@
+# flake8: noqa: E999
 from pytcher import App, Request, NotFoundException, Integer, Regex
 import http
 
@@ -28,13 +29,10 @@ def route_handler(r: Request):
 
     with r.get / 'novels' / Integer() as [novel_id]:
         with (r / 'authors' / Integer()) & (r.p['g'] == 3) as [author_id]:
-            print(r.p['g'].int)
             return {'novel': novel_id, 'author': author_id}
 
         return {'tools': [1, 2, 3]}
 
 
-
 if __name__ == '__main__':
-    # App().start(route_handler, exception_handler=exception_handler)
-    App().start(route_handler)
+    App().start(route_handler, exception_handler=exception_handler)

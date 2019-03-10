@@ -55,6 +55,9 @@ setup(
     ],
     install_requires=[
     ],
+    extras_require={
+        'data-classes': ['dataclasses-json']
+    },
     cmdclass={
         'install': CustomInstallCommand,
         'develop': CustomDevelopCommand

@@ -1,3 +1,4 @@
+# flake8: noqa: E999
 from pytcher import App, Request, NotFoundException, Integer, Regex
 import http
 
