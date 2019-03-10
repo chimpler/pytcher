@@ -10,15 +10,15 @@
 ### Pytcher
 
 
-
 Pytcher is an HTTP routing DSL for Python. The main focus of Pytcher is to provide a human readable router syntax that supports complex path matching, parameter matching and header matching using nested routes.
+We also try to limit scope of variables not relying on global variables. 
 
 For example:
 ```python
-from pytcher import App, Request, Integer
+from pytcher import AppRouter, Request, Integer
 
 
-class MyApp(object):
+class MyApp(AppRouter):
     def __init__(self):
         self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
 
@@ -40,19 +40,29 @@ class MyApp(object):
                     self._items[item_id] = r.json
                     return self._items[item_id]
 
-    def run(self):
-        App().start(route_handler=self.route_handler)
+                with r.delete:
+                    return self._items.pop(item_id)
 
 
 if __name__ == '__main__':
     MyApp().run()
 ```
 
-This is achieved by using custom implementation of context manager ([more info](https://stackoverflow.com/questions/12594148/skipping-execution-of-with-block/54765496#54765496))
+Start the app:
+
+    $ python my_app.py
+
+Then, in another window you can run commands such as:
+
+    $ curl localhost:8000/items  # list all the items
+    $ curl localhost:8000/items/2  # get the second item
+    $ curl localhost:8000/items -XPOST -d'"beer"'  # add item "beer"
+    $ curl localhost:8000/items/0 -XPUT -d'"donut"'  # replace first item with donut
+    $ curl localhost:8000/items/2 -XDELETE  # delete second item
+
+We can use contextmanager here `with` using a custom implementation ([more info](https://stackoverflow.com/questions/12594148/skipping-execution-of-with-block/54765496#54765496))
 that makes a context manager skip the body of the `with` if a condition is not fulfilled.
 This is known as [PEP-377](https://www.python.org/dev/peps/pep-0377/) which has been [rejected](https://www.python.org/dev/peps/pep-0377/).
-
-For more examples, check out the [examples](https://github.com/chimpler/pytcher/tree/master/examples) directory.
 
 We also offer another implementation that is using a `for` construct without using any hack.
 In this case instead of writing:
@@ -64,6 +74,8 @@ one can write:
 ```python
     for [item_id] in r / Integer():
 ```
+
+For more examples, check out the [examples](https://github.com/chimpler/pytcher/tree/master/examples) directory.
 
 # Compatibility
 

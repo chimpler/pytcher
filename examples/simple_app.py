@@ -1,12 +1,12 @@
 # flake8: noqa: E999
-from pytcher import App, Request, Integer
+from pytcher import AppRouter, Request, Integer
 
 
-class MyApp(object):
+class MyApp(AppRouter):
     def __init__(self):
         self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
 
-    def route_handler(self, r: Request):
+    def route(self, r: Request):
         with r / 'items':
             with r.end:
                 with r.get:
@@ -24,9 +24,9 @@ class MyApp(object):
                     self._items[item_id] = r.json
                     return self._items[item_id]
 
-    def run(self):
-        App().start(route_handler=self.route_handler)
+                with r.delete:
+                    return self._items.pop(item_id)
 
 
 if __name__ == '__main__':
-    MyApp().run()
+    MyApp().start()

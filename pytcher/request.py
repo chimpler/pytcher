@@ -13,7 +13,7 @@ class Request(object):
     PATCH = 'PATCH'
     DELETE = 'DELETE'
 
-    def __init__(self, command, url, headers, params, payload):
+    def __init__(self, command, url, params, headers, payload):
         self.url = url
         self.headers = headers
         self.command = command

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from dataclasses_json import dataclass_json
 
-from pytcher import App, Request, Integer
+from pytcher import Request, Integer, AppRouter
 
 
 @dataclass_json
@@ -15,7 +15,7 @@ class InventoryItem(object):
     quantity: int = 0
 
 
-class MyWebApp(object):
+class MyWebApp(AppRouter):
     def __init__(self):
         words = [
             'wine',
@@ -52,13 +52,10 @@ class MyWebApp(object):
                 return self._inventory
 
 
-    def run(self):
-        print()
-        print('Try: curl curl localhost:8000/items')
-        print('Try: curl curl localhost:8000/items/2')
-        print()
-        App().start(self._route_handler, output_serializer=self._output_serializer)
-
-
 if __name__ == '__main__':
-    MyWebApp().run()
+    print()
+    print('Try: curl curl localhost:8000/items')
+    print('Try: curl curl localhost:8000/items/2')
+    print()
+
+    MyWebApp().start()

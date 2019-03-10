@@ -1,5 +1,5 @@
 # flake8: noqa: E999
-from pytcher import App, Request, NotFoundException, Integer, Regex
+from pytcher import LocalWebserver, Request, NotFoundException, Integer, Regex
 import http
 
 
@@ -34,4 +34,4 @@ def route_handler(r: Request):
 
 if __name__ == '__main__':
     # App().start(route_handler, exception_handler=exception_handler)
-    App().start(route_handler)
+    LocalWebserver().start(route_handler)

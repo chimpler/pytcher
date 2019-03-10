@@ -1,13 +1,14 @@
 import json
 import logging
+import os
 import traceback
-import urllib.parse
-from http.server import HTTPServer, BaseHTTPRequestHandler
+import urllib
 
-from pytcher import _version, NotFoundException
+from pytcher import NotFoundException, Response
 from pytcher.request import Request
+from pytcher.webservers import LocalWebserver
 
-logger = logging.getLogger('pytcher')
+logger = logging.getLogger(__name__)
 
 
 def debug_exception_handler(request, exception):
@@ -28,96 +29,48 @@ def default_exception_handler(request, exception):
 
 
 class App(object):
-    def motd(self):
-        print(r"""             _       _
- _ __  _   _| |_ ___| |__   ___ _ __
-| '_ \| | | | __/ __| '_ \ / _ \ '__|
-| |_) | |_| | || (__| | | |  __/ |
-| .__/ \__, |\__\___|_| |_|\___|_|
-|_|    |___/
-
-v{app_version} built on {build_on} ({commit})
-{debugger_message}
-""".format(
-            app_version=_version.app_version,
-            build_on=_version.built_at,
-            commit=_version.git_version,
-            debugger_message='\n***WARNING: DEBUG MODE IS ON!' if self._debug else ''
-        )
-        )
-
-    def start(
-            self,
-            route_handler,
-            interface='0.0.0.0',
-            port=8000,
-            server_class=HTTPServer,
-            output_serializer=json.dumps,
-            exception_handler=None,
-            debug=True
-    ):
-        """
-        :param route_handler:
-        :param interface:
-        :param port:
-        :param server_class:
-        :param output_serializer:
-        :param exception_handler:
-        :param debug:
-        :return:
-        """
+    def __init__(self,
+                 route_handler,
+                 output_serializer=json.dumps,
+                 exception_handler=debug_exception_handler,
+                 debug=True
+                 ):
+        self._route_handler = route_handler
+        self._output_serializer = output_serializer
+        self._exception_handler = exception_handler
         self._debug = debug
-        if exception_handler is None:
-            exception_handler = debug_exception_handler if debug else default_exception_handler
 
-        class HTTPRequestHandler(BaseHTTPRequestHandler):
-            def __init__(self, request, client_address, server):
-                super(HTTPRequestHandler, self).__init__(request, client_address, server)
+        wsgi_version = os.environ.get('wsgi.version')
+        if wsgi_version:
+            logger.info('Using WSGI {version}'.format(version='.'.join(wsgi_version)))
+            self._has_wsgi = True
+        else:
+            self._has_wsgi = False
 
-            def do_GET(self):
-                return self.call_command()
+    def start(self, interface='0.0.0.0', port=8000):
+        if not self._has_wsgi:
+            LocalWebserver().start(self._handle_request, interface, port)
 
-            def do_POST(self):
-                return self.call_command()
+    def _handle_request(self, command, uri, query_string, headers, payload):
+        try:
+            params = urllib.parse.parse_qs(query_string) if query_string else {}
+            request = Request(command, uri, params, headers, payload)
+            route_output = self._route_handler(request)
+            if route_output is None:
+                raise NotFoundException()
+        except Exception as e:
+            route_output = self._exception_handler(e, request)
 
-            def do_PUT(self):
-                return self.call_command()
+        headers = {}
+        output_and_status_code = route_output
+        if isinstance(output_and_status_code, tuple):
+            output, status_code = output_and_status_code
+        elif isinstance(output_and_status_code, Response):
+            output = output_and_status_code.message
+            status_code = output_and_status_code.status_code
+            headers = output_and_status_code.headers
+        else:
+            output = output_and_status_code
+            status_code = 200
 
-            def do_PATCH(self):
-                return self.call_command()
-
-            def do_DELETE(self):
-                return self.call_command()
-
-            def call_command(self):
-                try:
-                    parse_result = urllib.parse.urlparse(self.path)
-                    params = urllib.parse.parse_qs(parse_result.query) if parse_result.query else {}
-
-                    content_len = int(self.headers.get('Content-Length', 0))
-                    body = self.rfile.read(content_len) if content_len else None
-                    request = Request(self.command, parse_result.path, self.headers, params, body)
-                    route_output = route_handler(request)
-
-                    if route_output is None:
-                        raise NotFoundException()
-                    else:
-                        output_and_status_code = route_output
-                        if isinstance(output_and_status_code, tuple):
-                            output, status_code = output_and_status_code
-                        else:
-                            output = output_and_status_code
-                            status_code = 200
-                except Exception as e:
-                    output, status_code = exception_handler(request, e)
-
-                serialized_output = output_serializer(output)
-                self.send_response(status_code)
-                self.send_header('Content-type', 'application/json')
-                self.end_headers()
-                self.wfile.write(serialized_output.encode('utf-8'))
-
-        self.motd()
-        print('Started server http://{host}:{port}'.format(host=interface, port=port))
-        httpd = server_class((interface, port), HTTPRequestHandler)
-        httpd.serve_forever()
+        return Response(self._output_serializer(output), status_code, headers)
