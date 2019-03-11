@@ -12,18 +12,18 @@ logger = logging.getLogger(__name__)
 def debug_exception_handler(request, exception):
     logger.info(exception, exc_info=True)
     if isinstance(exception, NotFoundException):
-        return 'Page not found', 404
+        return 'Page not found', http.HTTPStatus.NOT_FOUND
     else:
         return 'Internal Error: {exception}\n{stack_trace}'.format(exception=exception,
-                                                                   stack_trace=traceback.format_exc()), 500
+                                                                   stack_trace=traceback.format_exc()), http.HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 def default_exception_handler(request, exception):
     logger.info(exception, exc_info=True)
     if isinstance(exception, NotFoundException):
-        return 'Page not found', 404
+        return 'Page not found', http.HTTPStatus.NOT_FOUND
     else:
-        return 'Internal Error', 500
+        return 'Internal Error', http.HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 def default_json_serializer(obj, status_code=None, headers={}):

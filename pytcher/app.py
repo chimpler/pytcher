@@ -83,7 +83,7 @@ v{app_version} built on {build_on} ({commit})
             headers = output_and_status_code.headers
         else:
             output = output_and_status_code
-            status_code = http.HTTPStatus.OK.value
+            status_code = http.HTTPStatus.OK
 
         return self._output_serializer(output, status_code, headers)
 
