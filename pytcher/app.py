@@ -1,12 +1,14 @@
+import http
 import json
 import logging
 import os
 import traceback
 import urllib
-
-from pytcher import NotFoundException, Response
+from typing import Dict
+from wsgiref.simple_server import make_server
+from pytcher import NotFoundException, Response, _version
 from pytcher.request import Request
-from pytcher.webservers import LocalWebserver
+
 
 logger = logging.getLogger(__name__)
 
@@ -47,14 +49,33 @@ class App(object):
         else:
             self._has_wsgi = False
 
-    def start(self, interface='0.0.0.0', port=8000):
-        if not self._has_wsgi:
-            LocalWebserver().start(self._handle_request, interface, port)
+    def motd(self):
+        print(r"""             _       _
+ _ __  _   _| |_ ___| |__   ___ _ __
+| '_ \| | | | __/ __| '_ \ / _ \ '__|
+| |_) | |_| | || (__| | | |  __/ |
+| .__/ \__, |\__\___|_| |_|\___|_|
+|_|    |___/
+v{app_version} built on {build_on} ({commit})
+""".format(
+            app_version=_version.app_version,
+            build_on=_version.built_at,
+            commit=_version.git_version
+        )
+        )
 
-    def _handle_request(self, command, uri, query_string, headers, payload):
+    def start(self, interface='0.0.0.0', port=8000):
+        self.motd()
+        if not self._has_wsgi:
+            server = make_server(interface, port, self)
+            server.serve_forever()
+            # LocalWebserver().start(self._handle_request, interface, port)
+
+
+    def _handle_request(self, command: str, uri: str, query_string: str, headers: Dict[str, str], body: str):
         try:
             params = urllib.parse.parse_qs(query_string) if query_string else {}
-            request = Request(command, uri, params, headers, payload)
+            request = Request(command, uri, params, headers, body)
             route_output = self._route_handler(request)
             if route_output is None:
                 raise NotFoundException()
@@ -74,3 +95,32 @@ class App(object):
             status_code = 200
 
         return Response(self._output_serializer(output), status_code, headers)
+
+    def __call__(self, environ, start_response):
+        # Replace HTTP_ABC=value to ABC=value
+        headers = {
+            key[5:]: value
+            for key, value in environ.items()
+            if key.startswith('HTTP_')
+        }
+
+        body_size = environ.get('CONTENT_LENGTH')
+        body = environ['wsgi.input'].read(int(body_size)) if body_size else None
+
+        # improve to read data in stream
+        response = self._handle_request(
+            environ['REQUEST_METHOD'],
+            environ['PATH_INFO'],
+            environ['QUERY_STRING'],
+            headers,
+            body
+        )
+
+        status_response = '{status_code} {status_message}'.format(
+            status_code=response.status_code,
+            status_message=http.HTTPStatus(response.status_code).name
+        )
+
+        start_response(status_response, list(response.headers.items()))
+
+        return [response.body.encode('utf-8')]
