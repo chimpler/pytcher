@@ -1,7 +1,7 @@
 import json
 from abc import abstractmethod
 
-from pytcher import Request
+from pytcher import Request, Response
 from pytcher.app import debug_exception_handler, App
 
 
@@ -11,8 +11,8 @@ class AppRouter(object):
     def route(self, r: Request):
         pass
 
-    def serialize(self, obj):
-        return json.dumps(obj)
+    def serialize(self, obj, status_code, headers):
+        return Response(json.dumps(obj), status_code, headers)
 
     def handle_exception(self, r: Request, e: Exception):
         return debug_exception_handler(r, e)

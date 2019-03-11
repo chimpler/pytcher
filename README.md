@@ -13,17 +13,18 @@
 Pytcher is an HTTP routing DSL for Python. The main focus of Pytcher is to provide a human readable router syntax that supports complex path matching, parameter matching and header matching using nested routes.
 We also try to limit scope of variables not relying on global variables. 
 
-For example:
+Example of a simple CRUD REST server:
 ```python
 from pytcher import AppRouter, Request, Integer
 
 
 class MyApp(AppRouter):
     def __init__(self):
+        self.version = 'v1'
         self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
 
     def route_handler(self, r: Request):
-        with r / 'items':
+        with r / self.version / 'items':
             with r.end:
                 with r.get:
                     return self._items
@@ -54,11 +55,11 @@ Start the app:
 
 Then, in another window you can run commands such as:
 
-    $ curl localhost:8000/items  # list all the items
-    $ curl localhost:8000/items/2  # get the second item
-    $ curl localhost:8000/items -XPOST -d'"beer"'  # add item "beer"
-    $ curl localhost:8000/items/0 -XPUT -d'"donut"'  # replace first item with donut
-    $ curl localhost:8000/items/2 -XDELETE  # delete second item
+    $ curl localhost:8000/v1/items  # list all the items
+    $ curl localhost:8000/v1/items/2  # get the second item
+    $ curl localhost:8000/v1/items -XPOST -d'"beer"'  # add item "beer"
+    $ curl localhost:8000/v1/items/0 -XPUT -d'"donut"'  # replace first item with donut
+    $ curl localhost:8000/v1/items/2 -XDELETE  # delete second item
 
 We can use contextmanager here `with` using a custom implementation ([more info](https://stackoverflow.com/questions/12594148/skipping-execution-of-with-block/54765496#54765496))
 that makes a context manager skip the body of the `with` if a condition is not fulfilled.
@@ -67,12 +68,12 @@ This is known as [PEP-377](https://www.python.org/dev/peps/pep-0377/) which has 
 We also offer another implementation that is using a `for` construct without using any hack.
 In this case instead of writing:
 ```python
-    with r / Integer() as [item_id]:
+    with r / 'authors' / Integer() / 'books' / Integer()  as [author_id, book_id]:
 ```
 
 one can write:
 ```python
-    for [item_id] in r / Integer():
+    for [author_id, book_id] in r / 'authors' / Integer() / 'books' / Integer():
 ```
 
 For more examples, check out the [examples](https://github.com/chimpler/pytcher/tree/master/examples) directory.

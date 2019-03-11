@@ -30,10 +30,21 @@ def default_exception_handler(request, exception):
         return 'Internal Error', 500
 
 
+def default_json_serializer(obj, status_code=None, headers={}):
+    # final_status_code = status_code if status_code else http.HTTPStatus.OK.value
+    # final_headers = {
+    #     **headers,
+    #     **{
+    #         'Content-Type': 'application/json'
+    #     }
+    # }
+    # return Response(json.dumps(obj), final_status_code, final_headers)
+    return Response(json.dumps(obj))
+
 class App(object):
     def __init__(self,
                  route_handler,
-                 output_serializer=json.dumps,
+                 output_serializer=default_json_serializer,
                  exception_handler=debug_exception_handler,
                  debug=True
                  ):
@@ -94,7 +105,7 @@ v{app_version} built on {build_on} ({commit})
             output = output_and_status_code
             status_code = 200
 
-        return Response(self._output_serializer(output), status_code, headers)
+        return self._output_serializer(output, status_code, headers)
 
     def __call__(self, environ, start_response):
         # Replace HTTP_ABC=value to ABC=value
