@@ -1,10 +1,11 @@
 # flake8: noqa: E999
 import json
 from dataclasses import dataclass
+from typing import Dict
 
 from dataclasses_json import dataclass_json
 
-from pytcher import Request, Integer, AppRouter
+from pytcher import Request, Integer, AppRouter, Response
 
 
 @dataclass_json
@@ -26,24 +27,24 @@ class MyWebApp(AppRouter):
 
         ]
         self._inventory = [
-            InventoryItem(word, 10 + i, i)
+            InventoryItem(word, 10 + i, i + 1)
             for i in range(10)
             for word in words
         ]
 
-    def _output_serializer(self, root_obj):
-        def serialize(obj):
+    def serialize(self, root_obj, status_code: int, headers: Dict[str, str]):
+        def to_dict(obj):
             if isinstance(obj, list):
                 return [
-                    serialize(child)
+                    to_dict(child)
                     for child in obj
                 ]
             elif isinstance(obj, InventoryItem):
                 return InventoryItem.schema().dump(obj)
 
-        return json.dumps(serialize(root_obj))
+        return Response(json.dumps(to_dict(root_obj)))
 
-    def _route_handler(self, r: Request):
+    def route(self, r: Request):
         with r.get / 'items':
             with r / Integer() as [item_index]:
                 return self._inventory[item_index]
@@ -54,8 +55,8 @@ class MyWebApp(AppRouter):
 
 if __name__ == '__main__':
     print()
-    print('Try: curl curl localhost:8000/items')
-    print('Try: curl curl localhost:8000/items/2')
+    print('Try: curl localhost:8000/items')
+    print('Try: curl localhost:8000/items/2')
     print()
 
     MyWebApp().start()

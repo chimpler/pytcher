@@ -342,12 +342,15 @@ class RequestMatch(object):
         return self
 
     def __next__(self):
-        if self._first_time:
-            self._request._enter(self._matched_path)
-            self._first_time = False
-            return self._matched_vars
+        if self._is_match:
+            if self._first_time:
+                self._request._enter(self._matched_path)
+                self._first_time = False
+                return self._matched_vars
+            else:
+                self._request._exit(self._matched_path)
+                raise StopIteration
         else:
-            self._request._exit(self._matched_path)
             raise StopIteration
 
 class InvalidPathValue(Exception):

@@ -1,37 +1,32 @@
 # flake8: noqa: E999
-from pytcher import LocalWebserver, Request, NotFoundException, Integer, Regex
-import http
+from pytcher import AppRouter, Request, Integer
 
 
-def exception_handler(request: Request, e: Exception):
-    if isinstance(e, NotFoundException):
-        return {
-            'error': 'Page not found',
-            'url': request.url
-        }, http.client.NOT_FOUND
-    else:
-        return {
-            'error': 'Internal error',
-            'details': str(e)
-        }, http.client.INTERNAL_SERVER_ERROR
+class MyApp(AppRouter):
+    def __init__(self):
+        self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
 
+    def route(self, r: Request):
+        for _ in r / 'items':
+            for _ in r.end:
+                for _ in r.get:
+                    return self._items
 
-def route_handler(r: Request):
-    for book_id, admin_id in r / 'admin' / 'books' / Regex('c.*r') / 'admin' / Integer():
-        for _ in r.get | r.put:
-            for _ in r.h['X-Organization'] == 'chimpler':
-                return {'book': {'id': book_id, 'admin_id': admin_id}}
+                with r.post:
+                    self._items.append(r.json)
+                    return self._items[-1]
 
-            return {'message': 'restricted access'}
+            for [item_id] in r / Integer():
+                for _ in r.get:
+                    return self._items[item_id]
 
-        for _ in r.post:
-            return {'books': [{'id': 2}]}
+                for _ in r.put:
+                    self._items[item_id] = r.json
+                    return self._items[item_id]
 
-    for novel_id in r.get / 'novels' / Integer():
-        for author_id in (r / 'authors' / Integer()) & (r.p['g'] == 3):
-            return {'novel': novel_id, 'author': author_id}
+                for _ in r.delete:
+                    return self._items.pop(item_id)
 
 
 if __name__ == '__main__':
-    # App().start(route_handler, exception_handler=exception_handler)
-    LocalWebserver().start(route_handler)
+    MyApp().start()
