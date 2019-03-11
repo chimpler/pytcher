@@ -1,8 +1,9 @@
 # flake8: noqa: E999
 from pytcher import AppRouter, Request, Integer
+from pytcher.app import App
 
 
-class MyApp(AppRouter):
+class MyAppRouter(AppRouter):
     def __init__(self):
         self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
 
@@ -29,4 +30,4 @@ class MyApp(AppRouter):
 
 
 if __name__ == '__main__':
-    MyApp().start()
+    App(MyAppRouter()).start()

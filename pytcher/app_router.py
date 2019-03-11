@@ -1,8 +1,9 @@
 import json
 from abc import abstractmethod
 
-from pytcher import Request, Response
-from pytcher.app import debug_exception_handler, App
+from pytcher import Response
+from pytcher.defaults import debug_exception_handler
+from pytcher.request import Request
 
 
 class AppRouter(object):
@@ -16,15 +17,3 @@ class AppRouter(object):
 
     def handle_exception(self, r: Request, e: Exception):
         return debug_exception_handler(r, e)
-
-    # For WSGI
-    def __call__(self, environ, start_fn):
-        start_fn('200 OK', [('Content-Type', 'text/plain')])
-        yield "Hello World!\n"
-
-    def start(self, interface='0.0.0.0', port=8000):
-        App(
-            route_handler=self.route,
-            exception_handler=self.handle_exception,
-            output_serializer=self.serialize
-        ).start(interface, port)

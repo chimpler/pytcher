@@ -33,21 +33,29 @@ class PathMatcher(object):
 
 
 class Integer(PathMatcher):
+    __slots__ = []
+
     def match(self, value):
         return to_type(int, value)
 
 
 class Float(PathMatcher):
+    __slots__ = []
+
     def match(self, value):
         return to_type(float, value)
 
 
 class String(PathMatcher):
+    __slots__ = []
+
     def match(self, value):
         return value
 
 
 class Choice(PathMatcher):
+    __slots__ = ['ignore_case', 'choices']
+
     def __init__(self, ignore_case=True, *choices):
         self.choices = choices
         self.ignore_case = ignore_case
@@ -63,6 +71,8 @@ class Choice(PathMatcher):
 
 
 class Date(PathMatcher):
+    __slots__ = ['format']
+
     def __init__(self, format='%Y-%m-%d'):
         self._format = format
 
@@ -71,6 +81,8 @@ class Date(PathMatcher):
 
 
 class DateTime(PathMatcher):
+    __slots__ = ['format']
+
     def __init__(self, format='%Y-%m-%dT%H:%M:%s'):
         self._format = format
 
@@ -79,6 +91,8 @@ class DateTime(PathMatcher):
 
 
 class Regex(PathMatcher):
+    __slots__ = ['format', 'flags']
+
     def __init__(self, format, flags=0):
         self._pattern = re.compile(format, flags)
 

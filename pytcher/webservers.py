@@ -2,28 +2,11 @@ import logging
 import urllib.parse
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-from pytcher import _version
 
 logger = logging.getLogger('pytcher')
 
 
 class LocalWebserver(object):
-    def motd(self):
-        print(r"""             _       _
- _ __  _   _| |_ ___| |__   ___ _ __
-| '_ \| | | | __/ __| '_ \ / _ \ '__|
-| |_) | |_| | || (__| | | |  __/ |
-| .__/ \__, |\__\___|_| |_|\___|_|
-|_|    |___/
-
-v{app_version} built on {build_on} ({commit})
-""".format(
-            app_version=_version.app_version,
-            build_on=_version.built_at,
-            commit=_version.git_version
-        )
-        )
-
     def start(
             self,
             request_handler,
@@ -64,7 +47,6 @@ v{app_version} built on {build_on} ({commit})
                 # TODO replace by using iterator
                 self.wfile.write(response.message.encode('utf-8'))
 
-        self.motd()
         print('Started server http://{host}:{port}'.format(host=interface, port=port))
         httpd = server_class((interface, port), HTTPRequestHandler)
         httpd.serve_forever()

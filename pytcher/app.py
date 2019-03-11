@@ -1,56 +1,36 @@
 import http
-import json
 import logging
 import os
-import traceback
 import urllib
 from typing import Dict
 from wsgiref.simple_server import make_server
 from pytcher import NotFoundException, Response, _version
+from pytcher.defaults import default_exception_handler, default_json_serializer
 from pytcher.request import Request
+from pytcher.app_router import AppRouter
 
 
 logger = logging.getLogger(__name__)
 
 
-def debug_exception_handler(request, exception):
-    logger.info(exception, exc_info=True)
-    if isinstance(exception, NotFoundException):
-        return 'Page not found', 404
-    else:
-        return 'Internal Error: {exception}\n{stack_trace}'.format(exception=exception,
-                                                                   stack_trace=traceback.format_exc()), 500
-
-
-def default_exception_handler(request, exception):
-    logger.info(exception, exc_info=True)
-    if isinstance(exception, NotFoundException):
-        return 'Page not found', 404
-    else:
-        return 'Internal Error', 500
-
-
-def default_json_serializer(obj, status_code=None, headers={}):
-    # final_status_code = status_code if status_code else http.HTTPStatus.OK.value
-    # final_headers = {
-    #     **headers,
-    #     **{
-    #         'Content-Type': 'application/json'
-    #     }
-    # }
-    # return Response(json.dumps(obj), final_status_code, final_headers)
-    return Response(json.dumps(obj))
-
 class App(object):
     def __init__(self,
-                 route_handler,
-                 output_serializer=default_json_serializer,
-                 exception_handler=debug_exception_handler,
+                 app_router: AppRouter = None,
+                 route_handler=None,
+                 output_serializer=None,
+                 exception_handler=None,
                  debug=True
                  ):
-        self._route_handler = route_handler
-        self._output_serializer = output_serializer
-        self._exception_handler = exception_handler
+
+        if app_router:
+            self._route_handler = app_router.route
+            self._output_serializer = app_router.serialize
+            self._exception_handler = app_router.handle_exception
+        else:
+            self._route_handler = route_handler
+            self._output_serializer = default_json_serializer
+            self._exception_handler = default_exception_handler
+
         self._debug = debug
 
         wsgi_version = os.environ.get('wsgi.version')
@@ -103,7 +83,7 @@ v{app_version} built on {build_on} ({commit})
             headers = output_and_status_code.headers
         else:
             output = output_and_status_code
-            status_code = 200
+            status_code = http.HTTPStatus.OK.value
 
         return self._output_serializer(output, status_code, headers)
 
