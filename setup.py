@@ -54,6 +54,7 @@ setup(
         'pytcher',
     ],
     install_requires=[
+        'jsonpath-ng'
     ],
     extras_require={
         'data-classes': ['dataclasses-json']

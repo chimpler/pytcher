@@ -1,9 +1,14 @@
 import json
 import sys
 from abc import abstractmethod
+from typing import Dict, Type
+
+import jsonpath_ng
 
 from pytcher.matchers import PathMatcher, NoMatch
 from pytcher.matchers import to_type, is_type
+from pytcher.router import Router
+from pytcher.unmarshallers import Unmarshaller
 
 
 class Request(object):
@@ -13,7 +18,7 @@ class Request(object):
     PATCH = 'PATCH'
     DELETE = 'DELETE'
 
-    def __init__(self, command, url, params, headers, payload):
+    def __init__(self, command, url, params, headers, payload, unmarshallers: Dict[Type, Unmarshaller]):
         self.url = url
         self.headers = headers
         self.command = command
@@ -22,6 +27,7 @@ class Request(object):
         self._remaining_stack = list(reversed(url.split('/')[1:]))  # skip first '/'
         self._header_stack = []
         self._payload = payload
+        self._unmarshallers = unmarshallers
 
     def __str__(self):
         return '[Request: command={command} url={url}]'.format(
@@ -39,6 +45,16 @@ class Request(object):
     @property
     def p(self):
         return ParameterDict(self, self.params, ParameterOperator)
+
+    def route(self, router: Router):
+        # TODO: maybe accept a callable too
+        return router.route(self)
+
+    def entity(self, obj_type, json_path='$'):
+        # TODO: Do a search based on subtypes too
+        obj_data = jsonpath_ng.parse(json_path).find(self.json)[0].value
+        if obj_type in self._unmarshallers:
+            return self._unmarshallers[obj_type].unmarshall(obj_data)
 
     @property
     def json(self):
@@ -273,7 +289,6 @@ class RequestMatch(object):
         self._remaining_path = list(remaining_path)
         self._matched_path = list(matched_path)
         self._matched_vars = list(matched_vars)
-
         self._first_time = True
 
     def __enter__(self):
@@ -331,12 +346,12 @@ class RequestMatch(object):
         return '[RequestMatch request={request}, is_match={is_match}, ' \
                'remaining_path=[{remaining_path}], matched_path=[{matched_path}], ' \
                'matched_vars=[{matched_vars}]]'.format(
-                   request=self._request,
-                   is_match=self._is_match,
-                   remaining_path=', '.join(self._remaining_path),
-                   matched_path=', '.join([str(s) for s in self._matched_path]),
-                   matched_vars=', '.join([str(s) for s in self._matched_vars])
-               )
+            request=self._request,
+            is_match=self._is_match,
+            remaining_path=', '.join(self._remaining_path),
+            matched_path=', '.join([str(s) for s in self._matched_path]),
+            matched_vars=', '.join([str(s) for s in self._matched_vars])
+        )
 
     def __iter__(self):
         return self
@@ -352,6 +367,7 @@ class RequestMatch(object):
                 raise StopIteration
         else:
             raise StopIteration
+
 
 class InvalidPathValue(Exception):
     pass

@@ -5,7 +5,7 @@ from typing import Dict
 
 from dataclasses_json import dataclass_json
 
-from pytcher import Request, Integer, AppRouter, Response
+from pytcher import Request, Integer, Router, Response
 from pytcher.app import App
 
 
@@ -17,7 +17,7 @@ class InventoryItem(object):
     quantity: int = 0
 
 
-class MyWebAppRouter(AppRouter):
+class MyRouter(Router):
     def __init__(self):
         words = [
             'wine',
@@ -54,10 +54,13 @@ class MyWebAppRouter(AppRouter):
                 return self._inventory
 
 
+app = App(MyRouter())
+
+
 if __name__ == '__main__':
     print()
     print('Try: curl localhost:8000/items')
     print('Try: curl localhost:8000/items/2')
     print()
 
-    App(MyWebAppRouter()).start()
+    app.start()

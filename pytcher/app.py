@@ -2,36 +2,51 @@ import http
 import logging
 import os
 import urllib
-from typing import Dict
+from typing import Dict, Union, Callable, List, Type
 from wsgiref.simple_server import make_server
-from pytcher import NotFoundException, Response, _version
-from pytcher.defaults import default_exception_handler, default_json_serializer
-from pytcher.request import Request
-from pytcher.app_router import AppRouter
 
+from pytcher import NotFoundException, Response, _version
+from pytcher.exception_handlers import ExceptionHandler, DefaultDebugExceptionHandler, DefaultExceptionHandler
+from pytcher.marshallers import Marshaller, DefaultJSONMarshaller
+from pytcher.request import Request
+from pytcher.router import Router
+from pytcher.unmarshallers import DefaultJSONUnmarshaller
 
 logger = logging.getLogger(__name__)
 
 
 class App(object):
     def __init__(self,
-                 app_router: AppRouter = None,
-                 route_handler=None,
-                 output_serializer=None,
-                 exception_handler=None,
-                 debug=True
-                 ):
+                 router: Union[Router, Callable],
+                 marshallers: Dict[Type, Marshaller] = None,
+                 unmarshallers: Dict[Type, Marshaller] = None,
+                 exception_handlers: List[Union[Router, Callable]] = None,
+                 debug: bool = True):
 
-        if app_router:
-            self._route_handler = app_router.route
-            self._output_serializer = app_router.serialize
-            self._exception_handler = app_router.handle_exception
-        else:
-            self._route_handler = route_handler
-            self._output_serializer = default_json_serializer
-            self._exception_handler = default_exception_handler
+        self._route_handler = router.route if isinstance(router, Router) else router
+        assert callable(self._route_handler), 'router must be a callable or of type Router'
 
         self._debug = debug
+
+        if marshallers:
+            self._marshallers = marshallers
+        else:
+            self._marshallers = {dict: DefaultJSONMarshaller().marshall}
+
+        if unmarshallers:
+            self._unmarshallers = unmarshallers
+        else:
+            self._unmarshallers = {dict: DefaultJSONUnmarshaller().unmarshall}
+
+        if exception_handlers:
+            self._exception_handler = [
+                exception_handler.handle if isinstance(exception_handler, ExceptionHandler) else exception_handler
+                for exception_handler in exception_handlers
+            ]
+        else:
+            self._exception_handler = [
+                DefaultDebugExceptionHandler().handle if debug else DefaultExceptionHandler().handle
+            ]
 
         wsgi_version = os.environ.get('wsgi.version')
         if wsgi_version:
@@ -62,16 +77,21 @@ v{app_version} built on {build_on} ({commit})
             server.serve_forever()
             # LocalWebserver().start(self._handle_request, interface, port)
 
-
     def _handle_request(self, command: str, uri: str, query_string: str, headers: Dict[str, str], body: str):
         try:
             params = urllib.parse.parse_qs(query_string) if query_string else {}
-            request = Request(command, uri, params, headers, body)
+            request = Request(command, uri, params, headers, body, self._unmarshallers)
             route_output = self._route_handler(request)
             if route_output is None:
                 raise NotFoundException()
         except Exception as e:
-            route_output = self._exception_handler(e, request)
+            route_output = next(
+                (
+                    handler(e, request)
+                    for handler in self._exception_handlers
+                ),
+                None
+            )
 
         headers = {}
         output_and_status_code = route_output
@@ -85,7 +105,7 @@ v{app_version} built on {build_on} ({commit})
             output = output_and_status_code
             status_code = http.HTTPStatus.OK
 
-        return self._output_serializer(output, status_code, headers)
+        return Response(self._marshallers[dict](output), status_code, headers)
 
     def __call__(self, environ, start_response):
         # Replace HTTP_ABC=value to ABC=value

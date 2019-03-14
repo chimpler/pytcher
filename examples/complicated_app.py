@@ -1,5 +1,21 @@
 # flake8: noqa: E999
 from pytcher import App, Router, Request, Integer
+from pytcher.unmarshallers import Unmarshaller
+
+
+class Person(object):
+    def __init__(self, name):
+        self.name = name
+
+class AdminRouter(Router):
+    def route(self, r: Request):
+        person = r.entity(Person)
+
+        with r / 'users':
+            return ['darth', 'bear'] + [person.name]
+
+        with r.end:
+            return 'admin page'
 
 
 class MyRouter(Router):
@@ -7,6 +23,8 @@ class MyRouter(Router):
         self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
 
     def route(self, r: Request):
+        with r / 'admin':
+            return r.route(AdminRouter())
 
         with r / 'items':
             with r.end:
@@ -29,7 +47,17 @@ class MyRouter(Router):
                     return self._items.pop(item_id)
 
 
-app = App(MyRouter())
+class PersonUnmarshaller(Unmarshaller):
+    def unmarshall(self, data):
+        return Person(**data)
+
+
+app = App(
+    router=MyRouter(),
+    unmarshallers={
+        Person: PersonUnmarshaller()
+    }
+)
 
 
 if __name__ == '__main__':

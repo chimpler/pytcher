@@ -11,14 +11,15 @@
 
 
 Pytcher is an HTTP routing DSL for Python. The main focus of Pytcher is to provide a human readable router syntax that supports complex path matching, parameter matching and header matching using nested routes.
-We also try to limit scope of variables not relying on global variables. 
+We also try to limit scope of variables not relying on global variables.
+Pytcher will be mostly used to implement REST APIs and so sessions will not be supported.
 
 Example of a simple CRUD REST server:
 ```python
-from pytcher import AppRouter, Request, Integer
+from pytcher import App, AppRouter, Request, Integer
 
 
-class MyApp(AppRouter):
+class MyRouter(AppRouter):
     def __init__(self):
         self.version = 'v1'
         self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
@@ -45,13 +46,25 @@ class MyApp(AppRouter):
                     return self._items.pop(item_id)
 
 
+app = App(MyRouter())
+
+
 if __name__ == '__main__':
-    MyApp().run()
+    app.start()
 ```
 
 Start the app:
 
     $ python my_app.py
+    
+Or using uwsgi:
+
+    # uwsgi --http :8000 --wsgi my_app:app
+
+Optionally you can use the additional options:
+`--pp` directory where it is located (e.g., `examples`)
+`--wsgi-file` name of the file (e.g., `my_app.py`) 
+`-H` <path to virtual environment> (e.g., `venv`)
 
 Then, in another window you can run commands such as:
 
@@ -66,15 +79,10 @@ that makes a context manager skip the body of the `with` if a condition is not f
 This is known as [PEP-377](https://www.python.org/dev/peps/pep-0377/) which has been [rejected](https://www.python.org/dev/peps/pep-0377/).
 
 We also offer another implementation that is using a `for` construct without using any hack.
-In this case instead of writing:
-```python
-    with r / 'authors' / Integer() / 'books' / Integer()  as [author_id, book_id]:
-```
-
-one can write:
-```python
-    for [author_id, book_id] in r / 'authors' / Integer() / 'books' / Integer():
-```
+Using with | Using for
+------------|:------:
+`with r / 'authors' / Integer() / 'books' / Integer()  as [author_id, book_id]:` | `for [author_id, book_id] in r / 'authors' / Integer() / 'books' / Integer()` 
+`with r.get:` | `for _ in r.get`
 
 For more examples, check out the [examples](https://github.com/chimpler/pytcher/tree/master/examples) directory.
 
@@ -90,7 +98,7 @@ pypy 3      | :white_check_mark:
 Items                                     | Status
 ------------------------------------------| :-----:
 Support AND (&)                           | :white_check_mark:
-Support OR (|)                            | :white_check_mark:
+Support OR (\|)                           | :white_check_mark:
 Support /                                 | :white_check_mark:
 Support //                                | :x:
 Support GET                               | :white_check_mark:
@@ -100,5 +108,13 @@ Support PATCH                             | :white_check_mark:
 Support parameter                         | :white_check_mark:
 Support header                            | :white_check_mark:
 Automatically generate route path for doc | :x:
-WSGI                                      | :x:
+WSGI                                      | :white_check_mark:
 tests                                     | :x:
+cookies                                   | :x:
+docker                                    | :x:
+middleware                                | :x:
+plugin					  | :x:
+websocket				  | :x:
+codec gzip
+subroutes
+marshallers (json, data class, namedtuple)
