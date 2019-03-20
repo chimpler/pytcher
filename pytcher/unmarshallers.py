@@ -4,7 +4,7 @@ from abc import abstractmethod
 
 class Unmarshaller(object):
     @abstractmethod
-    def unmarshall(self, data: str):
+    def unmarshall(self, data: str, content_type='application/json', charset='utf-8'):
         pass
 
 

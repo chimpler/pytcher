@@ -35,7 +35,7 @@ setup(
     version='0.0.1',
     description='Micro framework for Python',
     long_description='Micro framework for Python',
-    keywords='hocon parser',
+    keywords='python rest routing framework',
     license='Apache License 2.0',
     author='Francois Dang Ngoc',
     author_email='francois.dangngoc@gmail.com',
@@ -54,7 +54,8 @@ setup(
         'pytcher',
     ],
     install_requires=[
-        'jsonpath-ng'
+        'jsonpath-ng',
+        'dacite'
     ],
     extras_require={
         'data-classes': ['dataclasses-json']

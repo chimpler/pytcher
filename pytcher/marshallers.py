@@ -10,6 +10,5 @@ class Marshaller(object):
 
 
 class DefaultJSONMarshaller(Marshaller):
-    def marshall(self, obj):
-        # TODO pass options for formatting
+    def marshall(self, obj, charset='utf-8'):
         return json.dumps(obj)

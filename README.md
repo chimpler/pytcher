@@ -16,10 +16,10 @@ Pytcher will be mostly used to implement REST APIs and so sessions will not be s
 
 Example of a simple CRUD REST server:
 ```python
-from pytcher import App, AppRouter, Request, Integer
+from pytcher import App, Router, Request, Integer
 
 
-class MyRouter(AppRouter):
+class MyRouter(Router):
     def __init__(self):
         self.version = 'v1'
         self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
@@ -113,8 +113,8 @@ tests                                     | :x:
 cookies                                   | :x:
 docker                                    | :x:
 middleware                                | :x:
-plugin					  | :x:
-websocket				  | :x:
-codec gzip
-subroutes
-marshallers (json, data class, namedtuple)
+plugin					                  | :x:
+websocket			                	  | :x:
+codec gzip                                | :x:
+subroutes                                 | :white_check_mark:
+marshallers (json, data class, namedtuple)|

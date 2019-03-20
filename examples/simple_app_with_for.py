@@ -13,7 +13,7 @@ class MyAppRouter(AppRouter):
                 for _ in r.get:
                     return self._items
 
-                with r.post:
+                for _ in r.post:
                     self._items.append(r.json)
                     return self._items[-1]
 

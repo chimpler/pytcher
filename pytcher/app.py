@@ -31,7 +31,9 @@ class App(object):
         if marshallers:
             self._marshallers = marshallers
         else:
-            self._marshallers = {dict: DefaultJSONMarshaller().marshall}
+            self._marshallers = {
+                'application/json': DefaultJSONMarshaller().marshall
+            }
 
         if unmarshallers:
             self._unmarshallers = unmarshallers
