@@ -1,6 +1,8 @@
 import json
 from abc import abstractmethod
 
+from pytcher.encoders.json_encoder import JSONEncoder
+
 
 class Marshaller(object):
 
@@ -10,5 +12,5 @@ class Marshaller(object):
 
 
 class DefaultJSONMarshaller(Marshaller):
-    def marshall(self, obj, charset='utf-8'):
-        return json.dumps(obj)
+    def marshall(self, obj):
+        return JSONEncoder().encode(obj)

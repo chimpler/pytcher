@@ -1,14 +1,9 @@
 import json
 import sys
 from abc import abstractmethod
-from typing import Dict, Type
 
-import jsonpath_ng
-
-from pytcher.matchers import PathMatcher, NoMatch
-from pytcher.matchers import to_type, is_type
+from pytcher.matchers import is_type, NoMatch, PathMatcher, to_type
 from pytcher.router import Router
-from pytcher.unmarshallers import Unmarshaller
 
 
 class Request(object):
@@ -18,7 +13,7 @@ class Request(object):
     PATCH = 'PATCH'
     DELETE = 'DELETE'
 
-    def __init__(self, command, url, params, headers, payload, unmarshallers: Dict[Type, Unmarshaller]):
+    def __init__(self, command, url, params, headers, payload, unmarshaller):
         self.url = url
         self.headers = headers
         self.command = command
@@ -27,7 +22,7 @@ class Request(object):
         self._remaining_stack = list(reversed(url.split('/')[1:]))  # skip first '/'
         self._header_stack = []
         self._payload = payload
-        self._unmarshallers = unmarshallers
+        self._unmarshaller = unmarshaller
 
     def __str__(self):
         return '[Request: command={command} url={url}]'.format(
@@ -52,9 +47,8 @@ class Request(object):
 
     def entity(self, obj_type, json_path='$'):
         # TODO: Do a search based on subtypes too
-        obj_data = jsonpath_ng.parse(json_path).find(self.json)[0].value
-        if obj_type in self._unmarshallers:
-            return self._unmarshallers[obj_type].unmarshall(obj_data)
+        # obj_data = jsonpath_ng.parse(json_path).find(self.json)[0].value
+        return self._unmarshaller(obj_type, self._payload)
 
     @property
     def json(self):

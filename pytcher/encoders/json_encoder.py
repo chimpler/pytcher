@@ -1,10 +1,11 @@
 import dataclasses
+import json
 import json as pyjson
 from enum import Enum
 from typing import Iterable
 
 
-class DaserJSONEncoder(pyjson.JSONEncoder):
+class CustomJSONEncoder(pyjson.JSONEncoder):
 
     def __init__(self, *args, **kwargs):
         if 'encoders' in kwargs:
@@ -13,7 +14,7 @@ class DaserJSONEncoder(pyjson.JSONEncoder):
         else:
             self._encoders = {}
 
-        super(DaserJSONEncoder, self).__init__(*args, **kwargs)
+        super(CustomJSONEncoder, self).__init__(*args, **kwargs)
 
     def default(self, obj):
         if obj is None or isinstance(obj, (bool, int, float, str)):
@@ -40,8 +41,8 @@ class DaserJSONEncoder(pyjson.JSONEncoder):
         }
 
 
-class DaserJSONEncoderBuilder(object):
-    def __init__(self, encoders):
+class CustomJSONEncoderBuilder(object):
+    def __init__(self, encoders=[]):
         self._encoders = encoders
 
     def __call__(self, *args, **kwargs):
@@ -49,4 +50,10 @@ class DaserJSONEncoderBuilder(object):
             **kwargs,
             **{'encoders': self._encoders}
         }
-        return DaserJSONEncoder(*args, **new_kwargs)
+        return CustomJSONEncoder(*args, **new_kwargs)
+
+
+# TODO add custom decoder (datetime, ...)
+class JSONEncoder(object):
+    def encode(self, obj):
+        return json.dumps(obj, cls=CustomJSONEncoderBuilder())

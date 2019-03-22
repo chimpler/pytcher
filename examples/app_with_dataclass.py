@@ -3,13 +3,10 @@ import json
 from dataclasses import dataclass
 from typing import Dict
 
-from dataclasses_json import dataclass_json
-
 from pytcher import Request, Integer, Router, Response
 from pytcher.app import App
 
 
-@dataclass_json
 @dataclass
 class InventoryItem(object):
     name: str
@@ -33,25 +30,19 @@ class MyRouter(Router):
             for word in words
         ]
 
-    def serialize(self, root_obj, status_code: int, headers: Dict[str, str]):
-        def to_dict(obj):
-            if isinstance(obj, list):
-                return [
-                    to_dict(child)
-                    for child in obj
-                ]
-            elif isinstance(obj, InventoryItem):
-                return InventoryItem.schema().dump(obj)
-
-        return Response(json.dumps(to_dict(root_obj)))
-
     def route(self, r: Request):
-        with r.get / 'items':
-            with r / Integer() as [item_index]:
+        with r / 'items':
+            with r.get / Integer() as [item_index]:
                 return self._inventory[item_index]
 
             with r.end:
-                return self._inventory
+                with r.get:
+                    return self._inventory
+
+                with r.post:
+                    item = r.entity(InventoryItem, '$')
+                    self._inventory.append(item)
+                    return item
 
 
 app = App(MyRouter())

@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 class App(object):
     def __init__(self,
                  router: Union[Router, Callable],
-                 marshallers: Dict[Type, Marshaller] = None,
-                 unmarshallers: Dict[Type, Marshaller] = None,
+                 marshallers: Dict[str, Marshaller] = None,
+                 unmarshallers: Dict[str, Marshaller] = None,
                  exception_handlers: List[Union[Router, Callable]] = None,
                  debug: bool = True):
 
@@ -38,7 +38,9 @@ class App(object):
         if unmarshallers:
             self._unmarshallers = unmarshallers
         else:
-            self._unmarshallers = {dict: DefaultJSONUnmarshaller().unmarshall}
+            self._unmarshallers = {
+                'application/json': DefaultJSONUnmarshaller().unmarshall
+            }
 
         if exception_handlers:
             self._exception_handler = [
@@ -82,7 +84,8 @@ v{app_version} built on {build_on} ({commit})
     def _handle_request(self, command: str, uri: str, query_string: str, headers: Dict[str, str], body: str):
         try:
             params = urllib.parse.parse_qs(query_string) if query_string else {}
-            request = Request(command, uri, params, headers, body, self._unmarshallers)
+            # convert to charset
+            request = Request(command, uri, params, headers, body, self._unmarshallers['application/json'])
             route_output = self._route_handler(request)
             if route_output is None:
                 raise NotFoundException()
@@ -107,7 +110,7 @@ v{app_version} built on {build_on} ({commit})
             output = output_and_status_code
             status_code = http.HTTPStatus.OK
 
-        return Response(self._marshallers[dict](output), status_code, headers)
+        return Response(self._marshallers['application/json'](output), status_code, headers)
 
     def __call__(self, environ, start_response):
         # Replace HTTP_ABC=value to ABC=value
