@@ -55,7 +55,7 @@ setup(
     ],
     install_requires=[
         'jsonpath-ng',
-        'dacite'
+        'xmldict'
     ],
     extras_require={
         'data-classes': ['dataclasses-json']

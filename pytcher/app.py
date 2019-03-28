@@ -2,15 +2,20 @@ import http
 import logging
 import os
 import urllib
-from typing import Dict, Union, Callable, List, Type
+from typing import Callable, Dict, List, Union
 from wsgiref.simple_server import make_server
 
-from pytcher import NotFoundException, Response, _version
-from pytcher.exception_handlers import ExceptionHandler, DefaultDebugExceptionHandler, DefaultExceptionHandler
-from pytcher.marshallers import Marshaller, DefaultJSONMarshaller
+from pytcher import _version, NotFoundException, Response
+from pytcher.exception_handlers import DefaultDebugExceptionHandler, DefaultExceptionHandler, ExceptionHandler
+# from pytcher.marshallers import DefaultXMLMarshaller, Marshaller
+from pytcher.marshallers import Marshaller
+from pytcher.marshallers.csv_marshaller import CSVMarshaller
+from pytcher.marshallers.json_marshaller import JSONMarshaller
+from pytcher.marshallers.xml_marshaller import XMLMarshaller
 from pytcher.request import Request
 from pytcher.router import Router
-from pytcher.unmarshallers import DefaultJSONUnmarshaller
+from pytcher.unmarshallers import Unmarshaller
+from pytcher.unmarshallers.json_unmarshaller import JSONUnmarshaller
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +24,7 @@ class App(object):
     def __init__(self,
                  router: Union[Router, Callable],
                  marshallers: Dict[str, Marshaller] = None,
-                 unmarshallers: Dict[str, Marshaller] = None,
+                 unmarshallers: Dict[str, Unmarshaller] = None,
                  exception_handlers: List[Union[Router, Callable]] = None,
                  debug: bool = True):
 
@@ -32,14 +37,17 @@ class App(object):
             self._marshallers = marshallers
         else:
             self._marshallers = {
-                'application/json': DefaultJSONMarshaller().marshall
+                'application/json': JSONMarshaller().marshall,
+                'application/xml': XMLMarshaller().marshall,
+                'text/csv': CSVMarshaller().marshall
             }
 
         if unmarshallers:
             self._unmarshallers = unmarshallers
         else:
             self._unmarshallers = {
-                'application/json': DefaultJSONUnmarshaller().unmarshall
+                'application/json': JSONUnmarshaller().unmarshall,
+                # 'application/xml': DefaultXMLUnmarshaller().unmarshall
             }
 
         if exception_handlers:
@@ -85,7 +93,9 @@ v{app_version} built on {build_on} ({commit})
         try:
             params = urllib.parse.parse_qs(query_string) if query_string else {}
             # convert to charset
-            request = Request(command, uri, params, headers, body, self._unmarshallers['application/json'])
+            content_type = headers.get('CONTENT_TYPE', 'application/json')
+            unmarshaller = self._unmarshallers[content_type]
+            request = Request(command, uri, params, headers, body, unmarshaller)
             route_output = self._route_handler(request)
             if route_output is None:
                 raise NotFoundException()
@@ -98,8 +108,9 @@ v{app_version} built on {build_on} ({commit})
                 None
             )
 
-        headers = {}
         output_and_status_code = route_output
+        print(headers)
+        accept_type = headers.get('ACCEPT', 'application/json')
         if isinstance(output_and_status_code, tuple):
             output, status_code = output_and_status_code
         elif isinstance(output_and_status_code, Response):
@@ -110,14 +121,16 @@ v{app_version} built on {build_on} ({commit})
             output = output_and_status_code
             status_code = http.HTTPStatus.OK
 
-        return Response(self._marshallers['application/json'](output), status_code, headers)
+        marshaller = self._marshallers[accept_type]
+        print('====')
+        print(marshaller(output))
+        return Response(marshaller(output), status_code, headers)
 
     def __call__(self, environ, start_response):
         # Replace HTTP_ABC=value to ABC=value
         headers = {
-            key[5:]: value
+            key[5:] if key.startswith('HTTP_') else key: value
             for key, value in environ.items()
-            if key.startswith('HTTP_')
         }
 
         body_size = environ.get('CONTENT_LENGTH')
@@ -136,7 +149,6 @@ v{app_version} built on {build_on} ({commit})
             status_code=response.status_code,
             status_message=http.HTTPStatus(response.status_code).name
         )
-
-        start_response(status_response, list(response.headers.items()))
-
+        # list(response.headers.items())
+        start_response(status_response, [])
         return [response.body.encode('utf-8')]

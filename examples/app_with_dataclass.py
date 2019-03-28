@@ -1,9 +1,7 @@
 # flake8: noqa: E999
-import json
 from dataclasses import dataclass
-from typing import Dict
 
-from pytcher import Request, Integer, Router, Response
+from pytcher import Integer, Request, Router
 from pytcher.app import App
 
 
@@ -40,13 +38,12 @@ class MyRouter(Router):
                     return self._inventory
 
                 with r.post:
-                    item = r.entity(InventoryItem, '$')
+                    item = r.entity(InventoryItem)
                     self._inventory.append(item)
                     return item
 
 
 app = App(MyRouter())
-
 
 if __name__ == '__main__':
     print()

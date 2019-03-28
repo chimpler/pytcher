@@ -4,6 +4,7 @@ from abc import abstractmethod
 
 from pytcher.matchers import is_type, NoMatch, PathMatcher, to_type
 from pytcher.router import Router
+from pytcher.unmarshallers import Unmarshaller
 
 
 class Request(object):
@@ -13,7 +14,14 @@ class Request(object):
     PATCH = 'PATCH'
     DELETE = 'DELETE'
 
-    def __init__(self, command, url, params, headers, payload, unmarshaller):
+    def __init__(
+            self,
+            command: str,
+            url: str,
+            params,
+            headers,
+            content,
+            unmarshaller: Unmarshaller):
         self.url = url
         self.headers = headers
         self.command = command
@@ -21,7 +29,7 @@ class Request(object):
         self._path_stack = []
         self._remaining_stack = list(reversed(url.split('/')[1:]))  # skip first '/'
         self._header_stack = []
-        self._payload = payload
+        self._content = content
         self._unmarshaller = unmarshaller
 
     def __str__(self):
@@ -46,14 +54,13 @@ class Request(object):
         return router.route(self)
 
     def entity(self, obj_type, json_path='$'):
-        # TODO: Do a search based on subtypes too
-        # obj_data = jsonpath_ng.parse(json_path).find(self.json)[0].value
-        return self._unmarshaller(obj_type, self._payload)
+        # obj_data = jsonpath_ng.parse(json_path).find(self._obj_type)[0].value
+        return self._unmarshaller(obj_type, self._content)
 
     @property
     def json(self):
         # TODO: make it lazy load
-        return json.loads(self._payload)
+        return json.loads(self._obj_type)
 
     @property
     def end(self):
