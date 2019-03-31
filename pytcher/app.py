@@ -36,10 +36,12 @@ class App(object):
         if marshallers:
             self._marshallers = marshallers
         else:
+            csv_marshaller = CSVMarshaller()
             self._marshallers = {
                 'application/json': JSONMarshaller().marshall,
                 'application/xml': XMLMarshaller().marshall,
-                'text/csv': CSVMarshaller().marshall
+                'text/csv': csv_marshaller.marshall,
+                'application/csv': csv_marshaller.marshall
             }
 
         if unmarshallers:

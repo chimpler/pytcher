@@ -6,11 +6,9 @@ from pytcher.marshallers import Marshaller
 
 
 class XMLMarshaller(Marshaller):
-    def __init__(self, encoders=[]):
-        self._encoders = encoders
 
     # TODO add namespace XMLInstance for xsi:nil
-    def marshall(self, obj):
+    def marshall_obj(self, obj):
         if isinstance(obj, (bool, int, float, str)):
             return obj
         elif isinstance(obj, Enum):
@@ -34,3 +32,6 @@ class XMLMarshaller(Marshaller):
             f'<{key}>{self.marshall(value)}</{key}>' if value is not None else f'<{key} xsi:nil="true"/>'
             for key, value in dict_obj.items()
         ]) + f'</{name}>'
+
+    def marshall(self, obj):
+        return self.marshall_obj(obj)

@@ -7,8 +7,6 @@ from pytcher.marshallers import default_encoders, Marshaller, MarshallerExceptio
 
 
 class CSVMarshaller(Marshaller):
-    def __init__(self, encoders=[]):
-        self._encoders = default_encoders + encoders
 
     def encode_value(self, obj):
         if obj is None:

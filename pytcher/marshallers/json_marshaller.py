@@ -45,13 +45,11 @@ class EntityJSONEncoderBuilder(object):
     def __init__(self, encoders):
         self._encoders = encoders
 
-    def __call__(self, *args, encoders={}, **kwargs):
+    def __call__(self, *args, encoders=[], **kwargs):
         return EntityJSONEncoder(encoders=encoders)
 
 
 class JSONMarshaller(Marshaller):
-    def __init__(self, encoders: List[Tuple[Callable, Callable]] = []):
-        self._encoders = encoders
 
     def marshall(self, obj):
-        return json.dumps(obj, cls=EntityJSONEncoderBuilder(self._encoders))
+        return json.dumps(obj, cls=EntityJSONEncoderBuilder(encoders=self._encoders))

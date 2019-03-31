@@ -1,5 +1,6 @@
 # flake8: noqa: E999
 from dataclasses import dataclass
+from datetime import timedelta
 
 from pytcher import Integer, Request, Router
 from pytcher.app import App
@@ -35,7 +36,7 @@ class MyRouter(Router):
 
             with r.end:
                 with r.get:
-                    return self._inventory
+                    return [self._inventory, timedelta(1, 3893, 1000, 122)]
 
                 with r.post:
                     item = r.entity(InventoryItem)
