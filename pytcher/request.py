@@ -3,6 +3,7 @@ import re
 import sys
 from abc import abstractmethod
 
+from pytcher import convert_str_to_path_elements
 from pytcher.matchers import is_type, NoMatch, PathMatcher, to_type, Regex
 from pytcher.unmarshallers import Unmarshaller
 
@@ -13,8 +14,6 @@ class Request(object):
     PUT = 'PUT'
     PATCH = 'PATCH'
     DELETE = 'DELETE'
-
-    RE_PATH_ELT = re.compile(r'<(?:(?P<type>.*?):)?(?P<name>.*?)>')
 
     def __init__(
             self,
@@ -89,42 +88,10 @@ class Request(object):
         return RequestMatch(self, self.command == self.DELETE, self._remaining_stack)
 
     def path(self, *path_elements):
-
-        def gen_regex(elt):
-            current_res = elt
-            groups = self.RE_PATH_ELT.finditer(elt)
-            data_types = []
-            if groups:
-                for data_type, name in groups:
-                    if not data_type:
-                        src = r'<{name}}>'.format(type=type, name=name),
-                        replacement = r'(?P<{name}>.*?)'.format(name=name)
-                    elif data_type:
-                        src = r'<{type}:{name}>'.format(type=type, name=name)
-
-                        if data_type == 'str':
-                            replacement = r'(?P<{name}>.*?)'.format(name=name)
-                        elif data_type == 'int':
-                            replacement = r'(?P<{name}>[+-]?\d+?)'.format(name=name)
-                        elif data_type == 'float':
-                            replacement = r'(?P<{name}>[-+]?([0-9]*\.[0-9]+|[0-9]+)?)'.format(name=name)
-
-                    current_res = current_res.replace(src, replacement)
-                    data_types.append(data_type)
-                return Regex(current_res, data_types=data_types)
-            else:
-                return current_res
-
-        def split_string(path_elt):
-            return [
-                gen_regex(elt)
-                for elt in path_elt.split('/')
-            ]
-
         transformed_elements = [
             sub_elt
             for path_elt in path_elements
-            for sub_elt in (split_string(path_elt) if isinstance(path_elt, str) else [path_elt])
+            for sub_elt in (convert_str_to_path_elements(path_elt) if isinstance(path_elt, str) else [path_elt])
         ]
 
         matched_path, matched_vars = self.match_path(self._remaining_stack, transformed_elements)

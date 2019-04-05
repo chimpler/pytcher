@@ -2,26 +2,20 @@ import http
 import logging
 import os
 import urllib
-from typing import Callable, Dict, List, Union, Iterable
+from typing import Callable, Dict, Iterable, List, Union
 from wsgiref.simple_server import make_server
 
 import pytcher
 from pytcher import _version, NotFoundException, Response
 from pytcher.exception_handlers import DefaultDebugExceptionHandler, DefaultExceptionHandler, ExceptionHandler
-# from pytcher.marshallers import DefaultXMLMarshaller, Marshaller
 from pytcher.marshallers import Marshaller
 from pytcher.marshallers.csv_marshaller import CSVMarshaller
 from pytcher.marshallers.json_marshaller import JSONMarshaller
 from pytcher.marshallers.xml_marshaller import XMLMarshaller
 from pytcher.request import Request
-from pytcher.router import Router, AnnotatedRouter
+from pytcher.router import Router
 from pytcher.unmarshallers import Unmarshaller
 from pytcher.unmarshallers.json_unmarshaller import JSONUnmarshaller
-import functools
-from collections import namedtuple
-from optparse import OptionParser
-import inspect
-
 
 logger = logging.getLogger(__name__)
 
@@ -40,15 +34,18 @@ class App(object):
             if isinstance(router, Callable):
                 found = next(
                     (
-                        func
-                        for func in pytcher._annotated_routes.get(router.__module__, {}).get(None)
-                        if router.__name__ == func.__name__
+                        annotated_route
+                        for annotated_route in pytcher._annotated_routes.get(router.__module__, {}).get(None)
+                        if router.__name__ == annotated_route.func.__name__
                     ),
                     None
                 )
                 return [found] if found else []
             else:
-                return pytcher._annotated_routes.get(router.__module__, {}).get(type(router).__name__)
+                return [
+                    pytcher.AnnotatedRoute(path, command, getattr(router, func.__name__))
+                    for path, command, func in pytcher._annotated_routes.get(router.__module__, {}).get(type(router).__name__)
+                ]
 
         self._routers = [
             r
@@ -57,7 +54,7 @@ class App(object):
         ]
 
         for router in self._routers:
-            logger.debug('Registered router %s', router.func.__name__)
+            print('Registered router %s', router.func.__name__)
 
         # self._route_handler = router.route if isinstance(router, Callable) else router
         # assert callable(self._route_handler), 'router must be a callable or of type Router'
@@ -79,8 +76,7 @@ class App(object):
             self._unmarshallers = unmarshallers
         else:
             self._unmarshallers = {
-                'application/json': JSONUnmarshaller().unmarshall,
-                # 'application/xml': DefaultXMLUnmarshaller().unmarshall
+                'application/json': JSONUnmarshaller().unmarshall
             }
 
         if exception_handlers:
@@ -123,17 +119,25 @@ v{app_version} built on {build_on} ({commit})
             # LocalWebserver().start(self._handle_request, interface, port)
 
     def _handle_request(self, command: str, uri: str, query_string: str, headers: Dict[str, str], body: str):
+        # convert to charset
+        content_type = headers.get('CONTENT_TYPE', 'application/json')
+        unmarshaller = self._unmarshallers[content_type]
+        params = urllib.parse.parse_qs(query_string) if query_string else {}
+        request = Request(command, uri, params, headers, body, unmarshaller)
         try:
-            params = urllib.parse.parse_qs(query_string) if query_string else {}
-            # convert to charset
-            content_type = headers.get('CONTENT_TYPE', 'application/json')
-            unmarshaller = self._unmarshallers[content_type]
-            request = Request(command, uri, params, headers, body, unmarshaller)
+
+            def run_router(router):
+                for matched_vars in request.path(*router.path):
+                    return router.func(request, *matched_vars)
 
             route_output = next(
                 (
-                    router.func(request)
-                    for router in self._routers
+                    output
+                    for output in (
+                            run_router(router)
+                            for router in self._routers
+                    )
+                    if output is not None
                 )
                 , None
             )
@@ -150,7 +154,6 @@ v{app_version} built on {build_on} ({commit})
             )
 
         output_and_status_code = route_output
-        print(headers)
         accept_type = headers.get('ACCEPT', 'application/json')
         if isinstance(output_and_status_code, tuple):
             output, status_code = output_and_status_code

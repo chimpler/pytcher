@@ -1,8 +1,7 @@
 # flake8: noqa: E999
 from dataclasses import dataclass
-from datetime import timedelta
 
-from pytcher import Integer, Request, Router, route
+from pytcher import Integer, Request, route
 from pytcher.app import App
 
 
@@ -16,6 +15,7 @@ class InventoryItem(object):
 @route(path='/')
 def test():
     return []
+
 
 class MyRouter(object):
     def __init__(self):
@@ -33,13 +33,14 @@ class MyRouter(object):
             for word in words
         ]
 
-    @route(path='/items', method='GET')
-    def list_items(self):
-        return self._inventory
 
-    # @route(path='/items/<id:string>', method='GET')
-    def get_item(self, id, request):
+    @route(path='/items/<int:id>', method='GET')
+    def get_item(self, request, id):
         return self._inventory[id]
+
+    @route(path='/items', method='GET')
+    def list_items(self, request):
+        return self._inventory
 
     def route(self, r: Request):
         with r / 'items':
@@ -56,9 +57,8 @@ class MyRouter(object):
                     return item
 
 
-app = App(MyRouter())
-
 if __name__ == '__main__':
+    app = App(MyRouter())
     print()
     print('Try: curl localhost:8000/items')
     print('Try: curl localhost:8000/items/2')

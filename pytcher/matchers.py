@@ -3,6 +3,8 @@ from datetime import datetime
 import re
 from itertools import zip_longest
 
+from pytcher import convert_type
+
 
 def to_type(new_type, n):
     try:
@@ -92,21 +94,33 @@ class DateTime(PathMatcher):
 
 
 class Regex(PathMatcher):
-    __slots__ = ['format', 'flags']
+    __slots__ = ['format', 'flags', 'data_types']
 
     def __init__(self, format, flags=0, data_types=[]):
         self._pattern = re.compile(format, flags)
         self._data_types = data_types
+        self._flags = flags
 
     def match(self, value):
         m = self._pattern.match(value)
         if m:
             if m.groups():
-                return [
-                    data_type(group) if data_type else group
-                    for group, data_type in zip_longest(m.groups, self._data_types)
+                values = [
+                    convert_type(data_type, group) if data_type else group
+                    for group, data_type in zip_longest(m.groups(), self._data_types)
                 ]
+                return values[0] if len(values) == 1 else values
             else:
                 return value
         else:
             return NoMatch
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return "[Regex pattern='{pattern}' flags='{flags}' types={types}]".format(
+            pattern=self._pattern,
+            flags=self._flags,
+            types=self._data_types
+        )
