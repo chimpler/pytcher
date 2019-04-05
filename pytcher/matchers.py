@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from datetime import datetime
 import re
+from itertools import zip_longest
 
 
 def to_type(new_type, n):
@@ -93,14 +94,18 @@ class DateTime(PathMatcher):
 class Regex(PathMatcher):
     __slots__ = ['format', 'flags']
 
-    def __init__(self, format, flags=0):
+    def __init__(self, format, flags=0, data_types=[]):
         self._pattern = re.compile(format, flags)
+        self._data_types = data_types
 
     def match(self, value):
         m = self._pattern.match(value)
         if m:
             if m.groups():
-                return list(m.groups())
+                return [
+                    data_type(group) if data_type else group
+                    for group, data_type in zip_longest(m.groups, self._data_types)
+                ]
             else:
                 return value
         else:

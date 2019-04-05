@@ -8,6 +8,7 @@ from pytcher.marshallers import Marshaller, default_encoders
 
 
 class EntityJSONEncoder(JSONEncoder):
+
     def __init__(self, *args, encoders=[], **kwargs):
         self._encoders = default_encoders + encoders
         super(EntityJSONEncoder, self).__init__(*args, **kwargs)
@@ -42,14 +43,18 @@ class EntityJSONEncoder(JSONEncoder):
         }
 
 class EntityJSONEncoderBuilder(object):
-    def __init__(self, encoders):
+    def __init__(self, encoders, **kwargs):
         self._encoders = encoders
+        self._extra_args = kwargs
 
     def __call__(self, *args, encoders=[], **kwargs):
-        return EntityJSONEncoder(encoders=encoders)
+        return EntityJSONEncoder(*args, encoders=encoders, **{**kwargs, **self._extra_args})
 
 
 class JSONMarshaller(Marshaller):
 
     def marshall(self, obj):
-        return json.dumps(obj, cls=EntityJSONEncoderBuilder(encoders=self._encoders))
+        return json.dumps(
+            obj,
+            cls=EntityJSONEncoderBuilder(encoders=self._encoders, separators=(',', ':')),
+        )

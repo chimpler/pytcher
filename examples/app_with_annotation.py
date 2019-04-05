@@ -1,7 +1,8 @@
 # flake8: noqa: E999
 from dataclasses import dataclass
+from datetime import timedelta
 
-from pytcher import Integer, Request, Router
+from pytcher import Integer, Request, Router, route
 from pytcher.app import App
 
 
@@ -12,7 +13,11 @@ class InventoryItem(object):
     quantity: int = 0
 
 
-class MyRouter(Router):
+@route(path='/')
+def test():
+    return []
+
+class MyRouter(object):
     def __init__(self):
         words = [
             'wine',
@@ -27,6 +32,14 @@ class MyRouter(Router):
             for i in range(10)
             for word in words
         ]
+
+    @route(path='/items', method='GET')
+    def list_items(self):
+        return self._inventory
+
+    # @route(path='/items/<id:string>', method='GET')
+    def get_item(self, id, request):
+        return self._inventory[id]
 
     def route(self, r: Request):
         with r / 'items':
