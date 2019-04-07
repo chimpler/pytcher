@@ -1,7 +1,7 @@
 # flake8: noqa: E999
 from dataclasses import dataclass
 
-from pytcher import Integer, Request, route
+from pytcher import Integer, Request, route, handle_exception
 from pytcher.app import App
 
 
@@ -33,7 +33,6 @@ class MyRouter(object):
             for word in words
         ]
 
-
     @route(path='/items/<int:id>', method='GET')
     def get_item(self, request, id):
         return self._inventory[id]
@@ -42,6 +41,7 @@ class MyRouter(object):
     def list_items(self, request):
         return self._inventory
 
+    @route(path='/items', method='GET')
     def route(self, r: Request):
         with r / 'items':
             with r.get / Integer() as [item_index]:
@@ -56,6 +56,10 @@ class MyRouter(object):
                     self._inventory.append(item)
                     return item
 
+    @handle_exception(Exception)
+    def handle_exception(self, exception, request):
+        print(exception)
+        return 'Error'
 
 if __name__ == '__main__':
     app = App(MyRouter())

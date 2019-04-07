@@ -7,13 +7,12 @@ from wsgiref.simple_server import make_server
 
 import pytcher
 from pytcher import _version, NotFoundException, Response
-from pytcher.exception_handlers import DefaultDebugExceptionHandler, DefaultExceptionHandler, ExceptionHandler
+from pytcher.exception_handlers import DefaultDebugExceptionHandler, DefaultExceptionHandler
 from pytcher.marshallers import Marshaller
 from pytcher.marshallers.csv_marshaller import CSVMarshaller
 from pytcher.marshallers.json_marshaller import JSONMarshaller
 from pytcher.marshallers.xml_marshaller import XMLMarshaller
 from pytcher.request import Request
-from pytcher.router import Router
 from pytcher.unmarshallers import Unmarshaller
 from pytcher.unmarshallers.json_unmarshaller import JSONUnmarshaller
 
@@ -23,12 +22,11 @@ logger = logging.getLogger(__name__)
 class App(object):
 
     def __init__(self,
-                 routers = [],
+                 handlers: Union[List, Callable] = [],
                  marshallers: Dict[str, Marshaller] = None,
                  unmarshallers: Dict[str, Unmarshaller] = None,
-                 exception_handlers: List[Union[Router, Callable]] = None,
                  debug: bool = True):
-        # self._annotated_routes = []
+        handler_list = handlers if isinstance(handlers, Iterable) else [handlers]
 
         def get_routers(router):
             if isinstance(router, Callable):
@@ -44,17 +42,53 @@ class App(object):
             else:
                 return [
                     pytcher.AnnotatedRoute(path, command, getattr(router, func.__name__))
-                    for path, command, func in pytcher._annotated_routes.get(router.__module__, {}).get(type(router).__name__)
+                    for path, command, func in
+                    pytcher._annotated_routes.get(router.__module__, {}).get(type(router).__name__)
                 ]
 
         self._routers = [
             r
-            for router in (routers if isinstance(routers, Iterable) else [routers])
+            for router in handler_list
             for r in get_routers(router)
         ]
 
+        def get_exception_handlers(exception_handler):
+            if isinstance(exception_handler, Callable):
+                found = next(
+                    (
+                        annotated_exception_handler
+                        for annotated_exception_handler in
+                    pytcher._annotated_exceptions.get(router.__module__, {}).get(None)
+                        if exception_handler.__name__ == annotated_exception_handler.func.__name__
+                    ),
+                    None
+                )
+                return [found] if found else []
+            else:
+                return [
+                    pytcher.AnnotatedExceptionHandler(exception, getattr(exception_handler, func.__name__))
+                    for exception, func in pytcher._annotated_exceptions.get(exception_handler.__module__, {}).get(
+                        type(exception_handler).__name__)
+                ]
+
+        self._exception_handlers = [
+                                       e
+                                       for exception_handler in handler_list
+                                       for e in get_exception_handlers(exception_handler)
+                                   ] + (
+                                       [
+                                           pytcher.AnnotatedExceptionHandler(
+                                               Exception,
+                                               DefaultDebugExceptionHandler().handle if debug else DefaultExceptionHandler().handle
+                                           )
+                                       ]
+                                   )
+
         for router in self._routers:
-            print('Registered router %s', router.func.__name__)
+            logger.debug('Registered router %s', router.func.__name__)
+
+        for exception_handler in self._exception_handlers:
+            logger.debug('Registered exception handler %s', exception_handler.func.__name__)
 
         # self._route_handler = router.route if isinstance(router, Callable) else router
         # assert callable(self._route_handler), 'router must be a callable or of type Router'
@@ -78,16 +112,6 @@ class App(object):
             self._unmarshallers = {
                 'application/json': JSONUnmarshaller().unmarshall
             }
-
-        if exception_handlers:
-            self._exception_handlers = [
-                exception_handler.handle if isinstance(exception_handler, ExceptionHandler) else exception_handler
-                for exception_handler in exception_handlers
-            ]
-        else:
-            self._exception_handlers = [
-                DefaultDebugExceptionHandler().handle if debug else DefaultExceptionHandler().handle
-            ]
 
         wsgi_version = os.environ.get('wsgi.version')
         if wsgi_version:
@@ -116,7 +140,6 @@ v{app_version} built on {build_on} ({commit})
         if not self._has_wsgi:
             server = make_server(interface, port, self)
             server.serve_forever()
-            # LocalWebserver().start(self._handle_request, interface, port)
 
     def _handle_request(self, command: str, uri: str, query_string: str, headers: Dict[str, str], body: str):
         # convert to charset
@@ -134,9 +157,9 @@ v{app_version} built on {build_on} ({commit})
                 (
                     output
                     for output in (
-                            run_router(router)
-                            for router in self._routers
-                    )
+                    run_router(router)
+                    for router in self._routers
+                )
                     if output is not None
                 )
                 , None
@@ -148,7 +171,8 @@ v{app_version} built on {build_on} ({commit})
             route_output = next(
                 (
                     handler(e, request)
-                    for handler in self._exception_handlers
+                    for exception_type, handler in self._exception_handlers
+                    if isinstance(e, exception_type)
                 ),
                 None
             )

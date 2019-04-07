@@ -3,8 +3,10 @@ from collections import namedtuple
 
 # module , clazz, method
 _annotated_routes = {}
+_annotated_exceptions = {}
 
 AnnotatedRoute = namedtuple('AnnotatedRoute', ['path', 'command', 'func'])
+AnnotatedExceptionHandler = namedtuple('AnnotatedExceptionHandler', ['exception', 'func'])
 
 
 class NotFoundException(Exception):
@@ -22,15 +24,15 @@ def gen_path_regex(elt):
         for data_type, name in groups:
             if not data_type:
                 src = r'<{name}}>'.format(type=data_type, name=name),
-                replacement = r'(?P<{name}>.+?)'.format(name=name)
+                replacement = r'(?P<{name}>.+)'.format(name=name)
             elif data_type:
                 src = r'<{type}:{name}>'.format(type=data_type, name=name)
 
                 if data_type == 'string':
                     data_type = 'str'
-                    replacement = r'(?P<{name}>.+?)'.format(name=name)
+                    replacement = r'(?P<{name}>.+)'.format(name=name)
                 elif data_type == 'int':
-                    replacement = r'(?P<{name}>[+-]?\d+?)'.format(name=name)
+                    replacement = r'(?P<{name}>[+-]?\d+)'.format(name=name)
                 elif data_type == 'float':
                     replacement = r'(?P<{name}>[-+]?([0-9]*\.[0-9]+|[0-9]+)?)'.format(name=name)
 
@@ -48,9 +50,28 @@ def convert_str_to_path_elements(path_elt):
     ]
 
 
+def handle_exception(exception: Exception):
+    def decorator_add_exception(func):
+        tokens = func.__qualname__.split('.')
+        if func.__module__ not in _annotated_exceptions:
+            _annotated_exceptions[func.__module__] = {}
+        # decorated function or method inside class
+        clazz = tokens[0] if len(tokens) == 2 else None
+
+        if clazz not in _annotated_exceptions[func.__module__]:
+            _annotated_exceptions[func.__module__][clazz] = []
+
+        _annotated_exceptions[func.__module__][clazz].append(
+            AnnotatedExceptionHandler(exception, func)
+        )
+
+        return func
+
+    return decorator_add_exception
+
+
 def route(path, method='GET'):
     def decorator_add_route(func):
-        print(func)
         tokens = func.__qualname__.split('.')
         if func.__module__ not in _annotated_routes:
             _annotated_routes[func.__module__] = {}
@@ -63,7 +84,7 @@ def route(path, method='GET'):
         _annotated_routes[func.__module__][clazz].append(
             AnnotatedRoute(convert_str_to_path_elements(path), method, func)
         )
-        print(_annotated_routes)
+
         return func
 
     return decorator_add_route
