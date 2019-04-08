@@ -1,29 +1,33 @@
 import http
 import json
+import logging
 import traceback
 
-from pytcher import NotFoundException, Response
-import logging
-
+from pytcher import handle_exception, NotFoundException, Response
+from pytcher.request import Request
 
 logger = logging.getLogger(__name__)
 
 
-def debug_exception_handler(request, exception):
+@handle_exception(Exception)
+def debug_exception_handler(request: Request, exception: Exception):
     logger.info(exception, exc_info=True)
     if isinstance(exception, NotFoundException):
-        return 'Page not found', http.HTTPStatus.NOT_FOUND
+        return {'error': 'Page not found'}, http.HTTPStatus.NOT_FOUND
     else:
-        return 'Internal Error: {exception}\n{stack_trace}'.format(exception=exception,
-                                                                   stack_trace=traceback.format_exc()), http.HTTPStatus.INTERNAL_SERVER_ERROR
+        return {
+                   'error': 'Internal Error: {exception}'.format(exception=exception),
+                   'stack_trace': traceback.format_exc().split('\n')
+               }, http.HTTPStatus.INTERNAL_SERVER_ERROR
 
 
+@handle_exception(Exception)
 def default_exception_handler(request, exception):
     logger.info(exception, exc_info=True)
     if isinstance(exception, NotFoundException):
-        return 'Page not found', http.HTTPStatus.NOT_FOUND
+        return {'error': 'Page not found'}, http.HTTPStatus.NOT_FOUND
     else:
-        return 'Internal Error', http.HTTPStatus.INTERNAL_SERVER_ERROR
+        return {'error': 'Internal Error'}, http.HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 def default_json_serializer(obj, status_code=None, headers={}):

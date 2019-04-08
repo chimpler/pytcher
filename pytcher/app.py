@@ -7,7 +7,7 @@ from wsgiref.simple_server import make_server
 
 import pytcher
 from pytcher import _version, NotFoundException, Response
-from pytcher.exception_handlers import DefaultDebugExceptionHandler, DefaultExceptionHandler
+from pytcher.defaults import debug_exception_handler, default_exception_handler
 from pytcher.marshallers import Marshaller
 from pytcher.marshallers.csv_marshaller import CSVMarshaller
 from pytcher.marshallers.json_marshaller import JSONMarshaller
@@ -26,72 +26,31 @@ class App(object):
                  marshallers: Dict[str, Marshaller] = None,
                  unmarshallers: Dict[str, Unmarshaller] = None,
                  debug: bool = True):
-        handler_list = handlers if isinstance(handlers, Iterable) else [handlers]
-
-        def get_routers(router):
-            if isinstance(router, Callable):
-                found = next(
-                    (
-                        annotated_route
-                        for annotated_route in pytcher._annotated_routes.get(router.__module__, {}).get(None)
-                        if router.__name__ == annotated_route.func.__name__
-                    ),
-                    None
-                )
-                return [found] if found else []
-            else:
-                return [
-                    pytcher.AnnotatedRoute(path, command, getattr(router, func.__name__))
-                    for path, command, func in
-                    pytcher._annotated_routes.get(router.__module__, {}).get(type(router).__name__)
-                ]
+        handler_list = (
+            handlers if isinstance(handlers, Iterable) else [handlers]
+        ) + [
+            debug_exception_handler if debug else default_exception_handler
+        ]
 
         self._routers = [
             r
             for router in handler_list
-            for r in get_routers(router)
+            for r in pytcher.get_routers(router)
         ]
 
-        def get_exception_handlers(exception_handler):
-            if isinstance(exception_handler, Callable):
-                found = next(
-                    (
-                        annotated_exception_handler
-                        for annotated_exception_handler in
-                    pytcher._annotated_exceptions.get(router.__module__, {}).get(None)
-                        if exception_handler.__name__ == annotated_exception_handler.func.__name__
-                    ),
-                    None
-                )
-                return [found] if found else []
-            else:
-                return [
-                    pytcher.AnnotatedExceptionHandler(exception, getattr(exception_handler, func.__name__))
-                    for exception, func in pytcher._annotated_exceptions.get(exception_handler.__module__, {}).get(
-                        type(exception_handler).__name__)
-                ]
 
         self._exception_handlers = [
                                        e
                                        for exception_handler in handler_list
-                                       for e in get_exception_handlers(exception_handler)
-                                   ] + (
-                                       [
-                                           pytcher.AnnotatedExceptionHandler(
-                                               Exception,
-                                               DefaultDebugExceptionHandler().handle if debug else DefaultExceptionHandler().handle
-                                           )
-                                       ]
-                                   )
+                                       for e in pytcher.get_exception_handlers(exception_handler)
+                                   ]
 
+        print(self._exception_handlers)
         for router in self._routers:
             logger.debug('Registered router %s', router.func.__name__)
 
         for exception_handler in self._exception_handlers:
             logger.debug('Registered exception handler %s', exception_handler.func.__name__)
-
-        # self._route_handler = router.route if isinstance(router, Callable) else router
-        # assert callable(self._route_handler), 'router must be a callable or of type Router'
 
         self._debug = debug
 
@@ -128,10 +87,12 @@ class App(object):
 | .__/ \__, |\__\___|_| |_|\___|_|
 |_|    |___/
 v{app_version} built on {build_on} ({commit})
+{debug}
 """.format(
             app_version=_version.app_version,
             build_on=_version.built_at,
-            commit=_version.git_version
+            commit=_version.git_version,
+            debug='\n***WARNING: DEBUG is set to true. DISABLE IT FOR PRODUCTION ***' if self._debug else ''
         )
         )
 
@@ -148,18 +109,13 @@ v{app_version} built on {build_on} ({commit})
         params = urllib.parse.parse_qs(query_string) if query_string else {}
         request = Request(command, uri, params, headers, body, unmarshaller)
         try:
-
-            def run_router(router):
-                for matched_vars in request.path(*router.path):
-                    return router.func(request, *matched_vars)
-
             route_output = next(
                 (
                     output
                     for output in (
-                    run_router(router)
-                    for router in self._routers
-                )
+                        pytcher.run_router(request, router)
+                        for router in self._routers
+                    )
                     if output is not None
                 )
                 , None
@@ -178,7 +134,7 @@ v{app_version} built on {build_on} ({commit})
             )
 
         output_and_status_code = route_output
-        accept_type = headers.get('ACCEPT', 'application/json')
+        accept_type = headers.get('ACCEPT', 'application/json').lower()
         if isinstance(output_and_status_code, tuple):
             output, status_code = output_and_status_code
         elif isinstance(output_and_status_code, Response):
@@ -189,7 +145,10 @@ v{app_version} built on {build_on} ({commit})
             output = output_and_status_code
             status_code = http.HTTPStatus.OK
 
-        marshaller = self._marshallers[accept_type]
+        if accept_type in self._marshallers:
+            marshaller = self._marshallers[accept_type]
+        else:
+            return Response('Accept {type} not supported'.format(type=accept_type), http.HTTPStatus.NOT_ACCEPTABLE)
         return Response(marshaller(output), status_code, headers)
 
     def __call__(self, environ, start_response):

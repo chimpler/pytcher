@@ -1,12 +1,25 @@
 import re
+from abc import abstractmethod
 from collections import namedtuple
 
 # module , clazz, method
+from typing import Callable
+
 _annotated_routes = {}
 _annotated_exceptions = {}
 
 AnnotatedRoute = namedtuple('AnnotatedRoute', ['path', 'command', 'func'])
 AnnotatedExceptionHandler = namedtuple('AnnotatedExceptionHandler', ['exception', 'func'])
+
+
+class Router(object):
+
+    @abstractmethod
+    def route(self, r):
+        pass
+
+    def handle_exception(self, r, e: Exception):
+        pass
 
 
 class NotFoundException(Exception):
@@ -101,10 +114,51 @@ def convert_type(data_type, value):
         return value
 
 
+def get_routers(router):
+    if isinstance(router, Callable):  # annotated functions
+        found = next(
+            (
+                annotated_route
+                for annotated_route in _annotated_routes.get(router.__module__, {}).get(None, [])
+                if router.__name__ == annotated_route.func.__name__
+            ),
+            []
+        )
+        return [found] if found else []
+    else:  # annotated methods in classes
+        return [
+            AnnotatedRoute(path, command, getattr(router, func.__name__))
+            for path, command, func in
+            _annotated_routes.get(router.__module__, {}).get(type(router).__name__, [])
+        ]
+
+
+def run_router(request, router):
+    for matched_vars in request.path(*router.path):
+        return router.func(request, *matched_vars)
+
+
+def get_exception_handlers(exception_handler):
+    if isinstance(exception_handler, Callable):
+        found = next(
+            (
+                annotated_exception_handler
+                for annotated_exception_handler in _annotated_exceptions.get(exception_handler.__module__, {}).get(None)
+                if exception_handler.__name__ == annotated_exception_handler.func.__name__
+            ),
+            []
+        )
+        return [found] if found else []
+    else:
+        return [
+            AnnotatedExceptionHandler(exception, getattr(exception_handler, func.__name__))
+            for exception, func in _annotated_exceptions.get(exception_handler.__module__, {}).get(type(exception_handler).__name__, [])
+        ]
+
+
 Response = namedtuple('Response', ['body', 'status_code', 'headers'])
 Response.__new__.__defaults__ = (None, 200, {})
 
 from pytcher.app import App  # noqa: F401
 from pytcher.request import Request  # noqa: F401
-from pytcher.router import Router  # noqa: F401
 from pytcher.matchers import *  # noqa: F401,E402,F403

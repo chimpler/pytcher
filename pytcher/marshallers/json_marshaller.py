@@ -42,6 +42,7 @@ class EntityJSONEncoder(JSONEncoder):
             for key, value in dict_obj.items()
         }
 
+
 class EntityJSONEncoderBuilder(object):
     def __init__(self, encoders, **kwargs):
         self._encoders = encoders

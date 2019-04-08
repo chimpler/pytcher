@@ -1,8 +1,12 @@
 # flake8: noqa: E999
+import logging
 from dataclasses import dataclass
 
-from pytcher import Integer, Request, route, handle_exception
+from pytcher import handle_exception, Integer, Request, route
 from pytcher.app import App
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -10,11 +14,6 @@ class InventoryItem(object):
     name: str
     unit_price: float
     quantity: int = 0
-
-
-@route(path='/')
-def test():
-    return []
 
 
 class MyRouter(object):
@@ -56,13 +55,17 @@ class MyRouter(object):
                     self._inventory.append(item)
                     return item
 
-    @handle_exception(Exception)
-    def handle_exception(self, exception, request):
-        print(exception)
-        return 'Error'
+    # @handle_exception(Exception)
+    # def handle_exception(self, exception, request):
+    #     logger.info(exception, exc_info=True)
+    #     return 'Error'
+
 
 if __name__ == '__main__':
-    app = App(MyRouter())
+    logging.basicConfig(level=logging.DEBUG)
+    logging.debug('This will get logged')
+
+    app = App(MyRouter(), debug=True)
     print()
     print('Try: curl localhost:8000/items')
     print('Try: curl localhost:8000/items/2')

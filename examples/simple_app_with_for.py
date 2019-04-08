@@ -1,5 +1,5 @@
 # flake8: noqa: E999
-from pytcher import AppRouter, Request, Integer
+from pytcher import Request, Integer
 from pytcher.app import App
 
 

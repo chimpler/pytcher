@@ -1,10 +1,11 @@
 import json
-import re
 import sys
 from abc import abstractmethod
+from typing import Iterable
 
+import pytcher
 from pytcher import convert_str_to_path_elements
-from pytcher.matchers import is_type, NoMatch, PathMatcher, to_type, Regex
+from pytcher.matchers import is_type, NoMatch, PathMatcher, to_type
 from pytcher.unmarshallers import Unmarshaller
 
 
@@ -50,12 +51,27 @@ class Request(object):
     def p(self):
         return ParameterDict(self, self.params, ParameterOperator)
 
-    def route(self, router):
-        # TODO: maybe accept a callable too
-        return router.route(self)
+    def route(self, routers):
+        router_list = routers if isinstance(routers, Iterable) else [routers]
+        router_handlers = [
+            r
+            for router in router_list
+            for r in pytcher.get_routers(router)
+        ]
+
+        return next(
+            (
+                output
+                for output in (
+                    pytcher.run_router(self, router)
+                    for router in router_handlers
+                )
+                if output is not None
+            )
+            , None
+        )
 
     def entity(self, obj_type, json_path='$'):
-        # obj_data = jsonpath_ng.parse(json_path).find(self._obj_type)[0].value
         return self._unmarshaller(obj_type, self._content)
 
     @property
