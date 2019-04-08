@@ -38,14 +38,12 @@ class App(object):
             for r in pytcher.get_routers(router)
         ]
 
-
         self._exception_handlers = [
                                        e
                                        for exception_handler in handler_list
                                        for e in pytcher.get_exception_handlers(exception_handler)
                                    ]
 
-        print(self._exception_handlers)
         for router in self._routers:
             logger.debug('Registered router %s', router.func.__name__)
 
@@ -126,7 +124,7 @@ v{app_version} built on {build_on} ({commit})
         except Exception as e:
             route_output = next(
                 (
-                    handler(e, request)
+                    handler(request, e)
                     for exception_type, handler in self._exception_handlers
                     if isinstance(e, exception_type)
                 ),

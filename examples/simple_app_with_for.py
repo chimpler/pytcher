@@ -3,7 +3,7 @@ from pytcher import Request, Integer
 from pytcher.app import App
 
 
-class MyAppRouter(AppRouter):
+class MyAppRouter(object):
     def __init__(self):
         self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
 

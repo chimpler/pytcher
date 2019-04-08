@@ -56,15 +56,18 @@ def gen_path_regex(elt):
         return current_res
 
 
-def convert_str_to_path_elements(path_elt):
+def convert_str_to_path_elements(path):
+    if not path:
+        return []
+
     return [
         gen_path_regex(elt)
-        for elt in path_elt.strip('/').split('/')
+        for elt in path.strip('/').split('/')
     ]
 
 
-def handle_exception(exception: Exception):
-    def decorator_add_exception(func):
+def handle_exception(exception_or_function=Exception):
+    def decorator_add_exception_handler(func):
         tokens = func.__qualname__.split('.')
         if func.__module__ not in _annotated_exceptions:
             _annotated_exceptions[func.__module__] = {}
@@ -75,15 +78,19 @@ def handle_exception(exception: Exception):
             _annotated_exceptions[func.__module__][clazz] = []
 
         _annotated_exceptions[func.__module__][clazz].append(
-            AnnotatedExceptionHandler(exception, func)
+            AnnotatedExceptionHandler(exception_or_function, func)
         )
-
         return func
 
-    return decorator_add_exception
+    if not isinstance(exception_or_function, Callable) and issubclass(exception_or_function, Exception):  # If called as @handle_exception with parenthesis
+        func = exception_or_function
+        exception_or_function = Exception
+        return decorator_add_exception_handler(func)
+    else:  # If called as @handle_exception with no parenthesis
+        return decorator_add_exception_handler
 
 
-def route(path, method='GET'):
+def route(path_or_function=None, method='GET'):
     def decorator_add_route(func):
         tokens = func.__qualname__.split('.')
         if func.__module__ not in _annotated_routes:
@@ -95,12 +102,17 @@ def route(path, method='GET'):
             _annotated_routes[func.__module__][clazz] = []
 
         _annotated_routes[func.__module__][clazz].append(
-            AnnotatedRoute(convert_str_to_path_elements(path), method, func)
+            AnnotatedRoute(convert_str_to_path_elements(path_or_function), method, func)
         )
 
         return func
 
-    return decorator_add_route
+    if isinstance(path_or_function, Callable):  # If called as @route with no parenthesis
+        func = path_or_function
+        path_or_function = None
+        return decorator_add_route(func)
+    else:  # If called as @route with parenthesis
+        return decorator_add_route
 
 
 def convert_type(data_type, value):
@@ -152,7 +164,8 @@ def get_exception_handlers(exception_handler):
     else:
         return [
             AnnotatedExceptionHandler(exception, getattr(exception_handler, func.__name__))
-            for exception, func in _annotated_exceptions.get(exception_handler.__module__, {}).get(type(exception_handler).__name__, [])
+            for exception, func in
+            _annotated_exceptions.get(exception_handler.__module__, {}).get(type(exception_handler).__name__, [])
         ]
 
 

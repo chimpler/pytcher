@@ -104,6 +104,9 @@ class Request(object):
         return RequestMatch(self, self.command == self.DELETE, self._remaining_stack)
 
     def path(self, *path_elements):
+        if not path_elements:
+            return RequestMatch(self, True, self._remaining_stack, [], [])
+
         transformed_elements = [
             sub_elt
             for path_elt in path_elements

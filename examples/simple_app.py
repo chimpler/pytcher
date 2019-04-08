@@ -1,13 +1,13 @@
 # flake8: noqa: E999
-from pytcher import App, Router, Request, Integer
+from pytcher import App, Router, Request, Integer, route
 
 
 class MyRouter(Router):
     def __init__(self):
         self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
 
+    @route
     def route(self, r: Request):
-
         with r / 'items':
             with r.end:
                 with r.get:
@@ -29,8 +29,6 @@ class MyRouter(Router):
                     return self._items.pop(item_id)
 
 
-app = App(MyRouter())
-
-
 if __name__ == '__main__':
+    app = App(MyRouter())
     app.start()

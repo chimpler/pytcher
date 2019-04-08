@@ -17,13 +17,15 @@ def debug_exception_handler(request: Request, exception: Exception):
     else:
         return {
                    'error': 'Internal Error: {exception}'.format(exception=exception),
+                   'url': request.url,
+                   'headers': {k: str(v) for k, v in request.headers.items()},
                    'stack_trace': traceback.format_exc().split('\n')
                }, http.HTTPStatus.INTERNAL_SERVER_ERROR
 
 
-@handle_exception(Exception)
+@handle_exception
 def default_exception_handler(request, exception):
-    logger.info(exception, exc_info=True)
+    logger.error(exception, exc_info=True)
     if isinstance(exception, NotFoundException):
         return {'error': 'Page not found'}, http.HTTPStatus.NOT_FOUND
     else:

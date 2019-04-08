@@ -33,7 +33,7 @@ class EntityJSONEncoder(JSONEncoder):
                     for condition, encode in self._encoders
                     if condition(obj)
                 ),
-                obj
+                str(obj)
             )
 
     def encode_dict(self, dict_obj):
