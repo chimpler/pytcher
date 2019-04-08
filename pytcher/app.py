@@ -56,18 +56,23 @@ class App(object):
             self._marshallers = marshallers
         else:
             csv_marshaller = CSVMarshaller()
+            json_marshaller = JSONMarshaller()
             self._marshallers = {
-                'application/json': JSONMarshaller().marshall,
+                'application/json': json_marshaller.marshall,
                 'application/xml': XMLMarshaller().marshall,
                 'text/csv': csv_marshaller.marshall,
-                'application/csv': csv_marshaller.marshall
+                'application/csv': csv_marshaller.marshall,
+                '*/*': json_marshaller.marshall
             }
 
         if unmarshallers:
             self._unmarshallers = unmarshallers
         else:
+            json_unmarshaller = JSONUnmarshaller()
             self._unmarshallers = {
-                'application/json': JSONUnmarshaller().unmarshall
+                'application/json': json_unmarshaller.unmarshall,
+                'text/plain': json_unmarshaller.unmarshall,
+                '*/*': json_unmarshaller.unmarshall
             }
 
         wsgi_version = os.environ.get('wsgi.version')

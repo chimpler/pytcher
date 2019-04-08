@@ -16,7 +16,7 @@ def debug_exception_handler(request: Request, exception: Exception):
         return {'error': 'Page not found'}, http.HTTPStatus.NOT_FOUND
     else:
         return {
-                   'error': 'Internal Error: {exception}'.format(exception=exception),
+                   'error': str(exception),
                    'url': request.url,
                    'headers': {k: str(v) for k, v in request.headers.items()},
                    'stack_trace': traceback.format_exc().split('\n')
