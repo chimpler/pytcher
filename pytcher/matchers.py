@@ -2,8 +2,7 @@ from abc import abstractmethod
 from datetime import datetime
 import re
 from itertools import zip_longest
-
-from pytcher import convert_type
+import pytcher
 
 
 def to_type(new_type, n):
@@ -36,10 +35,27 @@ class PathMatcher(object):
 
 
 class Integer(PathMatcher):
-    __slots__ = []
+    __slots__ = ['min', 'max']
+
+    def __init__(self, min=None, max=None):
+        super(PathMatcher, self).__init__()
+        self.min = min
+        self.max = max
 
     def match(self, value):
-        return to_type(int, value)
+        int_value = to_type(int, value)
+        if int_value == NoMatch:
+            return NoMatch
+
+        if self.min:
+            if self.min > value:
+                return NoMatch
+
+        if self.max:
+            if self.max < value:
+                return NoMatch
+
+        return int_value
 
 
 class Float(PathMatcher):
@@ -106,7 +122,7 @@ class Regex(PathMatcher):
         if m:
             if m.groups():
                 values = [
-                    convert_type(data_type, group) if data_type else group
+                    pytcher.convert_type(data_type, group) if data_type else group
                     for group, data_type in zip_longest(m.groups(), self._data_types)
                 ]
                 return values[0] if len(values) == 1 else values

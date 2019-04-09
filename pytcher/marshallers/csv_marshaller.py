@@ -3,7 +3,7 @@ import itertools
 from enum import Enum
 from typing import Iterable
 
-from pytcher.marshallers import default_encoders, Marshaller, MarshallerException
+from pytcher.marshallers import Marshaller, MarshallerException
 
 
 class CSVMarshaller(Marshaller):
@@ -35,11 +35,11 @@ class CSVMarshaller(Marshaller):
             return ''
 
         if isinstance(first_obj, dict):
-            extract_dict = lambda x: x
+            extract_dict = lambda x: x  # noqa: E731
         elif isinstance(first_obj, tuple) and hasattr(first_obj, '_fields') and hasattr(first_obj, '_asdict'):
-            extract_dict = lambda x: x._asdict()
+            extract_dict = lambda x: x._asdict()  # noqa: E731
         elif dataclasses.is_dataclass(first_obj):
-            extract_dict = lambda x: dataclasses.asdict(x)
+            extract_dict = dataclasses.asdict
         else:
             raise MarshallerException(
                 'Object type of {obj} must be of type dict (got {type}), namedtuple or dataclass'.format(
@@ -52,8 +52,7 @@ class CSVMarshaller(Marshaller):
 
         # TODO: create an iterator, escape chars
         return '\n'.join(
-            [','.join(columns)]
-            + [
+            [','.join(columns)] + [
                 self.encode_obj(extract_dict(obj), columns)
                 for obj in itertools.chain([first_obj], it)
             ]

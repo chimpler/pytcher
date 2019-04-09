@@ -2,9 +2,9 @@ import dataclasses
 import json
 from enum import Enum
 from json import JSONEncoder
-from typing import Iterable, Tuple, Callable, List
+from typing import Iterable
 
-from pytcher.marshallers import Marshaller, default_encoders
+from pytcher.marshallers import default_encoders, Marshaller
 
 
 class EntityJSONEncoder(JSONEncoder):

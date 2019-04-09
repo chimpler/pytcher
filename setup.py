@@ -25,9 +25,9 @@ def create_version_file():
     commit_hash = subprocess.Popen("git rev-parse HEAD", shell=True, stdout=subprocess.PIPE).stdout.read().strip().decode()
 
     with open('pytcher/_version.py', 'wt') as fd:
-            fd.write("git_version = '%s'\n" % commit_hash)
-            fd.write("app_version = '%s'\n" % app_version)
-            fd.write("built_at = '%s'\n" % datetime.now())
+        fd.write("git_version = '%s'\n" % commit_hash)
+        fd.write("app_version = '%s'\n" % app_version)
+        fd.write("built_at = '%s'\n" % datetime.now())
 
 
 setup(
@@ -53,12 +53,10 @@ setup(
     packages=[
         'pytcher',
     ],
-    install_requires=[
-        'jsonpath-ng',
-        'xmldict'
-    ],
     extras_require={
-        'data-classes': ['dataclasses-json']
+        'json-path': [
+            'jsonpath-ng'
+        ]
     },
     cmdclass={
         'install': CustomInstallCommand,

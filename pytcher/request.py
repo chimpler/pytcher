@@ -67,8 +67,8 @@ class Request(object):
                     for router in router_handlers
                 )
                 if output is not None
-            )
-            , None
+            ),
+            None
         )
 
     def entity(self, obj_type, json_path='$'):
@@ -373,12 +373,11 @@ class RequestMatch(object):
         return '[RequestMatch request={request}, is_match={is_match}, ' \
                'remaining_path=[{remaining_path}], matched_path=[{matched_path}], ' \
                'matched_vars=[{matched_vars}]]'.format(
-            request=self._request,
-            is_match=self._is_match,
-            remaining_path=', '.join(self._remaining_path),
-            matched_path=', '.join([str(s) for s in self._matched_path]),
-            matched_vars=', '.join([str(s) for s in self._matched_vars])
-        )
+                   request=self._request,
+                   is_match=self._is_match,
+                   remaining_path=', '.join(self._remaining_path),
+                   matched_path=', '.join([str(s) for s in self._matched_path]),
+                   matched_vars=', '.join([str(s) for s in self._matched_vars]))
 
     def __iter__(self):
         return self

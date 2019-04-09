@@ -39,10 +39,10 @@ class App(object):
         ]
 
         self._exception_handlers = [
-                                       e
-                                       for exception_handler in handler_list
-                                       for e in pytcher.get_exception_handlers(exception_handler)
-                                   ]
+            e
+            for exception_handler in handler_list
+            for e in pytcher.get_exception_handlers(exception_handler)
+        ]
 
         for router in self._routers:
             logger.debug('Registered router %s', router.func.__name__)
@@ -120,8 +120,8 @@ v{app_version} built on {build_on} ({commit})
                         for router in self._routers
                     )
                     if output is not None
-                )
-                , None
+                ),
+                None
             )
 
             if route_output is None:
