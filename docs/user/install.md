@@ -19,4 +19,4 @@ Or, download the [tarball](https://github.com/chimpler/pytcher/tarball/master).
 To install it:
 
     $ cd pytcher
-    $ pip install .
+    $ ./setup.py install .

@@ -23,8 +23,8 @@ def debug_exception_handler(request: Request, exception: Exception):
         }, http.HTTPStatus.INTERNAL_SERVER_ERROR
 
 
-@handle_exception
-def default_exception_handler(request, exception):
+@handle_exception(Exception)
+def default_exception_handler(request: Request, exception: Exception):
     logger.error(exception, exc_info=True)
     if isinstance(exception, NotFoundException):
         return {'error': 'Page not found'}, http.HTTPStatus.NOT_FOUND

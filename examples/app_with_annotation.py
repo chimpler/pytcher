@@ -33,7 +33,7 @@ class MyRouter(object):
         ]
 
     @route(path='/items/<int:id>', method='GET')
-    def get_item(self, request, id):
+    def get_item(self, r: Request, id):
         return self._inventory[id]
 
     @route(path='/items', method='GET')

@@ -30,5 +30,5 @@ class MyRouter(Router):
 
 
 if __name__ == '__main__':
-    app = App(MyRouter())
+    app = App(MyRouter(), debug=False)
     app.start()
