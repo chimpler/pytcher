@@ -1,9 +1,9 @@
 # flake8: noqa: E999
-from pytcher import AppRouter, Request, Integer
+from pytcher import Request, Integer
 from pytcher.app import App
 
 
-class MyAppRouter(AppRouter):
+class MyAppRouter(object):
     def __init__(self):
         self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
 
@@ -13,7 +13,7 @@ class MyAppRouter(AppRouter):
                 for _ in r.get:
                     return self._items
 
-                with r.post:
+                for _ in r.post:
                     self._items.append(r.json)
                     return self._items[-1]
 

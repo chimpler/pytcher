@@ -1,13 +1,11 @@
 import json
 import sys
 from abc import abstractmethod
-from typing import Dict, Type
+from typing import Iterable
 
-import jsonpath_ng
-
-from pytcher.matchers import PathMatcher, NoMatch
-from pytcher.matchers import to_type, is_type
-from pytcher.router import Router
+import pytcher
+from pytcher import convert_str_to_path_elements
+from pytcher.matchers import is_type, NoMatch, PathMatcher, to_type
 from pytcher.unmarshallers import Unmarshaller
 
 
@@ -18,7 +16,14 @@ class Request(object):
     PATCH = 'PATCH'
     DELETE = 'DELETE'
 
-    def __init__(self, command, url, params, headers, payload, unmarshallers: Dict[Type, Unmarshaller]):
+    def __init__(
+            self,
+            command: str,
+            url: str,
+            params,
+            headers,
+            content,
+            unmarshaller: Unmarshaller):
         self.url = url
         self.headers = headers
         self.command = command
@@ -26,8 +31,8 @@ class Request(object):
         self._path_stack = []
         self._remaining_stack = list(reversed(url.split('/')[1:]))  # skip first '/'
         self._header_stack = []
-        self._payload = payload
-        self._unmarshallers = unmarshallers
+        self._content = content
+        self._unmarshaller = unmarshaller
 
     def __str__(self):
         return '[Request: command={command} url={url}]'.format(
@@ -46,20 +51,33 @@ class Request(object):
     def p(self):
         return ParameterDict(self, self.params, ParameterOperator)
 
-    def route(self, router: Router):
-        # TODO: maybe accept a callable too
-        return router.route(self)
+    def route(self, routers):
+        router_list = routers if isinstance(routers, Iterable) else [routers]
+        router_handlers = [
+            r
+            for router in router_list
+            for r in pytcher.get_routers(router)
+        ]
+
+        return next(
+            (
+                output
+                for output in (
+                    pytcher.run_router(self, router)
+                    for router in router_handlers
+                )
+                if output is not None
+            ),
+            None
+        )
 
     def entity(self, obj_type, json_path='$'):
-        # TODO: Do a search based on subtypes too
-        obj_data = jsonpath_ng.parse(json_path).find(self.json)[0].value
-        if obj_type in self._unmarshallers:
-            return self._unmarshallers[obj_type].unmarshall(obj_data)
+        return self._unmarshaller(obj_type, self._content)
 
     @property
     def json(self):
         # TODO: make it lazy load
-        return json.loads(self._payload)
+        return json.loads(self._obj_type)
 
     @property
     def end(self):
@@ -86,7 +104,16 @@ class Request(object):
         return RequestMatch(self, self.command == self.DELETE, self._remaining_stack)
 
     def path(self, *path_elements):
-        matched_path, matched_vars = self.match_path(self._remaining_stack, path_elements)
+        if not path_elements:
+            return RequestMatch(self, True, self._remaining_stack, [], [])
+
+        transformed_elements = [
+            sub_elt
+            for path_elt in path_elements
+            for sub_elt in (convert_str_to_path_elements(path_elt) if isinstance(path_elt, str) else [path_elt])
+        ]
+
+        matched_path, matched_vars = self.match_path(self._remaining_stack, transformed_elements)
         return RequestMatch(self, matched_path != [], self._remaining_stack[:-len(matched_path)], matched_path,
                             matched_vars)
 
@@ -346,12 +373,11 @@ class RequestMatch(object):
         return '[RequestMatch request={request}, is_match={is_match}, ' \
                'remaining_path=[{remaining_path}], matched_path=[{matched_path}], ' \
                'matched_vars=[{matched_vars}]]'.format(
-            request=self._request,
-            is_match=self._is_match,
-            remaining_path=', '.join(self._remaining_path),
-            matched_path=', '.join([str(s) for s in self._matched_path]),
-            matched_vars=', '.join([str(s) for s in self._matched_vars])
-        )
+                   request=self._request,
+                   is_match=self._is_match,
+                   remaining_path=', '.join(self._remaining_path),
+                   matched_path=', '.join([str(s) for s in self._matched_path]),
+                   matched_vars=', '.join([str(s) for s in self._matched_vars]))
 
     def __iter__(self):
         return self

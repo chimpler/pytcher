@@ -1,6 +1,8 @@
 from abc import abstractmethod
 from datetime import datetime
 import re
+from itertools import zip_longest
+import pytcher
 
 
 def to_type(new_type, n):
@@ -33,10 +35,27 @@ class PathMatcher(object):
 
 
 class Integer(PathMatcher):
-    __slots__ = []
+    __slots__ = ['min', 'max']
+
+    def __init__(self, min=None, max=None):
+        super(PathMatcher, self).__init__()
+        self.min = min
+        self.max = max
 
     def match(self, value):
-        return to_type(int, value)
+        int_value = to_type(int, value)
+        if int_value == NoMatch:
+            return NoMatch
+
+        if self.min:
+            if self.min > value:
+                return NoMatch
+
+        if self.max:
+            if self.max < value:
+                return NoMatch
+
+        return int_value
 
 
 class Float(PathMatcher):
@@ -91,17 +110,33 @@ class DateTime(PathMatcher):
 
 
 class Regex(PathMatcher):
-    __slots__ = ['format', 'flags']
+    __slots__ = ['format', 'flags', 'data_types']
 
-    def __init__(self, format, flags=0):
+    def __init__(self, format, flags=0, data_types=[]):
         self._pattern = re.compile(format, flags)
+        self._data_types = data_types
+        self._flags = flags
 
     def match(self, value):
         m = self._pattern.match(value)
         if m:
             if m.groups():
-                return list(m.groups())
+                values = [
+                    pytcher.convert_type(data_type, group) if data_type else group
+                    for group, data_type in zip_longest(m.groups(), self._data_types)
+                ]
+                return values[0] if len(values) == 1 else values
             else:
                 return value
         else:
             return NoMatch
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return "[Regex pattern='{pattern}' flags='{flags}' types={types}]".format(
+            pattern=self._pattern,
+            flags=self._flags,
+            types=self._data_types
+        )

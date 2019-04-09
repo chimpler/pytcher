@@ -25,9 +25,9 @@ def create_version_file():
     commit_hash = subprocess.Popen("git rev-parse HEAD", shell=True, stdout=subprocess.PIPE).stdout.read().strip().decode()
 
     with open('pytcher/_version.py', 'wt') as fd:
-            fd.write("git_version = '%s'\n" % commit_hash)
-            fd.write("app_version = '%s'\n" % app_version)
-            fd.write("built_at = '%s'\n" % datetime.now())
+        fd.write("git_version = '%s'\n" % commit_hash)
+        fd.write("app_version = '%s'\n" % app_version)
+        fd.write("built_at = '%s'\n" % datetime.now())
 
 
 setup(
@@ -35,7 +35,7 @@ setup(
     version='0.0.1',
     description='Micro framework for Python',
     long_description='Micro framework for Python',
-    keywords='hocon parser',
+    keywords='python rest routing framework',
     license='Apache License 2.0',
     author='Francois Dang Ngoc',
     author_email='francois.dangngoc@gmail.com',
@@ -53,11 +53,10 @@ setup(
     packages=[
         'pytcher',
     ],
-    install_requires=[
-        'jsonpath-ng'
-    ],
     extras_require={
-        'data-classes': ['dataclasses-json']
+        'json-path': [
+            'jsonpath-ng'
+        ]
     },
     cmdclass={
         'install': CustomInstallCommand,

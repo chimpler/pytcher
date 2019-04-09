@@ -2,51 +2,78 @@ import http
 import logging
 import os
 import urllib
-from typing import Dict, Union, Callable, List, Type
+from typing import Callable, Dict, Iterable, List, Union
 from wsgiref.simple_server import make_server
 
-from pytcher import NotFoundException, Response, _version
-from pytcher.exception_handlers import ExceptionHandler, DefaultDebugExceptionHandler, DefaultExceptionHandler
-from pytcher.marshallers import Marshaller, DefaultJSONMarshaller
+import pytcher
+from pytcher import _version, NotFoundException, Response
+from pytcher.defaults import debug_exception_handler, default_exception_handler
+from pytcher.marshallers import Marshaller
+from pytcher.marshallers.csv_marshaller import CSVMarshaller
+from pytcher.marshallers.json_marshaller import JSONMarshaller
+from pytcher.marshallers.xml_marshaller import XMLMarshaller
 from pytcher.request import Request
-from pytcher.router import Router
-from pytcher.unmarshallers import DefaultJSONUnmarshaller
+from pytcher.unmarshallers import Unmarshaller
+from pytcher.unmarshallers.json_unmarshaller import JSONUnmarshaller
 
 logger = logging.getLogger(__name__)
 
 
 class App(object):
-    def __init__(self,
-                 router: Union[Router, Callable],
-                 marshallers: Dict[Type, Marshaller] = None,
-                 unmarshallers: Dict[Type, Marshaller] = None,
-                 exception_handlers: List[Union[Router, Callable]] = None,
-                 debug: bool = True):
 
-        self._route_handler = router.route if isinstance(router, Router) else router
-        assert callable(self._route_handler), 'router must be a callable or of type Router'
+    def __init__(self,
+                 handlers: Union[List, Callable] = [],
+                 marshallers: Dict[str, Marshaller] = None,
+                 unmarshallers: Dict[str, Unmarshaller] = None,
+                 debug: bool = True):
+        handler_list = (
+            handlers if isinstance(handlers, Iterable) else [handlers]
+        ) + [
+            debug_exception_handler if debug else default_exception_handler
+        ]
+
+        self._routers = [
+            r
+            for router in handler_list
+            for r in pytcher.get_routers(router)
+        ]
+
+        self._exception_handlers = [
+            e
+            for exception_handler in handler_list
+            for e in pytcher.get_exception_handlers(exception_handler)
+        ]
+
+        for router in self._routers:
+            logger.debug('Registered router %s', router.func.__name__)
+
+        for exception_handler in self._exception_handlers:
+            logger.debug('Registered exception handler %s', exception_handler.func.__name__)
 
         self._debug = debug
 
         if marshallers:
             self._marshallers = marshallers
         else:
-            self._marshallers = {dict: DefaultJSONMarshaller().marshall}
+            csv_marshaller = CSVMarshaller()
+            json_marshaller = JSONMarshaller()
+            self._marshallers = {
+                'application/json': json_marshaller.marshall,
+                'application/xml': XMLMarshaller().marshall,
+                'text/csv': csv_marshaller.marshall,
+                'application/csv': csv_marshaller.marshall,
+                '*/*': json_marshaller.marshall
+            }
 
         if unmarshallers:
             self._unmarshallers = unmarshallers
         else:
-            self._unmarshallers = {dict: DefaultJSONUnmarshaller().unmarshall}
-
-        if exception_handlers:
-            self._exception_handler = [
-                exception_handler.handle if isinstance(exception_handler, ExceptionHandler) else exception_handler
-                for exception_handler in exception_handlers
-            ]
-        else:
-            self._exception_handler = [
-                DefaultDebugExceptionHandler().handle if debug else DefaultExceptionHandler().handle
-            ]
+            json_unmarshaller = JSONUnmarshaller()
+            self._unmarshallers = {
+                'application/json': json_unmarshaller.unmarshall,
+                'text/plain': json_unmarshaller.unmarshall,
+                '*/*': json_unmarshaller.unmarshall
+            }
 
         wsgi_version = os.environ.get('wsgi.version')
         if wsgi_version:
@@ -63,10 +90,12 @@ class App(object):
 | .__/ \__, |\__\___|_| |_|\___|_|
 |_|    |___/
 v{app_version} built on {build_on} ({commit})
+{debug}
 """.format(
             app_version=_version.app_version,
             build_on=_version.built_at,
-            commit=_version.git_version
+            commit=_version.git_version,
+            debug='\n***WARNING: DEBUG is set to true. DISABLE IT FOR PRODUCTION ***' if self._debug else ''
         )
         )
 
@@ -75,26 +104,40 @@ v{app_version} built on {build_on} ({commit})
         if not self._has_wsgi:
             server = make_server(interface, port, self)
             server.serve_forever()
-            # LocalWebserver().start(self._handle_request, interface, port)
 
     def _handle_request(self, command: str, uri: str, query_string: str, headers: Dict[str, str], body: str):
+        # convert to charset
+        content_type = headers.get('CONTENT_TYPE', 'application/json')
+        unmarshaller = self._unmarshallers[content_type]
+        params = urllib.parse.parse_qs(query_string) if query_string else {}
+        request = Request(command, uri, params, headers, body, unmarshaller)
         try:
-            params = urllib.parse.parse_qs(query_string) if query_string else {}
-            request = Request(command, uri, params, headers, body, self._unmarshallers)
-            route_output = self._route_handler(request)
+            route_output = next(
+                (
+                    output
+                    for output in (
+                        pytcher.run_router(request, router)
+                        for router in self._routers
+                    )
+                    if output is not None
+                ),
+                None
+            )
+
             if route_output is None:
                 raise NotFoundException()
         except Exception as e:
             route_output = next(
                 (
-                    handler(e, request)
-                    for handler in self._exception_handlers
+                    handler(request, e)
+                    for exception_type, handler in self._exception_handlers
+                    if isinstance(e, exception_type)
                 ),
                 None
             )
 
-        headers = {}
         output_and_status_code = route_output
+        accept_type = headers.get('ACCEPT', 'application/json').lower()
         if isinstance(output_and_status_code, tuple):
             output, status_code = output_and_status_code
         elif isinstance(output_and_status_code, Response):
@@ -105,14 +148,17 @@ v{app_version} built on {build_on} ({commit})
             output = output_and_status_code
             status_code = http.HTTPStatus.OK
 
-        return Response(self._marshallers[dict](output), status_code, headers)
+        if accept_type in self._marshallers:
+            marshaller = self._marshallers[accept_type]
+        else:
+            return Response('Accept {type} not supported'.format(type=accept_type), http.HTTPStatus.NOT_ACCEPTABLE)
+        return Response(marshaller(output), status_code, headers)
 
     def __call__(self, environ, start_response):
         # Replace HTTP_ABC=value to ABC=value
         headers = {
-            key[5:]: value
+            key[5:] if key.startswith('HTTP_') else key: value
             for key, value in environ.items()
-            if key.startswith('HTTP_')
         }
 
         body_size = environ.get('CONTENT_LENGTH')
@@ -131,7 +177,6 @@ v{app_version} built on {build_on} ({commit})
             status_code=response.status_code,
             status_message=http.HTTPStatus(response.status_code).name
         )
-
-        start_response(status_response, list(response.headers.items()))
-
+        # list(response.headers.items())
+        start_response(status_response, [])
         return [response.body.encode('utf-8')]
