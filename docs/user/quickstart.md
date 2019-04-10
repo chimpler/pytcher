@@ -46,24 +46,24 @@ class MyRouter(Router):
 
     @route
     def route(self, r: Request):
-        with r / 'items':
-            with r.end:
-                with r.get:
+        with r / 'items':  # if URL starts with /items
+            with r.end:  # if there is nothing after /items
+                with r.get:  # If it's a get request
                     return self._items
 
-                with r.post:
+                with r.post:  # If request is a post request
                     self._items.append(r.json)
                     return self._items[-1]
 
-            with r / Integer() as [item_id]:
-                with r.get:
+            with r / Integer() as [item_id]:  # If the URL is /items/<integer> then bind item_id to the integer
+                with r.get:  # If the request is a get request
                     return self._items[item_id]
 
-                with r.put:
+                with r.put:  # If the request is a put request
                     self._items[item_id] = r.json
                     return self._items[item_id]
 
-                with r.delete:
+                with r.delete:  # If the request is a delete request
                     return self._items.pop(item_id)
 
 
@@ -72,12 +72,20 @@ if __name__ == '__main__':
     app.start()
 ``` 
 
+As you notice, we use the `with` statement context. In this case, if the request matches the condition (e.g., starts with `/items` or is `GET` request), then the code inside the block is executed. This can also be achieved using a `for` loop instead.
+
+For example:
+
+| using `with` |               using `for`                       |
+| ----------- | ------------------------------------------------- |
+| `with r / 'items':`  | `for _ in r / 'items':`          |
+| `with r.get / 'items' / Integer() as [item_id]:`  | `for item_id in r.get / 'items' / 'Integer':` |
+
+
 ## Create a simple web service using dataclasses
 
 ## Create a simple web service using annotation
 
 For those more used to using decorators like in Flask, one can decorate multiple methods using a path and method.
 One can also use multiple classes to do so and combine with the routing tree structure.
-
-
 

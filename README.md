@@ -14,6 +14,8 @@ DO NOT USE: WORK IN PROGRESS
 
 ```
 
+Documentation: https://chimpler.github.io/pytcher/
+
 ### Pytcher
 
 Pytcher is an HTTP routing DSL for Python. The main focus of Pytcher is to provide a human readable router syntax that supports complex path matching, parameter matching and header matching using nested routes.

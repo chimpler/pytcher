@@ -12,4 +12,8 @@ nav:
     - Test: user/test.md
 theme: material
 markdown_extensions:
-  - codehilite
+    - markdown.extensions.admonition
+    - markdown.extensions.codehilite:
+          guess_lang: false
+
+extra_css: [extra.css]

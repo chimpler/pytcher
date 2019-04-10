@@ -91,8 +91,12 @@ def handle_exception(exception_or_function=Exception):
         return decorator_add_exception_handler
 
 
-def route(path_or_function=None, method='GET'):
+def route(path=None, method='GET'):
     def decorator_add_route(func):
+        # path can be a path or the function itself if the annotation is simply @route
+        print('=======')
+        print(func.__qualname__)
+        print('=======')
         tokens = func.__qualname__.split('.')
         if func.__module__ not in _annotated_routes:
             _annotated_routes[func.__module__] = {}
@@ -103,13 +107,13 @@ def route(path_or_function=None, method='GET'):
             _annotated_routes[func.__module__][clazz] = []
 
         _annotated_routes[func.__module__][clazz].append(
-            AnnotatedRoute(convert_str_to_path_elements(path_or_function), method, func)
+            AnnotatedRoute(convert_str_to_path_elements(path), method, func)
         )
 
         return func
 
-    if isinstance(path_or_function, Callable):  # If called as @route with no parenthesis
-        func = path_or_function
+    if isinstance(path, Callable):  # If called as @route with no parenthesis
+        func = path
         path_or_function = None
         return decorator_add_route(func)
     else:  # If called as @route with parenthesis
