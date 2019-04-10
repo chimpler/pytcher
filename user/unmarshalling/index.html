@@ -57,6 +57,8 @@
     <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
     
     
+      <link rel="stylesheet" href="../../extra.css">
+    
     
       
     
@@ -300,7 +302,61 @@
                 
                   <h1>Unmarshalling</h1>
                 
-                
+                <p>It is common to read payload (in JSON) sent from the client using the <code>POST</code> or <code>PUT</code> method.
+In most cases, the <code>POST</code> request will send the JSON representation of a Python object that will then
+need to be unmarshalled to an object. This can be achieved using the <code>entity</code> method of the <code>Request</code> object passed to the function decorated with <code>@route</code>.</p>
+<p>For example:</p>
+<p>We consider Item to be a data class defined as follows:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">price</span><span class="p">:</span> <span class="nb">float</span>
+
+<span class="n">apple</span> <span class="o">=</span> <span class="n">Item</span><span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">)</span>
+</pre></div>
+
+
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>r.entity(List[Float])</td>
+<td>Create a list of float</td>
+</tr>
+<tr>
+<td>r.entity(MyDataClassObject)</td>
+<td>Create the data class object <code>Item</code></td>
+</tr>
+<tr>
+<td>r.entity(List[Item])</td>
+<td>Create a list of data classes <code>Item</code></td>
+</tr>
+<tr>
+<td>r.entity(Dict[Str, Item])</td>
+<td>Create a dictionary of <code>Str</code> -&gt; <code>Item</code></td>
+</tr>
+</tbody>
+</table>
+<p>Optionally, one can specify a <a href="https://github.com/h2non/jsonpath-ng">JSON path</a>. For example if the <code>Item</code> is wrapped in a <code>"data"</code> element:</p>
+<div class="codehilite"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;pear&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;price&quot;</span><span class="p">:</span> <span class="mf">1.45</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Item can be obtained using the json path <code>$.data</code> as follows:</p>
+<div class="codehilite"><pre><span></span><span class="n">r</span><span class="o">.</span><span class="n">entity</span><span class="p">(</span><span class="n">Item</span><span class="p">,</span> <span class="s1">&#39;$.data&#39;</span><span class="p">)</span>
+</pre></div>
                 
                   
                 

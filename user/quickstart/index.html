@@ -57,6 +57,8 @@
     <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
     
     
+      <link rel="stylesheet" href="../../extra.css">
+    
     
       
     
@@ -434,7 +436,7 @@
 <p>On another window:</p>
 <div class="codehilite"><pre><span></span>$ curl localhost:8080
 
-<span class="s2">&quot;Hello World!&quot;</span>
+&quot;Hello World!&quot;
 </pre></div>
 
 
@@ -451,24 +453,24 @@
 
     <span class="nd">@route</span>
     <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span>  <span class="c1"># if URL starts with /items</span>
+            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>  <span class="c1"># if there is nothing after /items</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>  <span class="c1"># If it&#39;s a get request</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span>
 
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">post</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">post</span><span class="p">:</span>  <span class="c1"># If request is a post request</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_id</span><span class="p">]:</span>
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_id</span><span class="p">]:</span>  <span class="c1"># If the URL is /items/&lt;integer&gt; then bind item_id to the integer</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>  <span class="c1"># If the request is a get request</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span>
 
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">put</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">put</span><span class="p">:</span>  <span class="c1"># If the request is a put request</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span>
 
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>  <span class="c1"># If the request is a delete request</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
 
 
@@ -478,6 +480,26 @@
 </pre></div>
 
 
+<p>As you notice, we use the <code>with</code> statement context. In this case, if the request matches the condition (e.g., starts with <code>/items</code> or is <code>GET</code> request), then the code inside the block is executed. This can also be achieved using a <code>for</code> loop instead.</p>
+<p>For example:</p>
+<table>
+<thead>
+<tr>
+<th>using <code>with</code></th>
+<th>using <code>for</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>with r / 'items':</code></td>
+<td><code>for _ in r / 'items':</code></td>
+</tr>
+<tr>
+<td><code>with r.get / 'items' / Integer() as [item_id]:</code></td>
+<td><code>for item_id in r.get / 'items' / 'Integer':</code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="create-a-simple-web-service-using-dataclasses">Create a simple web service using dataclasses</h2>
 <h2 id="create-a-simple-web-service-using-annotation">Create a simple web service using annotation</h2>
 <p>For those more used to using decorators like in Flask, one can decorate multiple methods using a path and method.

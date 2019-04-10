@@ -57,6 +57,8 @@
     <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
     
     
+      <link rel="stylesheet" href="../../extra.css">
+    
     
       
     
@@ -74,6 +76,10 @@
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#default-supported-types" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
     
     
       <header class="md-header" data-md-component="header">
@@ -230,9 +236,50 @@
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
     
     
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Marshalling
+      </label>
+    
     <a href="./" title="Marshalling" class="md-nav__link md-nav__link--active">
       Marshalling
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#default-supported-types" title="Default supported types" class="md-nav__link">
+    Default supported types
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-types" title="Additional types" class="md-nav__link">
+    Additional types
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-new-accept-formats" title="Adding new accept formats" class="md-nav__link">
+    Adding new accept formats
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -292,6 +339,49 @@
               </div>
             
             
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#default-supported-types" title="Default supported types" class="md-nav__link">
+    Default supported types
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-types" title="Additional types" class="md-nav__link">
+    Additional types
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-new-accept-formats" title="Adding new accept formats" class="md-nav__link">
+    Adding new accept formats
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
@@ -301,11 +391,132 @@
                   <h1>Marshalling</h1>
                 
                 <p>Marshalling converts Python data (int, str, float, list, dict, data classes, named tuples) into a format that can be send across the wire.
-The user can request a particular format to be returned using the <code>Accept</code> request HTTP header:
-* <code>application/json</code>: accept JSON output
-* <code>application/xml</code>: accept XML output
-* <code>text/csv</code>: accept CSV output
-* <code>*/*</code>: accept anything</p>
+The user can request a particular format to be returned using the <code>Accept</code> request HTTP header:</p>
+<ul>
+<li><code>application/json</code>: accept JSON output</li>
+<li><code>application/xml</code>: accept XML output</li>
+<li><code>text/csv</code>: accept CSV output</li>
+<li><code>*/*</code>: accept anything</li>
+</ul>
+<h2 id="default-supported-types">Default supported types</h2>
+<p>By default, pytcher accepts <code>application/json</code> and returns a JSON format output.</p>
+<p>Out of the box, it can marshall the followings:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Example</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dict</code></td>
+<td>dictionary</td>
+<td><code>{'key': 'value'}</code></td>
+<td><code>{"key":"value}</code></td>
+</tr>
+<tr>
+<td><code>list</code></td>
+<td>list</td>
+<td><code>['abc', 'cde']</code></td>
+<td><code>["abc","cde"]</code></td>
+</tr>
+<tr>
+<td><code>namedtuple</code></td>
+<td>named tuples</td>
+<td><code>Item('apple', 1.25)</code></td>
+<td><code>{"name":"apple","price":1.25}</code></td>
+</tr>
+<tr>
+<td><code>@dataclass</code></td>
+<td>data class</td>
+<td><code>Item('apple', 1.25)</code></td>
+<td><code>{"name":"apple","price":1.25}</code></td>
+</tr>
+<tr>
+<td><code>enum</code></td>
+<td>enum</td>
+<td><code>Color.RED</code></td>
+<td><code>"RED"</code></td>
+</tr>
+<tr>
+<td><code>str</code></td>
+<td>string</td>
+<td><code>'apple'</code></td>
+<td><code>"apple"</code></td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td>integer</td>
+<td><code>5</code></td>
+<td><code>5</code></td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>float</td>
+<td><code>5.12</code></td>
+<td><code>5.12</code></td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td>date</td>
+<td><code>datetime.date(2019, 2, 3)</code></td>
+<td><code>2019-02-03</code></td>
+</tr>
+<tr>
+<td><code>datetime</code></td>
+<td>datetime (no timezone)</td>
+<td><code>datetime.datetime(2019, 2, 3, 12, 32, 1)</code></td>
+<td><code>2019-02-03T12:32:01.000</code></td>
+</tr>
+<tr>
+<td><code>datetime</code></td>
+<td>datetime (with timezone)</td>
+<td><code>datetime.datetime(2019, 2, 3, 12, 32, 1, tzinfo=pytz.UTC)</code></td>
+<td><code>2019-02-03T12:32:01.000+00:00</code></td>
+</tr>
+</tbody>
+</table>
+<p>A namedtuple can be defined as follows:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+
+<span class="n">Item</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Item&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;price&#39;</span><span class="p">])</span>
+
+<span class="n">apple</span> <span class="o">=</span> <span class="n">Item</span><span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">)</span>
+</pre></div>
+
+
+<p>A dataclass can be defined as follows:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">price</span><span class="p">:</span> <span class="nb">float</span>
+
+<span class="n">apple</span> <span class="o">=</span> <span class="n">Item</span><span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">)</span>    
+</pre></div>
+
+
+<p>An enum can be defined as follows:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">GREEN</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">red</span> <span class="o">=</span> <span class="n">Color</span><span class="o">.</span><span class="n">RED</span>
+</pre></div>
+
+
+<h2 id="additional-types">Additional types</h2>
+<p>One can also add additional types to support as follows:</p>
+<div class="codehilite"><pre><span></span><span class="n">TODO</span>
+</pre></div>
+
+
+<h2 id="adding-new-accept-formats">Adding new accept formats</h2>
                 
                   
                 
