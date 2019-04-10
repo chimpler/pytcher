@@ -1,10 +1,11 @@
 import re
 from abc import abstractmethod
 from collections import namedtuple
-from pytcher.matchers import Regex
-
+from functools import reduce
 # module , clazz, method
 from typing import Callable
+
+from pytcher.matchers import Regex
 
 _annotated_routes = {}
 _annotated_exceptions = {}
@@ -67,25 +68,27 @@ def convert_str_to_path_elements(path):
     ]
 
 
-def handle_exception(exception_or_function=Exception):
+def handle_exception(exception=Exception):
     def decorator_add_exception_handler(func):
-        tokens = func.__qualname__.split('.')
         if func.__module__ not in _annotated_exceptions:
             _annotated_exceptions[func.__module__] = {}
         # decorated function or method inside class
-        clazz = tokens[0] if len(tokens) == 2 else None
 
-        if clazz not in _annotated_exceptions[func.__module__]:
-            _annotated_exceptions[func.__module__][clazz] = []
-
-        _annotated_exceptions[func.__module__][clazz].append(
-            AnnotatedExceptionHandler(exception_or_function, func)
-        )
+        cur_elt = _annotated_exceptions[func.__module__]
+        tokens = func.__qualname__.split('.')
+        num_tokens = len(tokens)
+        for index, token in enumerate(tokens):
+            if index == num_tokens - 1:
+                cur_elt[token] = AnnotatedExceptionHandler(exception, func)
+            else:
+                if token not in cur_elt:
+                    cur_elt[token] = {}
         return func
 
-    if not isinstance(exception_or_function, Callable) and issubclass(exception_or_function, Exception):  # If called as @handle_exception with parenthesis
-        func = exception_or_function
-        exception_or_function = Exception
+    if not isinstance(exception, Callable) and issubclass(exception,
+                                                          Exception):  # If called as @handle_exception with parenthesis
+        func = exception
+        exception = Exception
         return decorator_add_exception_handler(func)
     else:  # If called as @handle_exception with no parenthesis
         return decorator_add_exception_handler
@@ -94,27 +97,23 @@ def handle_exception(exception_or_function=Exception):
 def route(path=None, method='GET'):
     def decorator_add_route(func):
         # path can be a path or the function itself if the annotation is simply @route
-        print('=======')
-        print(func.__qualname__)
-        print('=======')
-        tokens = func.__qualname__.split('.')
-        if func.__module__ not in _annotated_routes:
-            _annotated_routes[func.__module__] = {}
         # decorated function or method inside class
-        clazz = tokens[0] if len(tokens) == 2 else None
+        cur_elt = _annotated_routes
+        tokens = [func.__module__] + func.__qualname__.split('.')
+        num_tokens = len(tokens)
+        for index, token in enumerate(tokens):
+            if index == num_tokens - 1:
+                cur_elt[token] = AnnotatedRoute(convert_str_to_path_elements(path), method, func)
+            else:
+                if token not in cur_elt:
+                    cur_elt[token] = {}
 
-        if clazz not in _annotated_routes[func.__module__]:
-            _annotated_routes[func.__module__][clazz] = []
-
-        _annotated_routes[func.__module__][clazz].append(
-            AnnotatedRoute(convert_str_to_path_elements(path), method, func)
-        )
-
+            cur_elt = cur_elt[token]
         return func
 
     if isinstance(path, Callable):  # If called as @route with no parenthesis
         func = path
-        path_or_function = None
+        path = None
         return decorator_add_route(func)
     else:  # If called as @route with parenthesis
         return decorator_add_route
@@ -130,24 +129,38 @@ def convert_type(data_type, value):
     else:
         return value
 
-
+# TODO: combine get_routers and get_exception_handlers
 def get_routers(router):
-    if isinstance(router, Callable):  # annotated functions
-        found = next(
-            (
-                annotated_route
-                for annotated_route in _annotated_routes.get(router.__module__, {}).get(None, [])
-                if router.__name__ == annotated_route.func.__name__
-            ),
-            []
-        )
-        return [found] if found else []
-    else:  # annotated methods in classes
+    def get_annotated_routes(route_dict):
         return [
-            AnnotatedRoute(path, command, getattr(router, func.__name__))
-            for path, command, func in
-            _annotated_routes.get(router.__module__, {}).get(type(router).__name__, [])
+            route
+            for key, value in route_dict.items()
+            for route in ([value] if isinstance(value, AnnotatedRoute) else get_annotated_routes(value))
         ]
+
+    if isinstance(router, Callable):
+        path_tokens = [router.__module__] + router.__qualname__.split('.')
+    else:
+        router_type = type(router)
+        path_tokens = [router_type.__module__] + router_type.__qualname__.split('.')
+
+    obj_dict = reduce(
+        lambda d, x: d.get(x, {}),
+        path_tokens,
+        _annotated_routes
+    )
+    return [
+        AnnotatedRoute(
+            path,
+            command,
+            func if isinstance(router, Callable)
+            else getattr(router, func.__name__)
+        )
+        for path, command, func in (
+            [obj_dict] if isinstance(obj_dict, AnnotatedRoute)
+            else get_annotated_routes(obj_dict)
+        )
+    ]
 
 
 def run_router(request, router):
@@ -155,23 +168,38 @@ def run_router(request, router):
         return router.func(request, *matched_vars)
 
 
-def get_exception_handlers(exception_handler):
-    if isinstance(exception_handler, Callable):
-        found = next(
-            (
-                annotated_exception_handler
-                for annotated_exception_handler in _annotated_exceptions.get(exception_handler.__module__, {}).get(None)
-                if exception_handler.__name__ == annotated_exception_handler.func.__name__
-            ),
-            []
-        )
-        return [found] if found else []
-    else:
+def get_exception_handlers(handler_exception):
+    def get_exception_handlers(handler_dict):
         return [
-            AnnotatedExceptionHandler(exception, getattr(exception_handler, func.__name__))
-            for exception, func in
-            _annotated_exceptions.get(exception_handler.__module__, {}).get(type(exception_handler).__name__, [])
+            handler_exception
+            for key, value in handler_dict.items()
+            for handler_exception in
+            ([value] if isinstance(value, AnnotatedExceptionHandler) else get_exception_handlers(value))
         ]
+
+    if isinstance(handler_exception, Callable):
+        path_tokens = [handler_exception.__module__] + handler_exception.__qualname__.split('.')
+    else:
+        handler_type = type(handler_exception)
+        path_tokens = [handler_type.__module__] + handler_type.__qualname__.split('.')
+
+    handler_dict = reduce(
+        lambda d, x: d.get(x, {}),
+        path_tokens,
+        _annotated_exceptions
+    )
+    return [
+        AnnotatedExceptionHandler(
+            exception,
+            func
+            if isinstance(func, Callable)
+            else getattr(handler_exception, func.__name__)
+        )
+        for exception, func in (
+            [handler_dict] if isinstance(handler_dict, AnnotatedExceptionHandler)
+            else get_exception_handlers(handler_dict)
+        )
+    ]
 
 
 Response = namedtuple('Response', ['body', 'status_code', 'headers'])

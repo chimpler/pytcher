@@ -17,6 +17,7 @@ class InventoryItem(object):
 
 
 class MyRouter(object):
+
     def __init__(self):
         words = [
             'wine',
