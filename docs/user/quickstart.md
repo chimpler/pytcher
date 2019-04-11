@@ -78,8 +78,8 @@ For example:
 
 | using `with` |               using `for`                       |
 | ----------- | ------------------------------------------------- |
-| `with r / 'items':`  | `for _ in r / 'items':`          |
-| `with r.get / 'items' / Integer() as [item_id]:`  | `for item_id in r.get / 'items' / 'Integer':` |
+| `:::py with r / 'items':`  | `:::py for _ in r / 'items':`          |
+| `:::py with r.get / 'items' / Integer() as [item_id]:`  | `:::py for item_id in r.get / 'items' / 'Integer':` |
 
 
 ## Create a simple web service using dataclasses
