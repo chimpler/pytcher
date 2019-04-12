@@ -28,7 +28,14 @@ class JSONUnmarshaller(object):
 
             return obj
         else:
-            return obj
+            return next(
+                (
+                    decode(obj_type, obj)
+                    for condition, decode in self._decoders
+                    if condition(obj_type, obj)
+                ),
+                obj
+            )
 
     def unmarshall(self, obj_type, data):
         obj_dict = json.loads(data)

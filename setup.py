@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-import sys
-from setuptools import setup
 import subprocess
-from setuptools.command.install import install
-from setuptools.command.develop import develop
+import sys
 from datetime import datetime
+
+from setuptools import setup
+from setuptools.command.develop import develop
+from setuptools.command.install import install
 
 
 class CustomInstallCommand(install):
@@ -21,8 +22,10 @@ class CustomDevelopCommand(develop):
 
 
 def create_version_file():
-    app_version = subprocess.Popen(sys.argv[0] + " --version", shell=True, stdout=subprocess.PIPE).stdout.read().strip().decode()
-    commit_hash = subprocess.Popen("git rev-parse HEAD", shell=True, stdout=subprocess.PIPE).stdout.read().strip().decode()
+    app_version = subprocess.Popen(sys.argv[0] + " --version", shell=True,
+                                   stdout=subprocess.PIPE).stdout.read().strip().decode()
+    commit_hash = subprocess.Popen("git rev-parse HEAD", shell=True,
+                                   stdout=subprocess.PIPE).stdout.read().strip().decode()
 
     with open('pytcher/_version.py', 'wt') as fd:
         fd.write("git_version = '%s'\n" % commit_hash)
@@ -49,6 +52,10 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+    ],
+    install_requires=[
+        'python-dateutil',
+        'pytz'
     ],
     packages=[
         'pytcher',

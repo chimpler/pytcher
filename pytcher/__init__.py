@@ -129,6 +129,7 @@ def convert_type(data_type, value):
     else:
         return value
 
+
 # TODO: combine get_routers and get_exception_handlers
 def get_routers(router):
     def get_annotated_routes(route_dict):

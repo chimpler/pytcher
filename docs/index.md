@@ -16,7 +16,7 @@ similar to RODA in Ruby, Akka HTTP in Scala or Javalin in Java.
 
 ## Simple example
 ```python
-from pytcher import App, Router, Request, Integer
+from pytcher import App, Request, Integer
 
 
 class MyRouter(object):
@@ -35,7 +35,7 @@ class MyRouter(object):
                     self._items.append(r.json)
                     return self._items[-1]
 
-            with r / Integer() as [item_id]:
+            with r / Integer(0, len(self._items) - 1) as [item_id]:
                 with r.get:
                     return self._items[item_id]
 

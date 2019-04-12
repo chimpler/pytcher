@@ -101,8 +101,80 @@ Matcher | Description | Example
 `:::python Regex()` | Match a regex | `:::python with r / 'data' / Regex('(.*)-(.*)') as [[a, b]]:`
    
 
-### Header matcher
-
 ### Parameter matcher
 
+Conditions can be put on parameter values (for example `http://localhost/items?token=45ab`). 
+
+This can be done as follows:
+```python
+with r.p['token] == '45ab':
+    return {
+        'message': 'Hello!'
+    }
+ 
+return {
+    'message': "Bye!"
+}
+
+```
+
+It can also use operators such as `>` or `<` for numeric values.
+
+Below is the full list of supported operators:
+
+Operator | Description | Example
+---------|-------------|--------
+`==`       | equal       | `:::python r.p['token'] == 'secret-token'` 
+`!=`       | not equal   | `:::python r.p['type'] != 'fruit'` 
+`>`       | greater than       | `:::python r.p['price'] > 100` 
+`<`       | less than       | `:::python r.p['price'] < 100` 
+`>=`       | greater or equal       | `:::python r.p['price'] >= 100` 
+`<=`       | less or equal       | `:::python r.p['price'] <= 100`
+`in`       | contains     | `:::python 'apple' in r.p['fruits']`
+
+### Header matcher
+
+!!! info
+    HTTP Headers are not case-sensitive (so `X-Organization` will be treated the same as `x-organization`)
+
+Similarly to parameter matchers, conditions can be put on header values. For example one can check if `X-Organization` is set to `my-company`.
+This can be done as follows:
+```python
+with r.h['X-Organization'] == 'my-company':
+    return {
+        'message': 'Hello my-company employee!'
+    }
+ 
+return {
+    'message': "Go away!"
+}
+
+```
+
+It can also use operators such as `>` or `<` for numeric values.
+
+Below is the full list of supported operators:
+
+Operator | Description | Example
+---------|-------------|--------
+`==`       | equal       | `:::python r.h['Token'] == 'secret-token'` 
+`!=`       | not equal   | `:::python r.h['X-Organization'] != 'my-company'` 
+`>`       | greater than       | `:::python r.h['money'] > 100` 
+`<`       | less than       | `:::python r.h['money'] < 100` 
+`>=`       | greater or equal       | `:::python r.h['money'] >= 100` 
+`<=`       | less or equal       | `:::python r.h['money'] <= 100`
+`in`       | contains     | `:::python 'apple' in r.h['fruits']`
+
 ### Combining matchers
+
+One can use boolean expressions with `&` (and) and `|` (or).
+For example:
+```python
+with (r / 'items') & r.h['X-Organization'] == 'my-company':
+    return {
+        "items": [
+            {"name": "pear"},
+            {"name": "apple"}
+        ]
+    }
+```

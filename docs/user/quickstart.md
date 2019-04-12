@@ -33,8 +33,13 @@ On another window:
 ## Creating a more complex web service using a routing tree
 
 Let's create a more complex CRUD service with the endpoints:
+
 * `/items`
+    * `GET`: return the list of items
+    * `POST`: add an item
 * `/items/<number>`
+    * `PUT`: replace the item at position `<number>`
+    * `DELETE`: delete the item at position `<number>`
 
 ```python
 from pytcher import App, Router, Request, Integer, route
@@ -72,7 +77,52 @@ if __name__ == '__main__':
     app.start()
 ``` 
 
-As you notice, we use the `with` statement context. In this case, if the request matches the condition (e.g., starts with `/items` or is `GET` request), then the code inside the block is executed. This can also be achieved using a `for` loop instead.
+On another window, try the following commands:
+
+``` tab="GET /items"
+$ curl localhost:8000/items
+
+["pizza","cheese","ice-cream","butter"]
+```
+
+``` tab="GET /items/1"
+$ curl localhost:8000/items/1
+
+"cheese"
+```
+
+``` tab="POST /items"
+$ curl localhost:8000/items -XPOST -d "ham"
+
+"ham"
+
+$ curl localhost:8000/items
+
+["pizza","cheese","ice-cream","butter", "ham"]
+```
+
+``` tab="PUT /items/1"
+$ curl localhost:8000/items/1 -XPUT -d "cucumber"
+
+"cucumber"
+
+$ curl localhost:8000/items
+
+["cucumber","cheese","ice-cream","butter", "ham"]
+```
+
+``` tab="DELETE /items/1"
+$ curl localhost:8000/items/1 -XDELETE
+
+"cucumber"
+
+$ curl localhost:8000/items
+
+["cheese","ice-cream","butter", "ham"]
+```
+    
+As you notice, we use the `with` statement context. In this case, if the request matches the condition (e.g., starts with `/items` or is `GET` request), then the code inside the block is executed. 
+This can also be achieved using a `for` loop instead.
 
 For example:
 
@@ -81,6 +131,10 @@ For example:
 | `:::py with r / 'items':`  | `:::py for _ in r / 'items':`          |
 | `:::py with r.get / 'items' / Integer() as [item_id]:`  | `:::py for item_id in r.get / 'items' / 'Integer':` |
 
+!!! Info
+    The author of Python did not approve requests to use `:::python with` statements to be conditional (i.e., execute the block
+    if a certain condition occurs). We implemented it to make it work on cpython and possibly other implementations of Python.
+    However using the `:::python for` loop construction is perfectly fine and does not violate the Python standard.
 
 ## Create a simple web service using dataclasses
 

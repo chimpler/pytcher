@@ -6,6 +6,8 @@ Install uWSGI:
     
     $ pip install uwsgi
     
-To run it:
+If you use a virtualenv `venv3`, you can run the example `simple_app.py` as follows:
 
     $ uwsgi --http :8000 --wsgi-file examples/simple_app.py --pp examples  -H venv3/ --wsgi simple_app:app
+    
+## uWSGI configuration
