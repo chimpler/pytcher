@@ -2,52 +2,52 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://chimpler.github.io/pytcher/</loc>
-     <lastmod>2019-04-11</lastmod>
+     <lastmod>2019-04-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/user/install/</loc>
-     <lastmod>2019-04-11</lastmod>
+     <lastmod>2019-04-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/user/quickstart/</loc>
-     <lastmod>2019-04-11</lastmod>
+     <lastmod>2019-04-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/user/example/</loc>
-     <lastmod>2019-04-11</lastmod>
+     <lastmod>2019-04-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/user/route/</loc>
-     <lastmod>2019-04-11</lastmod>
+     <lastmod>2019-04-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/user/marshalling/</loc>
-     <lastmod>2019-04-11</lastmod>
+     <lastmod>2019-04-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/user/unmarshalling/</loc>
-     <lastmod>2019-04-11</lastmod>
+     <lastmod>2019-04-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/user/exception/</loc>
-     <lastmod>2019-04-11</lastmod>
+     <lastmod>2019-04-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/user/wsgi/</loc>
-     <lastmod>2019-04-11</lastmod>
+     <lastmod>2019-04-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/user/test/</loc>
-     <lastmod>2019-04-11</lastmod>
+     <lastmod>2019-04-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
