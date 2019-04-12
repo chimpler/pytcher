@@ -7,8 +7,6 @@ site_name: pytcher
 nav:
     - Home: index.md
     - Install: user/install.md
-    - Quick start: user/quickstart.md
-    - Examples: user/example.md
     - Route: user/route.md
     - Marshalling: user/marshalling.md
     - Unmarshalling: user/unmarshalling.md
