@@ -507,9 +507,19 @@
 
 
 <h2 id="creating-a-more-complex-web-service-using-a-routing-tree">Creating a more complex web service using a routing tree</h2>
-<p>Let's create a more complex CRUD service with the endpoints:
-* <code>/items</code>
-* <code>/items/&lt;number&gt;</code></p>
+<p>Let's create a more complex CRUD service with the endpoints:</p>
+<ul>
+<li><code>/items</code><ul>
+<li><code>GET</code>: return the list of items</li>
+<li><code>POST</code>: add an item</li>
+</ul>
+</li>
+<li><code>/items/&lt;number&gt;</code><ul>
+<li><code>PUT</code>: replace the item at position <code>&lt;number&gt;</code></li>
+<li><code>DELETE</code>: delete the item at position <code>&lt;number&gt;</code></li>
+</ul>
+</li>
+</ul>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">route</span>
 
 
@@ -545,7 +555,53 @@
     <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>
 
-<p>As you notice, we use the <code>with</code> statement context. In this case, if the request matches the condition (e.g., starts with <code>/items</code> or is <code>GET</code> request), then the code inside the block is executed. This can also be achieved using a <code>for</code> loop instead.</p>
+<p>On another window, try the following commands:</p>
+<div class="superfences-tabs">
+<input name="__tabs_1" type="radio" id="__tab_1_0" checked="checked" />
+<label for="__tab_1_0">GET /items</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items
+
+[&quot;pizza&quot;,&quot;cheese&quot;,&quot;ice-cream&quot;,&quot;butter&quot;]
+</pre></div></div>
+<input name="__tabs_1" type="radio" id="__tab_1_1" />
+<label for="__tab_1_1">GET /items/1</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items/1
+
+&quot;cheese&quot;
+</pre></div></div>
+<input name="__tabs_1" type="radio" id="__tab_1_2" />
+<label for="__tab_1_2">POST /items</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items -XPOST -d &quot;ham&quot;
+
+&quot;ham&quot;
+
+$ curl localhost:8000/items
+
+[&quot;pizza&quot;,&quot;cheese&quot;,&quot;ice-cream&quot;,&quot;butter&quot;, &quot;ham&quot;]
+</pre></div></div>
+<input name="__tabs_1" type="radio" id="__tab_1_3" />
+<label for="__tab_1_3">PUT /items/1</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items/1 -XPUT -d &quot;cucumber&quot;
+
+&quot;cucumber&quot;
+
+$ curl localhost:8000/items
+
+[&quot;cucumber&quot;,&quot;cheese&quot;,&quot;ice-cream&quot;,&quot;butter&quot;, &quot;ham&quot;]
+</pre></div></div>
+<input name="__tabs_1" type="radio" id="__tab_1_4" />
+<label for="__tab_1_4">DELETE /items/1</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items/1 -XDELETE
+
+&quot;cucumber&quot;
+
+$ curl localhost:8000/items
+
+[&quot;cheese&quot;,&quot;ice-cream&quot;,&quot;butter&quot;, &quot;ham&quot;]
+</pre></div></div>
+</div>
+<p>As you notice, we use the <code>with</code> statement context. In this case, if the request matches the condition (e.g., starts with <code>/items</code> or is <code>GET</code> request), then the code inside the block is executed. 
+This can also be achieved using a <code>for</code> loop instead.</p>
 <p>For example:</p>
 <table>
 <thead>
@@ -565,6 +621,12 @@
 </tr>
 </tbody>
 </table>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>The author of Python did not approve requests to use <code class="codehilite"><span class="k">with</span></code> statements to be conditional (i.e., execute the block
+if a certain condition occurs). We implemented it to make it work on cpython and possibly other implementations of Python.
+However using the <code class="codehilite"><span class="k">for</span></code> loop construction is perfectly fine and does not violate the Python standard.</p>
+</div>
 <h2 id="create-a-simple-web-service-using-dataclasses">Create a simple web service using dataclasses</h2>
 <h2 id="create-a-simple-web-service-using-annotation">Create a simple web service using annotation</h2>
 <p>For those more used to using decorators like in Flask, one can decorate multiple methods using a path and method.

@@ -360,6 +360,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#uwsgi-configuration" title="uWSGI configuration" class="md-nav__link">
+    uWSGI configuration
+  </a>
+  
+</li>
+      
       
       
       
@@ -408,6 +415,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#uwsgi-configuration" title="uWSGI configuration" class="md-nav__link">
+    uWSGI configuration
+  </a>
+  
+</li>
+      
       
       
       
@@ -436,9 +450,12 @@
 </pre></div>
 
 
-<p>To run it:</p>
+<p>If you use a virtualenv <code>venv3</code>, you can run the example <code>simple_app.py</code> as follows:</p>
 <div class="codehilite"><pre><span></span>$ uwsgi --http :8000 --wsgi-file examples/simple_app.py --pp examples  -H venv3/ --wsgi simple_app:app
 </pre></div>
+
+
+<h2 id="uwsgi-configuration">uWSGI configuration</h2>
                 
                   
                 

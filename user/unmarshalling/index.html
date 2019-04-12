@@ -100,6 +100,10 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
+      <a href="#example" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid">
@@ -309,9 +313,36 @@
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
     
     
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Unmarshalling
+      </label>
+    
     <a href="./" title="Unmarshalling" class="md-nav__link md-nav__link--active">
       Unmarshalling
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#example" title="Example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -359,6 +390,35 @@
               </div>
             
             
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#example" title="Example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
@@ -372,7 +432,94 @@
                 <p>It is common to read payload (in JSON) sent from the client using the <code>POST</code> or <code>PUT</code> method.
 In most cases, the <code>POST</code> request will send the JSON representation of a Python object that will then
 need to be unmarshalled to an object. This can be achieved using the <code>entity</code> method of the <code>Request</code> object passed to the function decorated with <code>@route</code>.</p>
-<p>For example:</p>
+<p>Supported types:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int</td>
+<td>integer</td>
+<td>3</td>
+</tr>
+<tr>
+<td>float</td>
+<td>float</td>
+<td>3.4</td>
+</tr>
+<tr>
+<td>str</td>
+<td>string</td>
+<td>"test"</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>boolean</td>
+<td>"true"</td>
+</tr>
+<tr>
+<td>None</td>
+<td>NULL value</td>
+<td>NULL</td>
+</tr>
+<tr>
+<td>datetime</td>
+<td>datetime</td>
+<td>"2019-02-01T02:03:04"</td>
+</tr>
+<tr>
+<td>datetime with timezone</td>
+<td>datetime with timezone</td>
+<td>"2019-02-01T02:03:04-04:00"</td>
+</tr>
+<tr>
+<td>timezone</td>
+<td>timezone</td>
+<td>"America/New_York"</td>
+</tr>
+<tr>
+<td>date</td>
+<td>date</td>
+<td>"2019-04-02"</td>
+</tr>
+<tr>
+<td>time</td>
+<td>time</td>
+<td>"14:03:12"</td>
+</tr>
+<tr>
+<td>data class</td>
+<td>dataclass</td>
+<td></td>
+</tr>
+<tr>
+<td>list</td>
+<td>list</td>
+<td>[1, 2, 3]</td>
+</tr>
+<tr>
+<td>dict</td>
+<td>dictionary</td>
+<td>{"key": "value"}</td>
+</tr>
+<tr>
+<td>namedtuple</td>
+<td>named tuple</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>To parse <code>datetime</code>, <code>date</code> and <code>time</code> we rely on the library <a href="https://dateutil.readthedocs.io/en/stable/">dateutil</a> and
+for parsing <code>timezone</code>, we use the library <a href="https://pythonhosted.org/pytz/">pytz</a>.</p>
+</div>
+<h2 id="example">Example</h2>
 <p>We consider Item to be a data class defined as follows:
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 

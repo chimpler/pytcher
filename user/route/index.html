@@ -335,15 +335,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#header-matcher" title="Header matcher" class="md-nav__link">
-    Header matcher
+  <a href="#parameter-matcher" title="Parameter matcher" class="md-nav__link">
+    Parameter matcher
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#parameter-matcher" title="Parameter matcher" class="md-nav__link">
-    Parameter matcher
+  <a href="#header-matcher" title="Header matcher" class="md-nav__link">
+    Header matcher
   </a>
   
 </li>
@@ -479,15 +479,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#header-matcher" title="Header matcher" class="md-nav__link">
-    Header matcher
+  <a href="#parameter-matcher" title="Parameter matcher" class="md-nav__link">
+    Parameter matcher
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#parameter-matcher" title="Parameter matcher" class="md-nav__link">
-    Parameter matcher
+  <a href="#header-matcher" title="Header matcher" class="md-nav__link">
+    Header matcher
   </a>
   
 </li>
@@ -654,9 +654,141 @@ For example <code class="codehilite"><span class="k">with</span> <span class="n"
 </tr>
 </tbody>
 </table>
-<h3 id="header-matcher">Header matcher</h3>
 <h3 id="parameter-matcher">Parameter matcher</h3>
+<p>Conditions can be put on parameter values (for example <code>http://localhost/items?token=45ab</code>). </p>
+<p>This can be done as follows:
+<div class="codehilite"><pre><span></span><span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;token] == &#39;</span><span class="mi">45</span><span class="n">ab</span><span class="s1">&#39;:</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello!&#39;</span>
+    <span class="p">}</span>
+
+<span class="k">return</span> <span class="p">{</span>
+    <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s2">&quot;Bye!&quot;</span>
+<span class="p">}</span>
+</pre></div></p>
+<p>It can also use operators such as <code>&gt;</code> or <code>&lt;</code> for numeric values.</p>
+<p>Below is the full list of supported operators:</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>==</code></td>
+<td>equal</td>
+<td><code class="codehilite"><span class="n">r</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;token&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;secret-token&#39;</span></code></td>
+</tr>
+<tr>
+<td><code>!=</code></td>
+<td>not equal</td>
+<td><code class="codehilite"><span class="n">r</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;fruit&#39;</span></code></td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td>greater than</td>
+<td><code class="codehilite"><span class="n">r</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">100</span></code></td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td>less than</td>
+<td><code class="codehilite"><span class="n">r</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">100</span></code></td>
+</tr>
+<tr>
+<td><code>&gt;=</code></td>
+<td>greater or equal</td>
+<td><code class="codehilite"><span class="n">r</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">100</span></code></td>
+</tr>
+<tr>
+<td><code>&lt;=</code></td>
+<td>less or equal</td>
+<td><code class="codehilite"><span class="n">r</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">100</span></code></td>
+</tr>
+<tr>
+<td><code>in</code></td>
+<td>contains</td>
+<td><code class="codehilite"><span class="s1">&#39;apple&#39;</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;fruits&#39;</span><span class="p">]</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="header-matcher">Header matcher</h3>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>HTTP Headers are not case-sensitive (so <code>X-Organization</code> will be treated the same as <code>x-organization</code>)</p>
+</div>
+<p>Similarly to parameter matchers, conditions can be put on header values. For example one can check if <code>X-Organization</code> is set to <code>my-company</code>.
+This can be done as follows:
+<div class="codehilite"><pre><span></span><span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;X-Organization&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;my-company&#39;</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello my-company employee!&#39;</span>
+    <span class="p">}</span>
+
+<span class="k">return</span> <span class="p">{</span>
+    <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s2">&quot;Go away!&quot;</span>
+<span class="p">}</span>
+</pre></div></p>
+<p>It can also use operators such as <code>&gt;</code> or <code>&lt;</code> for numeric values.</p>
+<p>Below is the full list of supported operators:</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>==</code></td>
+<td>equal</td>
+<td><code class="codehilite"><span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;Token&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;secret-token&#39;</span></code></td>
+</tr>
+<tr>
+<td><code>!=</code></td>
+<td>not equal</td>
+<td><code class="codehilite"><span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;X-Organization&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;my-company&#39;</span></code></td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td>greater than</td>
+<td><code class="codehilite"><span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;money&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">100</span></code></td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td>less than</td>
+<td><code class="codehilite"><span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;money&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">100</span></code></td>
+</tr>
+<tr>
+<td><code>&gt;=</code></td>
+<td>greater or equal</td>
+<td><code class="codehilite"><span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;money&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">100</span></code></td>
+</tr>
+<tr>
+<td><code>&lt;=</code></td>
+<td>less or equal</td>
+<td><code class="codehilite"><span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;money&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">100</span></code></td>
+</tr>
+<tr>
+<td><code>in</code></td>
+<td>contains</td>
+<td><code class="codehilite"><span class="s1">&#39;apple&#39;</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;fruits&#39;</span><span class="p">]</span></code></td>
+</tr>
+</tbody>
+</table>
 <h3 id="combining-matchers">Combining matchers</h3>
+<p>One can use boolean expressions with <code>&amp;</code> (and) and <code>|</code> (or).
+For example:
+<div class="codehilite"><pre><span></span><span class="k">with</span> <span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;X-Organization&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;my-company&#39;</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;pear&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;apple&quot;</span><span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+</pre></div></p>
                 
                   
                 
