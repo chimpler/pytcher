@@ -100,7 +100,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#welcome-to-pytcher" tabindex="1" class="md-skip">
+      <a href="#features" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -243,38 +243,9 @@
       
     
     
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Home
-      </label>
-    
     <a href="." title="Home" class="md-nav__link md-nav__link--active">
       Home
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#features" title="Features" class="md-nav__link">
-    Features
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
     
   </li>
 
@@ -287,30 +258,6 @@
   <li class="md-nav__item">
     <a href="user/install/" title="Install" class="md-nav__link">
       Install
-    </a>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="user/quickstart/" title="Quick start" class="md-nav__link">
-      Quick start
-    </a>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="user/example/" title="Examples" class="md-nav__link">
-      Examples
     </a>
   </li>
 
@@ -404,22 +351,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#features" title="Features" class="md-nav__link">
-    Features
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -433,8 +364,7 @@
                   <a href="https://github.com/chimpler/pytcher/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="welcome-to-pytcher">Welcome to Pytcher</h1>
-<p>Pytcher is a REST micro-framework for Python that relies on a routing tree
+                <p>Pytcher is a REST micro-framework for Python that relies on a routing tree
 similar to RODA in Ruby, Akka HTTP in Scala or Javalin in Java.</p>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
@@ -448,6 +378,298 @@ similar to RODA in Ruby, Akka HTTP in Scala or Javalin in Java.</p>
 <li>Well scoped objects (no global variables)</li>
 <li>Support for WSGI</li>
 </ul>
+<h1 id="quickstart">Quickstart</h1>
+<p>First, make sure that you have Pytcher installed and up to date:</p>
+<div class="codehilite"><pre><span></span>$ pip install pytcher --upgrade
+</pre></div>
+
+
+<h2 id="create-a-simple-web-service">Create a simple web service</h2>
+<p>Let's create a simple web service that returns <code>Hello World!</code></p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">route</span>
+
+<span class="k">class</span> <span class="nc">MyRoute</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+   <span class="nd">@route</span>
+   <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span> 
+       <span class="k">return</span> <span class="s1">&#39;Hello World!&#39;</span>
+
+<span class="n">route</span> <span class="o">=</span> <span class="n">MyRoute</span><span class="p">()</span>
+<span class="n">App</span><span class="p">(</span><span class="n">route</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+
+<p>You can run it as follows:</p>
+<div class="codehilite"><pre><span></span>$ python run_app.py
+</pre></div>
+
+
+<p>On another window:</p>
+<div class="codehilite"><pre><span></span>$ curl localhost:8080
+
+&quot;Hello World!&quot;
+</pre></div>
+
+
+<h2 id="creating-a-more-complex-web-service-using-a-routing-tree">Creating a more complex web service using a routing tree</h2>
+<p>Let's create a more complex CRUD service with the endpoints:</p>
+<ul>
+<li><code>/items</code><ul>
+<li><code>GET</code>: return the list of items</li>
+<li><code>POST</code>: add an item</li>
+</ul>
+</li>
+<li><code>/items/&lt;number&gt;</code><ul>
+<li><code>PUT</code>: replace the item at position <code>&lt;number&gt;</code></li>
+<li><code>DELETE</code>: delete the item at position <code>&lt;number&gt;</code></li>
+</ul>
+</li>
+</ul>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">route</span>
+
+
+<span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="n">Router</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_items</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pizza&#39;</span><span class="p">,</span> <span class="s1">&#39;cheese&#39;</span><span class="p">,</span> <span class="s1">&#39;ice-cream&#39;</span><span class="p">,</span> <span class="s1">&#39;butter&#39;</span><span class="p">]</span>
+
+    <span class="nd">@route</span>
+    <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span>  <span class="c1"># if URL starts with /items</span>
+            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>  <span class="c1"># if there is nothing after /items</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>  <span class="c1"># If it&#39;s a get request</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span>
+
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">post</span><span class="p">:</span>  <span class="c1"># If request is a post request</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_id</span><span class="p">]:</span>  <span class="c1"># If the URL is /items/&lt;integer&gt; then bind item_id to the integer</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>  <span class="c1"># If the request is a get request</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span>
+
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">put</span><span class="p">:</span>  <span class="c1"># If the request is a put request</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span>
+
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>  <span class="c1"># If the request is a delete request</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRouter</span><span class="p">())</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+
+<p>On another window, try the following commands:</p>
+<div class="superfences-tabs">
+<input name="__tabs_1" type="radio" id="__tab_1_0" checked="checked" />
+<label for="__tab_1_0">GET /items</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items
+
+[&quot;pizza&quot;,&quot;cheese&quot;,&quot;ice-cream&quot;,&quot;butter&quot;]
+</pre></div></div>
+<input name="__tabs_1" type="radio" id="__tab_1_1" />
+<label for="__tab_1_1">GET /items/1</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items/1
+
+&quot;cheese&quot;
+</pre></div></div>
+<input name="__tabs_1" type="radio" id="__tab_1_2" />
+<label for="__tab_1_2">POST /items</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items -XPOST -d &quot;ham&quot;
+
+&quot;ham&quot;
+
+$ curl localhost:8000/items
+
+[&quot;pizza&quot;,&quot;cheese&quot;,&quot;ice-cream&quot;,&quot;butter&quot;, &quot;ham&quot;]
+</pre></div></div>
+<input name="__tabs_1" type="radio" id="__tab_1_3" />
+<label for="__tab_1_3">PUT /items/1</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items/1 -XPUT -d &quot;cucumber&quot;
+
+&quot;cucumber&quot;
+
+$ curl localhost:8000/items
+
+[&quot;pizza&quot;,&quot;cucumber&quot;,&quot;ice-cream&quot;,&quot;butter&quot;, &quot;ham&quot;]
+</pre></div></div>
+<input name="__tabs_1" type="radio" id="__tab_1_4" />
+<label for="__tab_1_4">DELETE /items/1</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items/1 -XDELETE
+
+&quot;cucumber&quot;
+
+$ curl localhost:8000/items
+
+[&quot;pizza&quot;,&quot;ice-cream&quot;,&quot;butter&quot;, &quot;ham&quot;]
+</pre></div></div>
+</div>
+<p>As you notice, we use the <code>with</code> statement context. In this case, if the request matches the condition (e.g., starts with <code>/items</code> or is <code>GET</code> request), then the code inside the block is executed. 
+This can also be achieved using a <code>for</code> loop instead.</p>
+<p>For example:</p>
+<table>
+<thead>
+<tr>
+<th>using <code>with</code></th>
+<th>using <code>for</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="codehilite"><span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span></code></td>
+<td><code class="codehilite"><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_id</span><span class="p">]:</span></code></td>
+<td><code class="codehilite"><span class="k">for</span> <span class="n">item_id</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span> <span class="o">/</span> <span class="s1">&#39;Integer&#39;</span><span class="p">:</span></code></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>The author of Python did not approve requests to use <code class="codehilite"><span class="k">with</span></code> statements to be conditional (i.e., execute the block
+if a certain condition occurs). We implemented it to make it work on cpython and possibly other implementations of Python.
+However using the <code class="codehilite"><span class="k">for</span></code> loop construction is perfectly fine and does not violate the Python standard.</p>
+</div>
+<h2 id="create-a-simple-web-service-using-dataclasses">Create a simple web service using dataclasses</h2>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route</span>
+<span class="kn">from</span> <span class="nn">pytcher.app</span> <span class="kn">import</span> <span class="n">App</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">InventoryItem</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">unit_price</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;wine&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pizza&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cheese&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;peanuts&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ice-cream&#39;</span>
+
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">InventoryItem</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span>
+        <span class="p">]</span>
+
+    <span class="nd">@route</span>
+    <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_index</span><span class="p">]:</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
+
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">put</span><span class="p">:</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">entity</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+                    <span class="k">return</span> <span class="n">item</span>
+
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
+                    <span class="k">return</span> <span class="n">item</span>
+
+            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span>
+
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">post</span><span class="p">:</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">entity</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">item</span>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRouter</span><span class="p">())</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+
+<p>On another window, try the following commands:</p>
+<div class="superfences-tabs">
+<input name="__tabs_2" type="radio" id="__tab_2_0" checked="checked" />
+<label for="__tab_2_0">GET /items</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items
+
+[
+  {
+    &quot;name&quot;: &quot;wine&quot;,
+    &quot;unit_price&quot;: 10,
+    &quot;quantity&quot;: 1
+  },
+  {
+    &quot;name&quot;: &quot;pizza&quot;,
+    &quot;unit_price&quot;: 10,
+    &quot;quantity&quot;: 1
+  },
+  {
+    &quot;name&quot;: &quot;cheese&quot;,
+    &quot;unit_price&quot;: 10,
+    &quot;quantity&quot;: 1
+  },
+  [...]
+]  
+</pre></div></div>
+<input name="__tabs_2" type="radio" id="__tab_2_1" />
+<label for="__tab_2_1">GET /items/1</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items/1
+
+{
+  &quot;name&quot;: &quot;pizza&quot;,
+  &quot;unit_price&quot;: 10,
+  &quot;quantity&quot;: 1
+}
+</pre></div></div>
+<input name="__tabs_2" type="radio" id="__tab_2_2" />
+<label for="__tab_2_2">POST /items</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items -H &quot;Content-Type: application/json&quot; -XPOST -d &#39;{
+  &quot;name&quot;: &quot;pizza&quot;,
+  &quot;unit_price&quot;: 10,
+  &quot;quantity&quot;: 1
+}&#39;
+
+{
+  &quot;name&quot;: &quot;pizza&quot;,
+  &quot;unit_price&quot;: 10,
+  &quot;quantity&quot;: 1
+}
+</pre></div></div>
+<input name="__tabs_2" type="radio" id="__tab_2_3" />
+<label for="__tab_2_3">PUT /items/1</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items/1  -H &quot;Content-Type: application/json&quot; -XPUT -d &#39;{
+  &quot;name&quot;: &quot;corn&quot;,
+  &quot;unit_price&quot;: 1,
+  &quot;quantity&quot;: 2
+}&#39;
+
+{
+  &quot;name&quot;: &quot;corn&quot;,
+  &quot;unit_price&quot;: 1,
+  &quot;quantity&quot;: 2
+}
+</pre></div></div>
+<input name="__tabs_2" type="radio" id="__tab_2_4" />
+<label for="__tab_2_4">DELETE /items/1</label>
+<div class="superfences-content"><div class="codehilite"><pre><span></span>$ curl localhost:8000/items/1 -XDELETE
+
+{
+  &quot;name&quot;: &quot;pizza&quot;,
+  &quot;unit_price&quot;: 10,
+  &quot;quantity&quot;: 1
+}
+</pre></div></div>
+</div>
+<h2 id="create-a-simple-web-service-using-annotation">Create a simple web service using annotation</h2>
+<p>For those more used to using decorators like in Flask, one can decorate multiple methods using a path and method.
+One can also use multiple classes to do so and combine with the routing tree structure.</p>
                 
                   
                 
