@@ -268,13 +268,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#simple-example" title="Simple example" class="md-nav__link">
-    Simple example
-  </a>
-  
-</li>
-      
       
       
       
@@ -421,13 +414,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#simple-example" title="Simple example" class="md-nav__link">
-    Simple example
-  </a>
-  
-</li>
-      
       
       
       
@@ -462,41 +448,6 @@ similar to RODA in Ruby, Akka HTTP in Scala or Javalin in Java.</p>
 <li>Well scoped objects (no global variables)</li>
 <li>Support for WSGI</li>
 </ul>
-<h2 id="simple-example">Simple example</h2>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Integer</span>
-
-
-<span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;v1&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_items</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pizza&#39;</span><span class="p">,</span> <span class="s1">&#39;cheese&#39;</span><span class="p">,</span> <span class="s1">&#39;ice-cream&#39;</span><span class="p">,</span> <span class="s1">&#39;butter&#39;</span><span class="p">]</span>
-
-    <span class="nd">@route</span>
-    <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span>
-
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">post</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_id</span><span class="p">]:</span>
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span>
-
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">put</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span>
-
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRouter</span><span class="p">())</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</pre></div>
                 
                   
                 
