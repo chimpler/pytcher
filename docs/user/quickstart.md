@@ -108,7 +108,7 @@ $ curl localhost:8000/items/1 -XPUT -d "cucumber"
 
 $ curl localhost:8000/items
 
-["cucumber","cheese","ice-cream","butter", "ham"]
+["pizza","cucumber","ice-cream","butter", "ham"]
 ```
 
 ``` tab="DELETE /items/1"
@@ -118,7 +118,7 @@ $ curl localhost:8000/items/1 -XDELETE
 
 $ curl localhost:8000/items
 
-["cheese","ice-cream","butter", "ham"]
+["pizza","ice-cream","butter", "ham"]
 ```
     
 As you notice, we use the `with` statement context. In this case, if the request matches the condition (e.g., starts with `/items` or is `GET` request), then the code inside the block is executed. 
@@ -137,6 +137,141 @@ For example:
     However using the `:::python for` loop construction is perfectly fine and does not violate the Python standard.
 
 ## Create a simple web service using dataclasses
+
+```python
+from dataclasses import dataclass
+
+from pytcher import Integer, Request, route
+from pytcher.app import App
+
+
+@dataclass
+class InventoryItem(object):
+    name: str
+    unit_price: float
+    quantity: int = 0
+
+
+class MyRouter(object):
+    def __init__(self):
+        words = [
+            'wine',
+            'pizza',
+            'cheese',
+            'peanuts',
+            'ice-cream'
+
+        ]
+        self._inventory = [
+            InventoryItem(word, 10 + i, i + 1)
+            for i in range(10)
+            for word in words
+        ]
+
+    @route
+    def route(self, r: Request):
+        with r / 'items':
+            with r / Integer() as [item_index]:
+                with r.get:
+                    return self._inventory[item_index]
+
+                with r.put:
+                    item = r.entity(InventoryItem)
+                    self._inventory[item_index] = item
+                    return item
+
+                with r.delete:
+                    item = self._inventory[item_index]
+                    del self._inventory[item_index]
+                    return item
+
+            with r.end:
+                with r.get:
+                    return self._inventory
+
+                with r.post:
+                    item = r.entity(InventoryItem)
+                    self._inventory.append(item)
+                    return item
+
+
+
+if __name__ == '__main__':
+    app = App(MyRouter())
+    app.start()
+```
+
+On another window, try the following commands:
+
+``` tab="GET /items"
+$ curl localhost:8000/items
+
+[
+  {
+    "name": "wine",
+    "unit_price": 10,
+    "quantity": 1
+  },
+  {
+    "name": "pizza",
+    "unit_price": 10,
+    "quantity": 1
+  },
+  {
+    "name": "cheese",
+    "unit_price": 10,
+    "quantity": 1
+  },
+  [...]
+]  
+```
+
+``` tab="GET /items/1"
+$ curl localhost:8000/items/1
+
+{
+  "name": "pizza",
+  "unit_price": 10,
+  "quantity": 1
+}
+```
+
+``` tab="POST /items"
+$ curl localhost:8000/items -H "Content-Type: application/json" -XPOST -d '{
+  "name": "pizza",
+  "unit_price": 10,
+  "quantity": 1
+}'
+
+{
+  "name": "pizza",
+  "unit_price": 10,
+  "quantity": 1
+}
+```
+
+``` tab="PUT /items/1"
+$ curl localhost:8000/items/1  -H "Content-Type: application/json" -XPUT -d '{
+  "name": "corn",
+  "unit_price": 1,
+  "quantity": 2
+}'
+
+{
+  "name": "corn",
+  "unit_price": 1,
+  "quantity": 2
+}
+
+``` tab="DELETE /items/1"
+$ curl localhost:8000/items/1 -XDELETE
+
+{
+  "name": "pizza",
+  "unit_price": 10,
+  "quantity": 1
+}
+```
 
 ## Create a simple web service using annotation
 

@@ -1,7 +1,7 @@
 # flake8: noqa: E999
 from dataclasses import dataclass
 
-from pytcher import Integer, Request, Router
+from pytcher import Integer, Request, route
 from pytcher.app import App
 
 
@@ -12,7 +12,7 @@ class InventoryItem(object):
     quantity: int = 0
 
 
-class MyRouter(Router):
+class MyRouter(object):
     def __init__(self):
         words = [
             'wine',
@@ -28,10 +28,22 @@ class MyRouter(Router):
             for word in words
         ]
 
+    @route
     def route(self, r: Request):
         with r / 'items':
-            with r.get / Integer() as [item_index]:
-                return self._inventory[item_index]
+            with r / Integer() as [item_index]:
+                with r.get:
+                    return self._inventory[item_index]
+
+                with r.put:
+                    item = r.entity(InventoryItem)
+                    self._inventory[item_index] = item
+                    return item
+
+                with r.delete:
+                    item = self._inventory[item_index]
+                    del self._inventory[item_index]
+                    return item
 
             with r.end:
                 with r.get:
