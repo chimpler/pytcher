@@ -630,7 +630,7 @@ However using the <code class="codehilite"><span class="k">for</span></code> loo
 <h2 id="create-a-simple-web-service-using-dataclasses">Create a simple web service using dataclasses</h2>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
-<span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">route</span>
+<span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route</span>
 <span class="kn">from</span> <span class="nn">pytcher.app</span> <span class="kn">import</span> <span class="n">App</span>
 
 
@@ -641,7 +641,7 @@ However using the <code class="codehilite"><span class="k">for</span></code> loo
     <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 
 
-<span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="n">Router</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">words</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s1">&#39;wine&#39;</span><span class="p">,</span>
@@ -660,8 +660,19 @@ However using the <code class="codehilite"><span class="k">for</span></code> loo
     <span class="nd">@route</span>
     <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_index</span><span class="p">]:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
+            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_index</span><span class="p">]:</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
+
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">put</span><span class="p">:</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">entity</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+                    <span class="k">return</span> <span class="n">item</span>
+
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
+                    <span class="k">return</span> <span class="n">item</span>
 
             <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
