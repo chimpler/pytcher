@@ -262,6 +262,7 @@ $ curl localhost:8000/items/1  -H "Content-Type: application/json" -XPUT -d '{
   "unit_price": 1,
   "quantity": 2
 }
+```
 
 ``` tab="DELETE /items/1"
 $ curl localhost:8000/items/1 -XDELETE
