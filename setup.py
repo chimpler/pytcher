@@ -7,6 +7,13 @@ from datetime import datetime
 from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
+from setuptools.command.test import test
+
+
+class CustomTestCommand(test):
+    def run(self):
+        create_version_file()
+        super(CustomTestCommand, self).run()
 
 
 class CustomInstallCommand(install):
@@ -67,6 +74,7 @@ setup(
     },
     cmdclass={
         'install': CustomInstallCommand,
-        'develop': CustomDevelopCommand
+        'develop': CustomDevelopCommand,
+        'test': CustomTestCommand
     }
 )
