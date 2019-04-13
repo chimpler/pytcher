@@ -11,7 +11,7 @@
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
       
-        <link rel="canonical" href="https://chimpler.github.io/pytcher/user/unmarshalling/">
+        <link rel="canonical" href="https://chimpler.github.io/pytcher/marshalling/">
       
       
         <meta name="author" content="Francois Dang Ngoc">
@@ -35,21 +35,21 @@
       
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
-      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
     
     
       
-        <title>Unmarshalling - pytcher</title>
+        <title>Marshalling - pytcher</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.3020aac5.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.3020aac5.css">
       
       
     
     
-      <script src="../../assets/javascripts/modernizr.01ccdecf.js"></script>
+      <script src="../assets/javascripts/modernizr.01ccdecf.js"></script>
     
     
       
@@ -58,10 +58,10 @@
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
-    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
     
     
-      <link rel="stylesheet" href="../../extra.css">
+      <link rel="stylesheet" href="../extra.css">
     
     
       
@@ -100,7 +100,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#example" tabindex="1" class="md-skip">
+      <a href="#default-supported-types" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -125,7 +125,7 @@
               pytcher
             </span>
             <span class="md-header-nav__topic">
-              Unmarshalling
+              Marshalling
             </span>
           
         </div>
@@ -235,7 +235,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../.." title="Home" class="md-nav__link">
+    <a href=".." title="Home" class="md-nav__link">
       Home
     </a>
   </li>
@@ -269,18 +269,6 @@
       
       
 
-
-  <li class="md-nav__item">
-    <a href="../marshalling/" title="Marshalling" class="md-nav__link">
-      Marshalling
-    </a>
-  </li>
-
-    
-      
-      
-      
-
   
 
 
@@ -290,11 +278,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Unmarshalling
+        Marshalling
       </label>
     
-    <a href="./" title="Unmarshalling" class="md-nav__link md-nav__link--active">
-      Unmarshalling
+    <a href="./" title="Marshalling" class="md-nav__link md-nav__link--active">
+      Marshalling
     </a>
     
       
@@ -306,8 +294,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#example" title="Example" class="md-nav__link">
-    Example
+  <a href="#default-supported-types" title="Default supported types" class="md-nav__link">
+    Default supported types
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-types" title="Additional types" class="md-nav__link">
+    Additional types
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-new-accept-formats" title="Adding new accept formats" class="md-nav__link">
+    Adding new accept formats
   </a>
   
 </li>
@@ -320,6 +322,18 @@
   
 </nav>
     
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../unmarshalling/" title="Unmarshalling" class="md-nav__link">
+      Unmarshalling
+    </a>
   </li>
 
     
@@ -378,8 +392,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#example" title="Example" class="md-nav__link">
-    Example
+  <a href="#default-supported-types" title="Default supported types" class="md-nav__link">
+    Default supported types
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-types" title="Additional types" class="md-nav__link">
+    Additional types
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-new-accept-formats" title="Adding new accept formats" class="md-nav__link">
+    Adding new accept formats
   </a>
   
 </li>
@@ -400,103 +428,108 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/chimpler/pytcher/edit/master/docs/user/unmarshalling.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/chimpler/pytcher/edit/master/docs/marshalling.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                  <h1>Unmarshalling</h1>
+                  <h1>Marshalling</h1>
                 
-                <p>It is common to read payload (in JSON) sent from the client using the <code>POST</code> or <code>PUT</code> method.
-In most cases, the <code>POST</code> request will send the JSON representation of a Python object that will then
-need to be unmarshalled to an object. This can be achieved using the <code>entity</code> method of the <code>Request</code> object passed to the function decorated with <code>@route</code>.</p>
-<p>Supported types:</p>
+                <p>Marshalling converts Python data (int, str, float, list, dict, data classes, named tuples) into a format that can be send across the wire.
+The user can request a particular format to be returned using the <code>Accept</code> request HTTP header:</p>
+<ul>
+<li><code>application/json</code>: accept JSON output</li>
+<li><code>application/xml</code>: accept XML output</li>
+<li><code>text/csv</code>: accept CSV output</li>
+<li><code>*/*</code>: accept anything</li>
+</ul>
+<h2 id="default-supported-types">Default supported types</h2>
+<p>By default, pytcher accepts <code>application/json</code> and returns a JSON format output.</p>
+<p>Out of the box, it can marshall the followings:</p>
 <table>
 <thead>
 <tr>
 <th>Type</th>
 <th>Description</th>
 <th>Example</th>
+<th>Output</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>int</td>
-<td>integer</td>
-<td>3</td>
-</tr>
-<tr>
-<td>float</td>
-<td>float</td>
-<td>3.4</td>
-</tr>
-<tr>
-<td>str</td>
-<td>string</td>
-<td>"test"</td>
-</tr>
-<tr>
-<td>boolean</td>
-<td>boolean</td>
-<td>"true"</td>
-</tr>
-<tr>
-<td>None</td>
-<td>NULL value</td>
-<td>NULL</td>
-</tr>
-<tr>
-<td>datetime</td>
-<td>datetime</td>
-<td>"2019-02-01T02:03:04"</td>
-</tr>
-<tr>
-<td>datetime with timezone</td>
-<td>datetime with timezone</td>
-<td>"2019-02-01T02:03:04-04:00"</td>
-</tr>
-<tr>
-<td>timezone</td>
-<td>timezone</td>
-<td>"America/New_York"</td>
-</tr>
-<tr>
-<td>date</td>
-<td>date</td>
-<td>"2019-04-02"</td>
-</tr>
-<tr>
-<td>time</td>
-<td>time</td>
-<td>"14:03:12"</td>
-</tr>
-<tr>
-<td>data class</td>
-<td>dataclass</td>
-<td></td>
-</tr>
-<tr>
-<td>list</td>
-<td>list</td>
-<td>[1, 2, 3]</td>
-</tr>
-<tr>
-<td>dict</td>
+<td><code class="codehilite"><span class="nb">dict</span></code></td>
 <td>dictionary</td>
-<td>{"key": "value"}</td>
+<td><code class="codehilite"><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">}</span></code></td>
+<td><code class="codehilite"><span class="p">{</span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="err">&quot;value</span><span class="p">}</span></code></td>
 </tr>
 <tr>
-<td>namedtuple</td>
-<td>named tuple</td>
-<td></td>
+<td><code class="codehilite"><span class="nb">list</span></code></td>
+<td>list</td>
+<td><code class="codehilite"><span class="p">[</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;cde&#39;</span><span class="p">]</span></code></td>
+<td><code class="codehilite"><span class="p">[</span><span class="s2">&quot;abc&quot;</span><span class="p">,</span><span class="s2">&quot;cde&quot;</span><span class="p">]</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="n">namedtuple</span></code></td>
+<td>named tuples</td>
+<td><code class="codehilite"><span class="n">Item</span><span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">)</span></code></td>
+<td><code class="codehilite"><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="mf">1.25</span><span class="p">}</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="nd">@dataclass</span></code></td>
+<td>data class</td>
+<td><code class="codehilite"><span class="n">Item</span><span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">)</span></code></td>
+<td><code class="codehilite"><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="mf">1.25</span><span class="p">}</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="n">enum</span></code></td>
+<td>enum</td>
+<td><code class="codehilite"><span class="n">Color</span><span class="o">.</span><span class="n">RED</span></code></td>
+<td><code class="codehilite"><span class="s2">&quot;RED&quot;</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="nb">str</span></code></td>
+<td>string</td>
+<td><code class="codehilite"><span class="s1">&#39;apple&#39;</span></code></td>
+<td><code class="codehilite"><span class="s2">&quot;apple&quot;</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="nb">int</span></code></td>
+<td>integer</td>
+<td><code class="codehilite"><span class="mi">5</span></code></td>
+<td><code class="codehilite"><span class="mi">5</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="nb">float</span></code></td>
+<td>float</td>
+<td><code class="codehilite"><span class="mf">5.12</span></code></td>
+<td><code class="codehilite"><span class="mf">5.12</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="n">date</span></code></td>
+<td>date</td>
+<td><code class="codehilite"><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span></code></td>
+<td><code class="codehilite"><span class="s2">&quot;2019-02-03&quot;</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="n">datetime</span></code></td>
+<td>datetime (no timezone)</td>
+<td><code class="codehilite"><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></code></td>
+<td><code class="codehilite"><span class="s2">&quot;2019-02-03T12:32:01.000&quot;</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="n">datetime</span></code></td>
+<td>datetime (with timezone)</td>
+<td><code class="codehilite"><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">pytz</span><span class="o">.</span><span class="n">UTC</span><span class="p">)</span></code></td>
+<td><code class="codehilite"><span class="s2">&quot;2019-02-03T12:32:01.000+00:00&quot;</span></code></td>
 </tr>
 </tbody>
 </table>
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>To parse <code>datetime</code>, <code>date</code> and <code>time</code> we rely on the library <a href="https://dateutil.readthedocs.io/en/stable/">dateutil</a> and
-for parsing <code>timezone</code>, we use the library <a href="https://pythonhosted.org/pytz/">pytz</a>.</p>
-</div>
-<h2 id="example">Example</h2>
-<p>We consider Item to be a data class defined as follows:
+<p>A namedtuple can be defined as follows:
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+
+<span class="n">Item</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Item&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;price&#39;</span><span class="p">])</span>
+
+<span class="n">apple</span> <span class="o">=</span> <span class="n">Item</span><span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">)</span>
+</pre></div></p>
+<p>A dataclass can be defined as follows:
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
 <span class="nd">@dataclass</span>
@@ -504,45 +537,21 @@ for parsing <code>timezone</code>, we use the library <a href="https://pythonhos
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">price</span><span class="p">:</span> <span class="nb">float</span>
 
-<span class="n">apple</span> <span class="o">=</span> <span class="n">Item</span><span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">)</span>
+<span class="n">apple</span> <span class="o">=</span> <span class="n">Item</span><span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">)</span>    
 </pre></div></p>
-<table>
-<thead>
-<tr>
-<th>Example</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>r.entity(List[Float])</td>
-<td>Create a list of float</td>
-</tr>
-<tr>
-<td>r.entity(MyDataClassObject)</td>
-<td>Create the data class object <code>Item</code></td>
-</tr>
-<tr>
-<td>r.entity(List[Item])</td>
-<td>Create a list of data classes <code>Item</code></td>
-</tr>
-<tr>
-<td>r.entity(Dict[Str, Item])</td>
-<td>Create a dictionary of <code>Str</code> -&gt; <code>Item</code></td>
-</tr>
-</tbody>
-</table>
-<p>Optionally, one can specify a <a href="https://github.com/h2non/jsonpath-ng">JSON path</a>. For example if the <code>Item</code> is wrapped in a <code>"data"</code> element:
-<div class="codehilite"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;pear&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;price&quot;</span><span class="p">:</span> <span class="mf">1.45</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<p>An enum can be defined as follows:
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">GREEN</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">red</span> <span class="o">=</span> <span class="n">Color</span><span class="o">.</span><span class="n">RED</span>
 </pre></div></p>
-<p>Item can be obtained using the json path <code>$.data</code> as follows:
-<div class="codehilite"><pre><span></span><span class="n">r</span><span class="o">.</span><span class="n">entity</span><span class="p">(</span><span class="n">Item</span><span class="p">,</span> <span class="s1">&#39;$.data&#39;</span><span class="p">)</span>
+<h2 id="additional-types">Additional types</h2>
+<p>One can also add additional types to support as follows:
+<div class="codehilite"><pre><span></span><span class="n">TODO</span>
 </pre></div></p>
+<h2 id="adding-new-accept-formats">Adding new accept formats</h2>
                 
                   
                 
@@ -563,7 +572,7 @@ for parsing <code>timezone</code>, we use the library <a href="https://pythonhos
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../marshalling/" title="Marshalling" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../route/" title="Route" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -572,19 +581,19 @@ for parsing <code>timezone</code>, we use the library <a href="https://pythonhos
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Marshalling
+                Route
               </span>
             </div>
           </a>
         
         
-          <a href="../exception/" title="Exception" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../unmarshalling/" title="Unmarshalling" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Exception
+                Unmarshalling
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
@@ -612,9 +621,9 @@ for parsing <code>timezone</code>, we use the library <a href="https://pythonhos
       
     </div>
     
-      <script src="../../assets/javascripts/application.dc02f8ce.js"></script>
+      <script src="../assets/javascripts/application.dc02f8ce.js"></script>
       
-      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
     
   </body>

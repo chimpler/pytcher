@@ -11,7 +11,7 @@
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
       
-        <link rel="canonical" href="https://chimpler.github.io/pytcher/user/route/">
+        <link rel="canonical" href="https://chimpler.github.io/pytcher/route/">
       
       
         <meta name="author" content="Francois Dang Ngoc">
@@ -35,7 +35,7 @@
       
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
-      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
     
     
@@ -44,12 +44,12 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.3020aac5.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.3020aac5.css">
       
       
     
     
-      <script src="../../assets/javascripts/modernizr.01ccdecf.js"></script>
+      <script src="../assets/javascripts/modernizr.01ccdecf.js"></script>
     
     
       
@@ -58,10 +58,10 @@
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
-    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
     
     
-      <link rel="stylesheet" href="../../extra.css">
+      <link rel="stylesheet" href="../extra.css">
     
     
       
@@ -235,7 +235,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../.." title="Home" class="md-nav__link">
+    <a href=".." title="Home" class="md-nav__link">
       Home
     </a>
   </li>
@@ -496,7 +496,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/chimpler/pytcher/edit/master/docs/user/route.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/chimpler/pytcher/edit/master/docs/route.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
                   <h1>Route</h1>
@@ -540,8 +540,10 @@ path (that can contain binding variables) that defaults to <code>/</code>.</p>
 <p>Inside a function or a method decorated with <code class="codehilite"><span class="nd">@route</span></code>
 The routing tree can be defined using <code class="codehilite"><span class="k">with</span></code> statements or <code class="codehilite"><span class="k">for</span></code> loops.</p>
 <p>The following example using <code class="codehilite"><span class="k">with</span></code> statements:</p>
-<div class="codehilite"><pre><span></span><span class="nd">@route</span>
-<span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Integer</span>
+
+<span class="nd">@route</span>
+<span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;v1&#39;</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_id</span><span class="p">]:</span>
             <span class="k">return</span> <span class="p">{</span>
@@ -550,8 +552,10 @@ The routing tree can be defined using <code class="codehilite"><span class="k">w
 </pre></div>
 
 <p>Can be rewritten with <code class="codehilite"><span class="k">for</span></code> loops as follows:</p>
-<div class="codehilite"><pre><span></span><span class="nd">@route</span>
-<span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Integer</span>
+
+<span class="nd">@route</span>
+<span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span>  <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;v1&#39;</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">item_id</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span>
@@ -628,19 +632,50 @@ For example <code class="codehilite"><span class="k">with</span> <span class="n"
 <td>Match a regex</td>
 <td><code class="codehilite"><span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;data&#39;</span> <span class="o">/</span> <span class="n">Regex</span><span class="p">(</span><span class="s1">&#39;(.*)-(.*)&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]]:</span></code></td>
 </tr>
+<tr>
+<td><code class="codehilite"><span class="bp">None</span></code></td>
+<td>Match the end of the path</td>
+<td><code class="codehilite"><span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span> <span class="o">/</span> <span class="bp">None</span></code></td>
+</tr>
 </tbody>
 </table>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If you use default parameters, you can use the matcher class or the instance. For example <code>Integer</code> or <code>Integer()</code></p>
+</div>
+<p>Here is an example of routing tree:
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">Request</span>
+
+<span class="nd">@route</span>
+<span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;books&#39;</span><span class="p">:</span>  <span class="c1"># If path starts with &#39;/books&#39;</span>
+        <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>  <span class="c1"># If path matches exactly `/books`</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;something&quot;</span><span class="p">}</span>
+
+        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;info&#39;</span> <span class="o">/</span> <span class="bp">None</span><span class="p">:</span>  <span class="c1"># If path matches exactly `/books/info`:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="s2">&quot;nothing&quot;</span><span class="p">}</span>
+
+        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">String</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;page&#39;</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="o">/</span> <span class="bp">None</span> <span class="k">as</span> <span class="p">[</span><span class="n">book_id</span><span class="p">,</span> <span class="n">page</span><span class="p">]:</span>  <span class="c1"># For example /books/test/page/10</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;book&quot;</span><span class="p">:</span> <span class="n">book_id</span><span class="p">,</span>
+                <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="n">page</span>
+            <span class="p">}</span>
+</pre></div></p>
 <h3 id="parameter-matcher">Parameter matcher</h3>
 <p>Conditions can be put on parameter values (for example <code>http://localhost/items?token=45ab</code>). </p>
 <p>This can be done as follows:
-<div class="codehilite"><pre><span></span><span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;token] == &#39;</span><span class="mi">45</span><span class="n">ab</span><span class="s1">&#39;:</span>
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello!&#39;</span>
-    <span class="p">}</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">Request</span>
 
-<span class="k">return</span> <span class="p">{</span>
-    <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s2">&quot;Bye!&quot;</span>
-<span class="p">}</span>
+<span class="nd">@route</span>
+<span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;token&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;45ab&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello!&#39;</span>
+        <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s2">&quot;Bye!&quot;</span>
+    <span class="p">}</span>
 </pre></div></p>
 <p>It can also use operators such as <code>&gt;</code> or <code>&lt;</code> for numeric values.</p>
 <p>Below is the full list of supported operators:</p>
@@ -697,14 +732,18 @@ For example <code class="codehilite"><span class="k">with</span> <span class="n"
 </div>
 <p>Similarly to parameter matchers, conditions can be put on header values. For example one can check if <code>X-Organization</code> is set to <code>my-company</code>.
 This can be done as follows:
-<div class="codehilite"><pre><span></span><span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;X-Organization&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;my-company&#39;</span><span class="p">:</span>
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello my-company employee!&#39;</span>
-    <span class="p">}</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">Request</span>
 
-<span class="k">return</span> <span class="p">{</span>
-    <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s2">&quot;Go away!&quot;</span>
-<span class="p">}</span>
+<span class="nd">@route</span>
+<span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;X-Organization&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;my-company&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello my-company employee!&#39;</span>
+        <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s2">&quot;Go away!&quot;</span>
+    <span class="p">}</span>
 </pre></div></p>
 <p>It can also use operators such as <code>&gt;</code> or <code>&lt;</code> for numeric values.</p>
 <p>Below is the full list of supported operators:</p>
@@ -757,13 +796,17 @@ This can be done as follows:
 <h3 id="combining-matchers">Combining matchers</h3>
 <p>One can use boolean expressions with <code>&amp;</code> (and) and <code>|</code> (or).
 For example:
-<div class="codehilite"><pre><span></span><span class="k">with</span> <span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;X-Organization&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;my-company&#39;</span><span class="p">:</span>
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;pear&quot;</span><span class="p">},</span>
-            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;apple&quot;</span><span class="p">}</span>
-        <span class="p">]</span>
-    <span class="p">}</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">Request</span>
+
+<span class="nd">@route</span>
+<span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="k">with</span> <span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">r</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;X-Organization&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;my-company&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;pear&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;apple&quot;</span><span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
 </pre></div></p>
                 
                   
@@ -834,9 +877,9 @@ For example:
       
     </div>
     
-      <script src="../../assets/javascripts/application.dc02f8ce.js"></script>
+      <script src="../assets/javascripts/application.dc02f8ce.js"></script>
       
-      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
     
   </body>

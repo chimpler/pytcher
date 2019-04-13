@@ -11,7 +11,7 @@
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
       
-        <link rel="canonical" href="https://chimpler.github.io/pytcher/user/marshalling/">
+        <link rel="canonical" href="https://chimpler.github.io/pytcher/exception/">
       
       
         <meta name="author" content="Francois Dang Ngoc">
@@ -35,21 +35,21 @@
       
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
-      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
     
     
       
-        <title>Marshalling - pytcher</title>
+        <title>Exception - pytcher</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.3020aac5.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.3020aac5.css">
       
       
     
     
-      <script src="../../assets/javascripts/modernizr.01ccdecf.js"></script>
+      <script src="../assets/javascripts/modernizr.01ccdecf.js"></script>
     
     
       
@@ -58,10 +58,10 @@
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
-    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
     
     
-      <link rel="stylesheet" href="../../extra.css">
+      <link rel="stylesheet" href="../extra.css">
     
     
       
@@ -100,7 +100,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#default-supported-types" tabindex="1" class="md-skip">
+      <a href="#default-exception-handlers" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -125,7 +125,7 @@
               pytcher
             </span>
             <span class="md-header-nav__topic">
-              Marshalling
+              Exception
             </span>
           
         </div>
@@ -235,7 +235,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../.." title="Home" class="md-nav__link">
+    <a href=".." title="Home" class="md-nav__link">
       Home
     </a>
   </li>
@@ -269,59 +269,11 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Marshalling
-      </label>
-    
-    <a href="./" title="Marshalling" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../marshalling/" title="Marshalling" class="md-nav__link">
       Marshalling
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#default-supported-types" title="Default supported types" class="md-nav__link">
-    Default supported types
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#additional-types" title="Additional types" class="md-nav__link">
-    Additional types
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adding-new-accept-formats" title="Adding new accept formats" class="md-nav__link">
-    Adding new accept formats
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
     
@@ -341,11 +293,52 @@
       
       
 
+  
 
-  <li class="md-nav__item">
-    <a href="../exception/" title="Exception" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Exception
+      </label>
+    
+    <a href="./" title="Exception" class="md-nav__link md-nav__link--active">
       Exception
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#default-exception-handlers" title="Default exception handlers" class="md-nav__link">
+    Default exception handlers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customize-exception-handlers" title="Customize exception handlers" class="md-nav__link">
+    Customize exception handlers
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
     
@@ -392,22 +385,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#default-supported-types" title="Default supported types" class="md-nav__link">
-    Default supported types
+  <a href="#default-exception-handlers" title="Default exception handlers" class="md-nav__link">
+    Default exception handlers
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#additional-types" title="Additional types" class="md-nav__link">
-    Additional types
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adding-new-accept-formats" title="Adding new accept formats" class="md-nav__link">
-    Adding new accept formats
+  <a href="#customize-exception-handlers" title="Customize exception handlers" class="md-nav__link">
+    Customize exception handlers
   </a>
   
 </li>
@@ -428,130 +414,86 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/chimpler/pytcher/edit/master/docs/user/marshalling.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/chimpler/pytcher/edit/master/docs/exception.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                  <h1>Marshalling</h1>
+                  <h1>Exception</h1>
                 
-                <p>Marshalling converts Python data (int, str, float, list, dict, data classes, named tuples) into a format that can be send across the wire.
-The user can request a particular format to be returned using the <code>Accept</code> request HTTP header:</p>
-<ul>
-<li><code>application/json</code>: accept JSON output</li>
-<li><code>application/xml</code>: accept XML output</li>
-<li><code>text/csv</code>: accept CSV output</li>
-<li><code>*/*</code>: accept anything</li>
-</ul>
-<h2 id="default-supported-types">Default supported types</h2>
-<p>By default, pytcher accepts <code>application/json</code> and returns a JSON format output.</p>
-<p>Out of the box, it can marshall the followings:</p>
-<table>
-<thead>
-<tr>
-<th>Type</th>
-<th>Description</th>
-<th>Example</th>
-<th>Output</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>dict</code></td>
-<td>dictionary</td>
-<td><code>{'key': 'value'}</code></td>
-<td><code>{"key":"value}</code></td>
-</tr>
-<tr>
-<td><code>list</code></td>
-<td>list</td>
-<td><code>['abc', 'cde']</code></td>
-<td><code>["abc","cde"]</code></td>
-</tr>
-<tr>
-<td><code>namedtuple</code></td>
-<td>named tuples</td>
-<td><code>Item('apple', 1.25)</code></td>
-<td><code>{"name":"apple","price":1.25}</code></td>
-</tr>
-<tr>
-<td><code>@dataclass</code></td>
-<td>data class</td>
-<td><code>Item('apple', 1.25)</code></td>
-<td><code>{"name":"apple","price":1.25}</code></td>
-</tr>
-<tr>
-<td><code>enum</code></td>
-<td>enum</td>
-<td><code>Color.RED</code></td>
-<td><code>"RED"</code></td>
-</tr>
-<tr>
-<td><code>str</code></td>
-<td>string</td>
-<td><code>'apple'</code></td>
-<td><code>"apple"</code></td>
-</tr>
-<tr>
-<td><code>int</code></td>
-<td>integer</td>
-<td><code>5</code></td>
-<td><code>5</code></td>
-</tr>
-<tr>
-<td><code>float</code></td>
-<td>float</td>
-<td><code>5.12</code></td>
-<td><code>5.12</code></td>
-</tr>
-<tr>
-<td><code>date</code></td>
-<td>date</td>
-<td><code>datetime.date(2019, 2, 3)</code></td>
-<td><code>2019-02-03</code></td>
-</tr>
-<tr>
-<td><code>datetime</code></td>
-<td>datetime (no timezone)</td>
-<td><code>datetime.datetime(2019, 2, 3, 12, 32, 1)</code></td>
-<td><code>2019-02-03T12:32:01.000</code></td>
-</tr>
-<tr>
-<td><code>datetime</code></td>
-<td>datetime (with timezone)</td>
-<td><code>datetime.datetime(2019, 2, 3, 12, 32, 1, tzinfo=pytz.UTC)</code></td>
-<td><code>2019-02-03T12:32:01.000+00:00</code></td>
-</tr>
-</tbody>
-</table>
-<p>A namedtuple can be defined as follows:
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
-
-<span class="n">Item</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Item&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;price&#39;</span><span class="p">])</span>
-
-<span class="n">apple</span> <span class="o">=</span> <span class="n">Item</span><span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">)</span>
+                <h2 id="default-exception-handlers">Default exception handlers</h2>
+<p>Exceptions can be intercepted and converted to a response with a status code.
+By default, if <code>debug</code> is enabled (by default), the exception will be captured
+and the server will response with error <code>500</code> with a detailed error description
+containing the error, the url, the headers and the stack trace:
+<div class="codehilite"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;list index out of range&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;/items/444&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;headers&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;wsgi.input&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;_io.BufferedReader name=7&gt;&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;wsgi.errors&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;_io.TextIOWrapper name=&#39;&lt;stderr&gt;&#39; mode=&#39;w&#39; encoding=&#39;UTF-8&#39;&gt;&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;wsgi.version&quot;</span><span class="p">:</span> <span class="s2">&quot;(1, 0)&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;wsgi.run_once&quot;</span><span class="p">:</span> <span class="s2">&quot;False&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;wsgi.multithread&quot;</span><span class="p">:</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;wsgi.multiprocess&quot;</span><span class="p">:</span> <span class="s2">&quot;False&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;wsgi.file_wrapper&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;class &#39;wsgiref.util.FileWrapper&#39;&gt;&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;stack_trace&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;Traceback (most recent call last):&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;  File \&quot;/Users/fdang/chimpler/pytcher/pytcher/app.py\&quot;, line 124, in _handle_request&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;    None&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;  File \&quot;/Users/fdang/chimpler/pytcher/pytcher/app.py\&quot;, line 117, in &lt;genexpr&gt;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;    output&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;  File \&quot;/Users/fdang/chimpler/pytcher/pytcher/app.py\&quot;, line 120, in &lt;genexpr&gt;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;    for router in self._routers&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;  File \&quot;/Users/fdang/chimpler/pytcher/pytcher/__init__.py\&quot;, line 151, in run_router&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;    return router.func(request, *matched_vars)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;  File \&quot;examples/simple_app.py\&quot;, line 22, in route&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;    return self._items[item_id]&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;IndexError: list index out of range&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;&quot;</span>
+  <span class="p">]</span>
+<span class="p">}</span>
 </pre></div></p>
-<p>A dataclass can be defined as follows:
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">price</span><span class="p">:</span> <span class="nb">float</span>
-
-<span class="n">apple</span> <span class="o">=</span> <span class="n">Item</span><span class="p">(</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">)</span>    
+<p>If debug is disabled (for example in production), a simple Internal error message will be returned:
+<div class="codehilite"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Internal Error&quot;</span>
+<span class="p">}</span>
 </pre></div></p>
-<p>An enum can be defined as follows:
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="n">RED</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">GREEN</span> <span class="o">=</span> <span class="mi">2</span>
+<h2 id="customize-exception-handlers">Customize exception handlers</h2>
+<p>If one wants to intercept other exceptions and not use the default ones, one can create a function
+or a method inside a class and use the decorator <code>handle_exception</code> with the exception to capture.</p>
+<p>The following example captures the <code>ValueError</code> exceptions and return a response with the exception message.</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">handle_exception</span>
 
-<span class="n">red</span> <span class="o">=</span> <span class="n">Color</span><span class="o">.</span><span class="n">RED</span>
+<span class="nd">@handle_exception</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_value_error</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="ne">ValueError</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span>
+    <span class="p">}</span>
+</pre></div>
+
+<p>And then pass it to the application <code>App</code>:
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">App</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">([</span><span class="n">router</span><span class="p">,</span> <span class="n">handle_value_error</span><span class="p">])</span>
+<span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div></p>
-<h2 id="additional-types">Additional types</h2>
-<p>One can also add additional types to support as follows:
-<div class="codehilite"><pre><span></span><span class="n">TODO</span>
+<p>Note that it can also be defined in the same class that defines the route:
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span> <span class="n">handle_exception</span>
+
+<span class="k">class</span> <span class="nc">MyRoute</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="nd">@route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/items&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Hello&quot;</span>
+
+    <span class="nd">@handle_exception</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">handle_value_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span>
+        <span class="p">}</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRoute</span><span class="p">())</span>
+<span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div></p>
-<h2 id="adding-new-accept-formats">Adding new accept formats</h2>
                 
                   
                 
@@ -572,7 +514,7 @@ The user can request a particular format to be returned using the <code>Accept</
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../route/" title="Route" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../unmarshalling/" title="Unmarshalling" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -581,19 +523,19 @@ The user can request a particular format to be returned using the <code>Accept</
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Route
+                Unmarshalling
               </span>
             </div>
           </a>
         
         
-          <a href="../unmarshalling/" title="Unmarshalling" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../wsgi/" title="WSGI" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Unmarshalling
+                WSGI
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
@@ -621,9 +563,9 @@ The user can request a particular format to be returned using the <code>Accept</
       
     </div>
     
-      <script src="../../assets/javascripts/application.dc02f8ce.js"></script>
+      <script src="../assets/javascripts/application.dc02f8ce.js"></script>
       
-      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
     
   </body>

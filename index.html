@@ -256,7 +256,7 @@
 
 
   <li class="md-nav__item">
-    <a href="user/install/" title="Install" class="md-nav__link">
+    <a href="install/" title="Install" class="md-nav__link">
       Install
     </a>
   </li>
@@ -268,7 +268,7 @@
 
 
   <li class="md-nav__item">
-    <a href="user/route/" title="Route" class="md-nav__link">
+    <a href="route/" title="Route" class="md-nav__link">
       Route
     </a>
   </li>
@@ -280,7 +280,7 @@
 
 
   <li class="md-nav__item">
-    <a href="user/marshalling/" title="Marshalling" class="md-nav__link">
+    <a href="marshalling/" title="Marshalling" class="md-nav__link">
       Marshalling
     </a>
   </li>
@@ -292,7 +292,7 @@
 
 
   <li class="md-nav__item">
-    <a href="user/unmarshalling/" title="Unmarshalling" class="md-nav__link">
+    <a href="unmarshalling/" title="Unmarshalling" class="md-nav__link">
       Unmarshalling
     </a>
   </li>
@@ -304,7 +304,7 @@
 
 
   <li class="md-nav__item">
-    <a href="user/exception/" title="Exception" class="md-nav__link">
+    <a href="exception/" title="Exception" class="md-nav__link">
       Exception
     </a>
   </li>
@@ -316,7 +316,7 @@
 
 
   <li class="md-nav__item">
-    <a href="user/wsgi/" title="WSGI" class="md-nav__link">
+    <a href="wsgi/" title="WSGI" class="md-nav__link">
       WSGI
     </a>
   </li>
@@ -328,7 +328,7 @@
 
 
   <li class="md-nav__item">
-    <a href="user/test/" title="Test" class="md-nav__link">
+    <a href="test/" title="Test" class="md-nav__link">
       Test
     </a>
   </li>
@@ -668,8 +668,65 @@ However using the <code class="codehilite"><span class="k">for</span></code> loo
 </pre></div></div>
 </div>
 <h2 id="create-a-simple-web-service-using-annotation">Create a simple web service using annotation</h2>
-<p>For those more used to using decorators like in Flask, one can decorate multiple methods using a path and method.
-One can also use multiple classes to do so and combine with the routing tree structure.</p>
+<p>For those more used to using decorators like in Flask, one can decorate multiple methods using a path and method.</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route</span>
+<span class="kn">from</span> <span class="nn">pytcher.app</span> <span class="kn">import</span> <span class="n">App</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">InventoryItem</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">unit_price</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;wine&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pizza&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cheese&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;peanuts&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ice-cream&#39;</span>
+
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">InventoryItem</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span>
+        <span class="p">]</span>
+
+    <span class="nd">@route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/items/&lt;int:id&gt;&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+
+    <span class="nd">@route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/items&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">list_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span>
+
+    <span class="nd">@route</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/items&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">post</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">entity</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">item</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;This will get logged&#39;</span><span class="p">)</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRouter</span><span class="p">(),</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+
+<h2 id="combining-route-and-routing-tree">Combining @route and routing tree</h2>
                 
                   
                 
@@ -691,7 +748,7 @@ One can also use multiple classes to do so and combine with the routing tree str
       <nav class="md-footer-nav__inner md-grid">
         
         
-          <a href="user/install/" title="Install" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="install/" title="Install" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
