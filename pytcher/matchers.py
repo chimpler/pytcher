@@ -75,7 +75,7 @@ class String(PathMatcher):
 class Choice(PathMatcher):
     __slots__ = ['ignore_case', 'choices']
 
-    def __init__(self, ignore_case=True, *choices):
+    def __init__(self, *choices, ignore_case=True,):
         self.choices = choices
         self.ignore_case = ignore_case
 

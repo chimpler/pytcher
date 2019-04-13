@@ -12,7 +12,7 @@ similar to RODA in Ruby, Akka HTTP in Scala or Javalin in Java.
 - Well scoped objects (no global variables)
 - Support for WSGI
 
-# Quickstart
+# Getting started
 
 First, make sure that you have Pytcher installed and up to date:
 

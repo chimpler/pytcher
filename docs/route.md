@@ -99,6 +99,8 @@ Matcher | Description | Example
 `:::python Integer(min=None, max=None)` | Match an Integer between `min` and `max` | `:::python with r / 'books' / Integer() / 'pages' / Integer() as [book_id, page]:`   
 `:::python Float(min=None, max=None)` | Match a float between `min` and `max` | `:::python with r / 'values' / Float() as [price]:`
 `:::python Date(format='YYYY-MM-DD')` | Match a date | `:::python with r / 'data' / Date() as [date]:`
+`:::python Choice(value1, value2, ..., ignore_case=True])` | Match different strings | `:::python with r / Choice(['books', 'novels]) as [book_type]:`   
+`:::python str` | Match a string | `:::python with r / 'data':`
 `:::python Regex()` | Match a regex | `:::python with r / 'data' / Regex('(.*)-(.*)') as [[a, b]]:`
 `:::python None` | Match the end of the path | `:::python with r / 'items' / None`
 

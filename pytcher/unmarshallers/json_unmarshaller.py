@@ -1,8 +1,13 @@
 import dataclasses
 import json
 
+from pytcher.unmarshallers import decode
+
 
 class JSONUnmarshaller(object):
+    def __init__(self, decoders=[]):
+        self._decoders = decoders
+
     def make_obj(self, obj_type, obj):
         if obj is None:
             return None
@@ -28,14 +33,7 @@ class JSONUnmarshaller(object):
 
             return obj
         else:
-            return next(
-                (
-                    decode(obj_type, obj)
-                    for condition, decode in self._decoders
-                    if condition(obj_type, obj)
-                ),
-                obj
-            )
+            return decode(obj_type, obj, self._decoders)
 
     def unmarshall(self, obj_type, data):
         obj_dict = json.loads(data)

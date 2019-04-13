@@ -22,9 +22,9 @@ def format_timedelta(d: datetime.timedelta):
 
     if d.seconds or d.microseconds:
         result += 'T'
-        total_seconds = d.total_seconds() % 86400
+        total_seconds = int(d.total_seconds()) % 86400
         hours = int(total_seconds // 3600)
-        minutes = int((total_seconds % 3600) // 60)
+        minutes = (total_seconds % 3600) // 60
         seconds = total_seconds % 60 + (d.microseconds / 1000000)
         if hours:
             result += str(hours) + 'H'
@@ -51,11 +51,11 @@ default_encoders = [
 ]
 
 
-def default_encode(obj):
+def encode(obj, extra_encoders=[]):
     return next(
         (
             encode(obj)
-            for condition, encode in default_encoders
+            for condition, encode in extra_encoders + default_encoders
             if condition(obj)
         ),
         None

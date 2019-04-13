@@ -1,15 +1,16 @@
 import dataclasses
 import json
+from email import encoders
 from json import JSONEncoder
 from typing import Iterable
 
-from pytcher.marshallers import default_encoders, Marshaller
+from pytcher.marshallers import default_encoders, Marshaller, encode
 
 
 class EntityJSONEncoder(JSONEncoder):
 
     def __init__(self, *args, encoders=[], **kwargs):
-        self._encoders = default_encoders + encoders
+        self._encoders = encoders
         super(EntityJSONEncoder, self).__init__(*args, **kwargs)
 
     def default(self, obj):
@@ -24,14 +25,7 @@ class EntityJSONEncoder(JSONEncoder):
                 self.default(child) for child in obj
             ]
         else:
-            return next(
-                (
-                    encode(obj)
-                    for condition, encode in self._encoders
-                    if condition(obj)
-                ),
-                str(obj)
-            )
+            return encode(obj, encoders)
 
     def encode_dict(self, dict_obj):
         return {
