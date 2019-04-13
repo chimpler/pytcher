@@ -1,5 +1,4 @@
 import re
-from abc import abstractmethod
 from collections import namedtuple
 from functools import reduce
 # module , clazz, method
@@ -15,6 +14,10 @@ AnnotatedExceptionHandler = namedtuple('AnnotatedExceptionHandler', ['exception'
 
 
 class NotFoundException(Exception):
+    pass
+
+
+class RouteException(Exception):
     pass
 
 
@@ -84,7 +87,7 @@ def handle_exception(exception=Exception):
         return decorator_add_exception_handler
 
 
-def route(path=None, method='GET'):
+def route(path=None, prefix=None, method='GET'):
     def decorator_add_route(func):
         # path can be a path or the function itself if the annotation is simply @route
         # decorated function or method inside class
@@ -93,7 +96,11 @@ def route(path=None, method='GET'):
         num_tokens = len(tokens)
         for index, token in enumerate(tokens):
             if index == num_tokens - 1:
-                cur_elt[token] = AnnotatedRoute(convert_str_to_path_elements(path), method, func)
+                if path and prefix:
+                    raise RouteException('path and prefix cannot be both set')
+
+                route_path = convert_str_to_path_elements(path if path else prefix)
+                cur_elt[token] = AnnotatedRoute(route_path, method, func)
             else:
                 if token not in cur_elt:
                     cur_elt[token] = {}

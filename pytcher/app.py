@@ -177,6 +177,5 @@ v{app_version} built on {build_on} ({commit})
             status_code=response.status_code,
             status_message=http.HTTPStatus(response.status_code).name
         )
-        # list(response.headers.items())
         start_response(status_response, [])
         return [response.body.encode('utf-8')]

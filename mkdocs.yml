@@ -6,13 +6,13 @@ repo_url: https://github.com/chimpler/pytcher
 site_name: pytcher
 nav:
     - Home: index.md
-    - Install: user/install.md
-    - Route: user/route.md
-    - Marshalling: user/marshalling.md
-    - Unmarshalling: user/unmarshalling.md
-    - Exception: user/exception.md
-    - WSGI: user/wsgi.md
-    - Test: user/test.md
+    - Install: install.md
+    - Route: route.md
+    - Marshalling: marshalling.md
+    - Unmarshalling: unmarshalling.md
+    - Exception: exception.md
+    - WSGI: wsgi.md
+    - Test: test.md
 theme: material
 markdown_extensions:
     - markdown.extensions.admonition

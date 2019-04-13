@@ -1,8 +1,8 @@
 # flake8: noqa: E999
-from pytcher import App, Router, Request, Integer, route
+from pytcher import App, Request, Integer, route
 
 
-class MyRouter(Router):
+class MyRouter(object):
     def __init__(self):
         self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
 
@@ -17,7 +17,7 @@ class MyRouter(Router):
                     self._items.append(r.json)
                     return self._items[-1]
 
-            with r / Integer() as [item_id]:
+            with r / Integer as [item_id]:
                 with r.get:
                     return self._items[item_id]
 

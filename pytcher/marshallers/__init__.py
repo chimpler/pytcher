@@ -1,6 +1,7 @@
 import datetime
 import uuid
 from abc import abstractmethod
+from enum import Enum
 from typing import Callable, List, Tuple
 
 
@@ -37,9 +38,9 @@ def format_timedelta(d: datetime.timedelta):
 
 # TODO add more
 default_encoders = [
+    (lambda x: isinstance(x, Enum), lambda x: x.value),
     (lambda x: isinstance(x, datetime.datetime) and x.tzinfo is None, lambda x: x.strftime('%Y-%m-%dT%H:%M:%S.%f')),
-    (lambda x: isinstance(x, datetime.datetime) and x.tzinfo is not None,
-     lambda x: x.strftime('%Y-%m-%dT%H:%M:%S.%f%z')),
+    (lambda x: isinstance(x, datetime.datetime) and x.tzinfo is not None, lambda x: x.strftime('%Y-%m-%dT%H:%M:%S.%f%z')),
     (lambda x: isinstance(x, datetime.date), lambda x: x.strftime('%Y-%m-%d')),
     (lambda x: isinstance(x, datetime.time), lambda x: x.strftime('%H:%M:%S.%f')),
     (lambda x: isinstance(x, datetime.tzinfo), lambda x: '{hour}{minute}'.format(x.seconds / 3600, x.seconds % 3600)),

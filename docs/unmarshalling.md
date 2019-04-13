@@ -6,20 +6,20 @@ Supported types:
 
 Type | Description | Example
 -----|-------------|--------
-int  | integer     | 3
-float| float       | 3.4
-str  | string      | "test"
-boolean | boolean  | "true"
-None | NULL value   | NULL
-datetime | datetime | "2019-02-01T02:03:04"
-datetime with timezone | datetime with timezone | "2019-02-01T02:03:04-04:00"
-timezone | timezone | "America/New_York"
-date | date | "2019-04-02"
-time | time | "14:03:12"
-data class | dataclass
-list | list | [1, 2, 3]
-dict | dictionary | {"key": "value"}
-namedtuple | named tuple
+`:::python int`  | integer     | `:::json 3`
+`:::python float`| float       | `:::json 3.4`
+`:::python str`  | string      | `:::json "test"`
+`:::python boolean` | boolean  | `:::json "true"`
+`:::python None` | NULL value   | `:::json NULL`
+`:::python datetime` | datetime | `:::json "2019-02-01T02:03:04"`
+`:::python datetime` with timezone | datetime with timezone | `:::json "2019-02-01T02:03:04-04:00"`
+`:::python timezone` | timezone | `:::json "America/New_York"`
+`:::python date` | date | `:::json "2019-04-02"`
+`:::python time` | time | `:::json "14:03:12"`
+data class | dataclass | dictionary representing the data class
+`:::python list` | list | `:::json [1, 2, 3]`
+`:::python dict` | dictionary | `:::json {"key": "value"}`
+namedtuple | named tuple | dictionary representing the named tuple
 
 !!! info
     To parse `datetime`, `date` and `time` we rely on the library [dateutil](https://dateutil.readthedocs.io/en/stable/) and
@@ -41,10 +41,10 @@ apple = Item('apple', 1.25)
 
 Example | Description
 --------|------------
-r.entity(List[Float]) | Create a list of float
-r.entity(MyDataClassObject) | Create the data class object `Item`
-r.entity(List[Item]) | Create a list of data classes `Item`
-r.entity(Dict[Str, Item]) | Create a dictionary of `Str` -> `Item`
+`:::python r.entity(List[Float])` | Create a list of float
+`:::python r.entity(MyDataClassObject)` | Create the data class object `Item`
+`:::python r.entity(List[Item])` | Create a list of data classes `Item`
+`:::python r.entity(Dict[Str, Item])` | Create a dictionary of `Str` -> `Item`
 
 Optionally, one can specify a [JSON path](https://github.com/h2non/jsonpath-ng). For example if the `Item` is wrapped in a `"data"` element:
 ```json

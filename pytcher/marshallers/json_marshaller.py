@@ -16,8 +16,6 @@ class EntityJSONEncoder(JSONEncoder):
     def default(self, obj):
         if obj is None or isinstance(obj, (bool, int, float, str)):
             return obj
-        elif isinstance(obj, Enum):
-            return obj.value
         elif isinstance(obj, tuple) and hasattr(obj, '_fields') and hasattr(obj, '_asdict'):
             return self.encode_dict(obj._asdict())
         elif dataclasses.is_dataclass(obj):

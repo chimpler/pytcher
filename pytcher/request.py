@@ -1,7 +1,8 @@
+import inspect
 import json
 import sys
 from abc import abstractmethod
-from typing import Iterable
+from typing import Iterable, Tuple, List, Any
 
 import pytcher
 from pytcher import convert_str_to_path_elements
@@ -29,7 +30,7 @@ class Request(object):
         self.command = command
         self.params = params
         self._path_stack = []
-        self._remaining_stack = list(reversed(url.split('/')[1:]))  # skip first '/'
+        self._remaining_stack = list(reversed(url.lstrip('/').split('/'))) if url != '/' else []  # skip first '/'
         self._header_stack = []
         self._content = content
         self._unmarshaller = unmarshaller
@@ -125,10 +126,11 @@ class Request(object):
         pass
 
     @classmethod
-    def match_path(cls, remaining_stack, path_elements):
-        # TODO maybe move to utility method
-        # TODO optimize it
-        if len(path_elements) > len(list(remaining_stack)):
+    def match_path(cls, remaining_stack: List[Any], path_elements: List[Any]) -> Tuple[List[Any], List[Any]]:
+        if path_elements == [None] and not remaining_stack:
+            return [None], []
+
+        if len(path_elements) > len(remaining_stack):
             return [], []
 
         # TODO: accept captures of multiple segments at once
@@ -136,7 +138,13 @@ class Request(object):
         matched_vars = []
 
         for p_elt, r_elt in zip(path_elements, reversed(remaining_stack)):
-            if isinstance(p_elt, PathMatcher):
+            if type(p_elt).__name__ == 'type':
+                value = p_elt().match(r_elt)
+                if value == NoMatch:
+                    return [], []
+                else:
+                    matched_vars.append(value)
+            elif isinstance(p_elt, PathMatcher):
                 value = p_elt.match(r_elt)
                 if value == NoMatch:
                     return [], []
@@ -166,13 +174,15 @@ class Request(object):
 
     def _enter(self, path_matched):
         for e in path_matched:
-            self._remaining_stack.pop()
-            self._path_stack.append(e)
+            if e is not None:
+                self._remaining_stack.pop()
+                self._path_stack.append(e)
 
     def _exit(self, path_matched):
         for e in path_matched:
-            self._path_stack.pop()
-            self._remaining_stack.append(e)
+            if e is not None:
+                self._path_stack.pop()
+                self._remaining_stack.append(e)
 
 
 class ParameterDict(object):

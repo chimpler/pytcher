@@ -41,9 +41,6 @@ def route(request: Request, item_id: int):
 
 ```
 
-
-
-
 ## Routing tree
 
 Inside a function or a method decorated with `:::python @route`
@@ -52,8 +49,10 @@ The routing tree can be defined using `:::python with` statements or `:::python 
 The following example using `:::python with` statements:
 
 ```python
+from pytcher import route, Request, Integer
+
 @route
-def route(r: Request)
+def route(r: Request):
     with r / 'v1':
         with r.get / 'items' / Integer as [item_id]:
             return {
@@ -64,8 +63,10 @@ def route(r: Request)
 Can be rewritten with `:::python for` loops as follows:
 
 ```python
+from pytcher import route, Request, Integer
+
 @route
-def route(r: Request)
+def route(r: Request):
     for _ in  r / 'v1':
         for item_id in r.get / 'items' / Integer:
             return {
@@ -99,7 +100,30 @@ Matcher | Description | Example
 `:::python Float(min=None, max=None)` | Match a float between `min` and `max` | `:::python with r / 'values' / Float() as [price]:`
 `:::python Date(format='YYYY-MM-DD')` | Match a date | `:::python with r / 'data' / Date() as [date]:`
 `:::python Regex()` | Match a regex | `:::python with r / 'data' / Regex('(.*)-(.*)') as [[a, b]]:`
-   
+`:::python None` | Match the end of the path | `:::python with r / 'items' / None`
+
+!!! Info
+    If you use default parameters, you can use the matcher class or the instance. For example `Integer` or `Integer()`
+
+Here is an example of routing tree:
+```python
+from pytcher import route, Request
+
+@route
+def route(r: Request):
+    with r / 'books':  # If path starts with '/books'
+        with r.end:  # If path matches exactly `/books`
+            return {"message": "something"}
+            
+        with r / 'info' / None:  # If path matches exactly `/books/info`:
+            return {"info": "nothing"}
+            
+        with r / String() / 'page' / Integer() / None as [book_id, page]:  # For example /books/test/page/10
+            return {
+                "book": book_id,
+                "page": page
+            }
+```
 
 ### Parameter matcher
 
@@ -107,15 +131,18 @@ Conditions can be put on parameter values (for example `http://localhost/items?t
 
 This can be done as follows:
 ```python
-with r.p['token] == '45ab':
-    return {
-        'message': 'Hello!'
-    }
- 
-return {
-    'message': "Bye!"
-}
+from pytcher import route, Request
 
+@route
+def route(r: Request):
+    with r.p['token'] == '45ab':
+        return {
+            'message': 'Hello!'
+        }
+     
+    return {
+        'message': "Bye!"
+    }
 ```
 
 It can also use operators such as `>` or `<` for numeric values.
@@ -140,14 +167,18 @@ Operator | Description | Example
 Similarly to parameter matchers, conditions can be put on header values. For example one can check if `X-Organization` is set to `my-company`.
 This can be done as follows:
 ```python
-with r.h['X-Organization'] == 'my-company':
+from pytcher import route, Request
+
+@route
+def route(r: Request):
+    with r.h['X-Organization'] == 'my-company':
+        return {
+            'message': 'Hello my-company employee!'
+        }
+     
     return {
-        'message': 'Hello my-company employee!'
+        'message': "Go away!"
     }
- 
-return {
-    'message': "Go away!"
-}
 
 ```
 
@@ -170,11 +201,15 @@ Operator | Description | Example
 One can use boolean expressions with `&` (and) and `|` (or).
 For example:
 ```python
-with (r / 'items') & r.h['X-Organization'] == 'my-company':
-    return {
-        "items": [
-            {"name": "pear"},
-            {"name": "apple"}
-        ]
-    }
+from pytcher import route, Request
+
+@route
+def route(r: Request):
+    with (r / 'items') & r.h['X-Organization'] == 'my-company':
+        return {
+            "items": [
+                {"name": "pear"},
+                {"name": "apple"}
+            ]
+        }
 ```

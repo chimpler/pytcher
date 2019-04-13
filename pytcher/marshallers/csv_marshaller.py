@@ -13,10 +13,15 @@ class CSVMarshaller(Marshaller):
             return ''
         elif isinstance(obj, (bool, int, float, str)):
             return obj
-        elif isinstance(obj, Enum):
-            return obj.value
         else:
-            return str(obj)
+            return next(
+                (
+                    encode(obj)
+                    for condition, encode in self._encoders
+                    if condition(obj)
+                ),
+                str(obj)
+            )
 
     def encode_obj(self, obj_dict, columns):
         # TODO: create an iterator, escape chars and separator

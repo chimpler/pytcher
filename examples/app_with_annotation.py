@@ -2,9 +2,8 @@
 import logging
 from dataclasses import dataclass
 
-from pytcher import handle_exception, Integer, Request, route
+from pytcher import Request, route
 from pytcher.app import App
-
 
 logger = logging.getLogger(__name__)
 
@@ -41,25 +40,12 @@ class MyRouter(object):
     def list_items(self, request):
         return self._inventory
 
-    @route(path='/items', method='GET')
+    @route(path='/items', method='POST')
     def route(self, r: Request):
-        with r / 'items':
-            with r.get / Integer() as [item_index]:
-                return self._inventory[item_index]
-
-            with r.end:
-                with r.get:
-                    return self._inventory
-
-                with r.post:
-                    item = r.entity(InventoryItem)
-                    self._inventory.append(item)
-                    return item
-
-    # @handle_exception(Exception)
-    # def handle_exception(self, exception, request):
-    #     logger.info(exception, exc_info=True)
-    #     return 'Error'
+        with r.post:
+            item = r.entity(InventoryItem)
+            self._inventory.append(item)
+            return item
 
 
 if __name__ == '__main__':

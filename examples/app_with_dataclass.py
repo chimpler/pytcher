@@ -30,6 +30,9 @@ class MyRouter(object):
 
     @route
     def route(self, r: Request):
+        with r / None:
+            return {"test": 1}
+
         with r / 'items':
             with r / Integer() as [item_index]:
                 with r.get:

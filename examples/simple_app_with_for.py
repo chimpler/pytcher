@@ -1,5 +1,5 @@
 # flake8: noqa: E999
-from pytcher import Request, Integer
+from pytcher import Integer, Request
 from pytcher.app import App
 
 
@@ -29,8 +29,6 @@ class MyAppRouter(object):
                     return self._items.pop(item_id)
 
 
-app = App(MyAppRouter())
-
-
 if __name__ == '__main__':
+    app = App(MyAppRouter())
     app.start()

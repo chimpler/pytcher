@@ -14,17 +14,17 @@ Out of the box, it can marshall the followings:
 
  Type         | Description  | Example               | Output
 --------------|--------------|-----------------------|-------
-`dict`        | dictionary   | `{'key': 'value'}`    | `{"key":"value}`
-`list`        | list         | `['abc', 'cde']`      | `["abc","cde"]`
-`namedtuple`  | named tuples | `Item('apple', 1.25)` | `{"name":"apple","price":1.25}`
-`@dataclass`  | data class   | `Item('apple', 1.25)` | `{"name":"apple","price":1.25}`
-`enum`        | enum         | `Color.RED`           | `"RED"`
-`str`         | string       | `'apple'`             | `"apple"`
-`int`         | integer      | `5`                   | `5`
-`float`       | float        | `5.12`                | `5.12`
-`date`        | date         | `datetime.date(2019, 2, 3)` | `2019-02-03`
-`datetime`    | datetime (no timezone) | `datetime.datetime(2019, 2, 3, 12, 32, 1)` | `2019-02-03T12:32:01.000`
-`datetime`    | datetime (with timezone) | `datetime.datetime(2019, 2, 3, 12, 32, 1, tzinfo=pytz.UTC)` | `2019-02-03T12:32:01.000+00:00`
+`:::python dict`        | dictionary   | `:::python {'key': 'value'}`    | `:::json {"key":"value}`
+`:::python list`        | list         | `:::python ['abc', 'cde']`      | `:::json ["abc","cde"]`
+`:::python namedtuple`  | named tuples | `:::python Item('apple', 1.25)` | `:::json {"name":"apple","price":1.25}`
+`:::python @dataclass`  | data class   | `:::python Item('apple', 1.25)` | `:::json {"name":"apple","price":1.25}`
+`:::python enum`        | enum         | `:::python Color.RED`           | `:::json "RED"`
+`:::python str`         | string       | `:::python 'apple'`             | `:::json "apple"`
+`:::python int`         | integer      | `:::python 5`                   | `:::json 5`
+`:::python float`       | float        | `:::python 5.12`                | `:::json 5.12`
+`:::python date`        | date         | `:::python datetime.date(2019, 2, 3)` | `:::json "2019-02-03"`
+`:::python datetime`    | datetime (no timezone) | `:::python datetime.datetime(2019, 2, 3, 12, 32, 1)` | `:::json "2019-02-03T12:32:01.000"`
+`:::python datetime`    | datetime (with timezone) | `:::python datetime.datetime(2019, 2, 3, 12, 32, 1, tzinfo=pytz.UTC)` | `:::json "2019-02-03T12:32:01.000+00:00"`
 
 A namedtuple can be defined as follows:
 ```python
