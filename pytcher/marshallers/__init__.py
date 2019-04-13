@@ -38,15 +38,28 @@ def format_timedelta(d: datetime.timedelta):
 
 # TODO add more
 default_encoders = [
-    (lambda x: isinstance(x, Enum), lambda x: x.value),
+    (lambda x: isinstance(x, Enum), lambda x: x.name),
     (lambda x: isinstance(x, datetime.datetime) and x.tzinfo is None, lambda x: x.strftime('%Y-%m-%dT%H:%M:%S.%f')),
-    (lambda x: isinstance(x, datetime.datetime) and x.tzinfo is not None, lambda x: x.strftime('%Y-%m-%dT%H:%M:%S.%f%z')),
+    (lambda x: isinstance(x, datetime.datetime) and x.tzinfo is not None,
+     lambda x: x.strftime('%Y-%m-%dT%H:%M:%S.%f%z')),
     (lambda x: isinstance(x, datetime.date), lambda x: x.strftime('%Y-%m-%d')),
     (lambda x: isinstance(x, datetime.time), lambda x: x.strftime('%H:%M:%S.%f')),
-    (lambda x: isinstance(x, datetime.tzinfo), lambda x: '{hour}{minute}'.format(x.seconds / 3600, x.seconds % 3600)),
+    # (lambda x: isinstance(x, datetime.tzinfo), lambda x: '{hour}{minute}'.format(x.seconds / 3600, x.seconds % 3600)),
+    (lambda x: isinstance(x, datetime.tzinfo), lambda x: x.zone),
     (lambda x: isinstance(x, datetime.timedelta), format_timedelta),
     (lambda x: isinstance(x, uuid.UUID), lambda x: str(x))
 ]
+
+
+def default_encode(obj):
+    return next(
+        (
+            encode(obj)
+            for condition, encode in default_encoders
+            if condition(obj)
+        ),
+        None
+    )
 
 
 class MarshallerException(Exception):

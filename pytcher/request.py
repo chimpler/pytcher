@@ -1,8 +1,7 @@
-import inspect
 import json
 import sys
 from abc import abstractmethod
-from typing import Iterable, Tuple, List, Any
+from typing import Iterable, Tuple, List, Any, Dict
 
 import pytcher
 from pytcher import convert_str_to_path_elements
@@ -21,8 +20,8 @@ class Request(object):
             self,
             command: str,
             url: str,
-            params,
-            headers,
+            params: Dict[str, Any],
+            headers: Dict[str, Any],
             content,
             unmarshaller: Unmarshaller):
         self.url = url

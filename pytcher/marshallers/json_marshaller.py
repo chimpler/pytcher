@@ -1,6 +1,5 @@
 import dataclasses
 import json
-from enum import Enum
 from json import JSONEncoder
 from typing import Iterable
 

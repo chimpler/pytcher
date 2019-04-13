@@ -1,6 +1,5 @@
 import dataclasses
 import itertools
-from enum import Enum
 from typing import Iterable
 
 from pytcher.marshallers import Marshaller, MarshallerException

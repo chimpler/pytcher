@@ -35,9 +35,7 @@ def default_exception_handler(request: Request, exception: Exception):
 def default_json_serializer(obj, status_code=None, headers={}):
     final_status_code = status_code if status_code else http.HTTPStatus.OK.value
     final_headers = {
+        'Content-Type': 'application/json',
         **headers,
-        **{
-            'Content-Type': 'application/json'
-        }
     }
     return Response(json.dumps(obj), final_status_code, final_headers)
