@@ -152,6 +152,8 @@ For example:
 
 ## Create a simple web service using dataclasses
 
+In this example, we will take advantage of the [data classes](https://docs.python.org/3/library/dataclasses.html) that were introduced in Python 3.7.
+
 ```python
 from dataclasses import dataclass
 
@@ -353,6 +355,9 @@ if __name__ == '__main__':
 
 ## Combining @route and routing tree
 
+In this example, we combine the use of the `@route` decorator using the prefix `/items` with a routing tree.
+This can be a common pattern, especially when using multiple router classes (e.g., one class with `/admin` and another one to handle `items`).
+
 ```python
 import logging
 from dataclasses import dataclass
@@ -427,3 +432,11 @@ if __name__ == '__main__':
 ```
 
 All the examples can be found in the [examples folder](https://github.com/chimpler/pytcher/tree/master/examples).
+
+## More features
+
+To use multiple routers, one can simply pass them to `App`. For example:
+```python
+app = App([AdminRouter(), ItemRouter()])
+app.run()
+```
