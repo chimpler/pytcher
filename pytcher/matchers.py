@@ -1,7 +1,8 @@
+import re
 from abc import abstractmethod
 from datetime import datetime
-import re
 from itertools import zip_longest
+
 import pytcher
 
 
@@ -48,11 +49,11 @@ class Integer(PathMatcher):
             return NoMatch
 
         if self.min:
-            if self.min > value:
+            if self.min > int_value:
                 return NoMatch
 
         if self.max:
-            if self.max < value:
+            if self.max < int_value:
                 return NoMatch
 
         return int_value
@@ -61,8 +62,25 @@ class Integer(PathMatcher):
 class Float(PathMatcher):
     __slots__ = []
 
+    def __init__(self, min=None, max=None):
+        super(PathMatcher, self).__init__()
+        self.min = min
+        self.max = max
+
     def match(self, value):
-        return to_type(float, value)
+        float_value = to_type(float, value)
+        if float_value == NoMatch:
+            return NoMatch
+
+        if self.min:
+            if self.min > float_value:
+                return NoMatch
+
+        if self.max:
+            if self.max < float_value:
+                return NoMatch
+
+        return float_value
 
 
 class String(PathMatcher):
@@ -75,7 +93,7 @@ class String(PathMatcher):
 class Choice(PathMatcher):
     __slots__ = ['ignore_case', 'choices']
 
-    def __init__(self, *choices, ignore_case=True,):
+    def __init__(self, *choices, ignore_case=True, ):
         self.choices = choices
         self.ignore_case = ignore_case
 
@@ -86,6 +104,7 @@ class Choice(PathMatcher):
                     return choice
             elif choice == value:
                 return choice
+
         return NoMatch
 
 

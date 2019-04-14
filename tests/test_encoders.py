@@ -1,10 +1,7 @@
 from datetime import datetime, date, time, timedelta
 from enum import Enum
 from uuid import UUID
-
-import pytest
 import pytz
-
 from pytcher.marshallers import encode
 
 

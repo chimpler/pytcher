@@ -20,11 +20,15 @@ class Request(object):
             self,
             command: str,
             url: str,
-            params: Dict[str, Any],
-            headers: Dict[str, Any],
-            content,
-            unmarshaller: Unmarshaller):
+            params: Dict[str, Any] = {},
+            headers: Dict[str, Any] = {},
+            host: str = None,
+            port: int = None,
+            content=None,
+            unmarshaller: Unmarshaller=None):
         self.url = url
+        self.host = host
+        self.port = port
         self.headers = headers
         self.command = command
         self.params = params
