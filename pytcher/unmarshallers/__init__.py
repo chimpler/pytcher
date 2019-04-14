@@ -10,11 +10,13 @@ import pytz as pytz
 
 RE_TIMEDELTA = re.compile(r'(?:P(?P<days>\d+)D)?(?:T(?:(?P<hours>\d+)H)?(?:(?P<minutes>\d+)M)?(?:(?P<seconds>\d*(?:\.\d+)?)S)?)')
 
+
 class Unmarshaller(object):
 
     @abstractmethod
     def unmarshall(self, obj_type, obj):
         pass
+
 
 def parse_timedelta(value: str):
     match = RE_TIMEDELTA.match(value)
@@ -28,10 +30,11 @@ def parse_timedelta(value: str):
     else:
         return None
 
+
 # TODO: for types, check subtypes
 default_decoders = [
     (lambda data_type, value: issubclass(data_type, Enum), lambda data_type, value: getattr(data_type, value, None)),
-    (lambda data_type, value: issubclass(data_type,  datetime.datetime), lambda data_type, value: dateutil.parser.parse(value)),
+    (lambda data_type, value: issubclass(data_type, datetime.datetime), lambda data_type, value: dateutil.parser.parse(value)),
     (lambda data_type, value: issubclass(data_type, datetime.date), lambda data_type, value: dateutil.parser.parse(value).date()),
     (lambda data_type, value: issubclass(data_type, datetime.time), lambda data_type, value: dateutil.parser.parse(value).time()),
     (lambda data_type, value: issubclass(data_type, datetime.timezone), lambda data_type, value: pytz.timezone(value)),

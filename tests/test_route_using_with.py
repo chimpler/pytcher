@@ -9,4 +9,3 @@ def test_simple_route():
 
         with r / 'books':
             return 2
-

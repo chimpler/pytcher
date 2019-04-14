@@ -4,7 +4,7 @@ from email import encoders
 from json import JSONEncoder
 from typing import Iterable
 
-from pytcher.marshallers import default_encoders, Marshaller, encode
+from pytcher.marshallers import Marshaller, encode
 
 
 class EntityJSONEncoder(JSONEncoder):

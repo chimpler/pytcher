@@ -25,7 +25,7 @@ class Request(object):
             host: str = None,
             port: int = None,
             content=None,
-            unmarshaller: Unmarshaller=None):
+            unmarshaller: Unmarshaller = None):
         self.url = url
         self.host = host
         self.port = port
