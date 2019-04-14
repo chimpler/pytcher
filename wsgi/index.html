@@ -343,6 +343,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#docker-deployment" title="Docker deployment" class="md-nav__link">
+    Docker deployment
+  </a>
+  
+</li>
+      
       
       
       
@@ -398,6 +405,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#docker-deployment" title="Docker deployment" class="md-nav__link">
+    Docker deployment
+  </a>
+  
+</li>
+      
       
       
       
@@ -432,6 +446,16 @@
 
 
 <h2 id="uwsgi-configuration">uWSGI configuration</h2>
+<p>Minimal configuration</p>
+<div class="codehilite"><pre><span></span><span class="k">[uwsgi]</span>
+<span class="na">module</span> <span class="o">=</span> <span class="s">simple_app</span>
+<span class="na">callable</span> <span class="o">=</span> <span class="s">app</span>
+<span class="na">master</span> <span class="o">=</span> <span class="s">true</span>
+<span class="na">processes</span> <span class="o">=</span> <span class="s">5</span>
+<span class="na">socket</span> <span class="o">=</span> <span class="s">uwsgi.sock</span>
+</pre></div>
+
+<h2 id="docker-deployment">Docker deployment</h2>
                 
                   
                 
