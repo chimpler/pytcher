@@ -1,5 +1,5 @@
-Pytcher is a REST micro-framework for Python that relies on a routing tree
-similar to RODA in Ruby, Akka HTTP in Scala or Javalin in Java.
+Pytcher is a REST micro-framework for Python 3 that relies on a routing tree
+similar to [RODA](http://roda.jeremyevans.net/) in Ruby, [Akka HTTP](https://doc.akka.io/docs/akka-http/current/index.html) in Scala or [Javalin](https://javalin.io/) in Java.
 
 !!! danger
     Under development
@@ -8,7 +8,7 @@ similar to RODA in Ruby, Akka HTTP in Scala or Javalin in Java.
 
 - Marshalling / Unmarshalling of `data classes` (using types), `namedtuples`, `date`, `datetime`, `uuid`, ...   
 - Routing tree definition
-- Routing decorator similar to Flask
+- Additional Routing decorators similar to Flask
 - Well scoped objects (no global variables)
 - Support for WSGI
 

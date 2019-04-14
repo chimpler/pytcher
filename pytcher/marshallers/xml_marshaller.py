@@ -28,10 +28,10 @@ class XMLMarshaller(Marshaller):
                     return function(obj)
 
     def encode_dict(self, name, dict_obj):
-        return f'<{name}>' + ''.join([
-            f'<{key}>{self.marshall(value)}</{key}>' if value is not None else f'<{key} xsi:nil="true"/>'
+        return '<' + name + '>' + ''.join([
+            '<' + key + '>' + self.marshall(value) + '</' + key + '>' if value is not None else '<' + key + 'xsi:nil="true"/>'
             for key, value in dict_obj.items()
-        ]) + f'</{name}>'
+        ]) + '</' + name + '>'
 
     def marshall(self, obj):
         return self.marshall_obj(obj)
