@@ -2,6 +2,7 @@ import re
 from abc import abstractmethod
 from datetime import datetime
 from itertools import zip_longest
+from typing import List
 
 import pytcher
 
@@ -93,7 +94,7 @@ class String(PathMatcher):
 class Choice(PathMatcher):
     __slots__ = ['ignore_case', 'choices']
 
-    def __init__(self, *choices, ignore_case=True, ):
+    def __init__(self, *choices, ignore_case=True):
         self.choices = choices
         self.ignore_case = ignore_case
 
@@ -111,7 +112,7 @@ class Choice(PathMatcher):
 class Date(PathMatcher):
     __slots__ = ['format']
 
-    def __init__(self, format='%Y-%m-%d'):
+    def __init__(self, format: str = '%Y-%m-%d'):
         self._format = format
 
     def match(self, value):
@@ -121,7 +122,7 @@ class Date(PathMatcher):
 class DateTime(PathMatcher):
     __slots__ = ['format']
 
-    def __init__(self, format='%Y-%m-%dT%H:%M:%s'):
+    def __init__(self, format: str = '%Y-%m-%dT%H:%M:%s'):
         self._format = format
 
     def match(self, value):
@@ -131,7 +132,7 @@ class DateTime(PathMatcher):
 class Regex(PathMatcher):
     __slots__ = ['format', 'flags', 'data_types']
 
-    def __init__(self, format, flags=0, data_types=[]):
+    def __init__(self, format: str, flags: int = 0, data_types: List = []):
         self._pattern = re.compile(format, flags)
         self._data_types = data_types
         self._flags = flags
