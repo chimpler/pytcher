@@ -364,8 +364,8 @@
                   <a href="https://github.com/chimpler/pytcher/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <p>Pytcher is a REST micro-framework for Python that relies on a routing tree
-similar to RODA in Ruby, Akka HTTP in Scala or Javalin in Java.</p>
+                <p>Pytcher is a REST micro-framework for Python 3 that relies on a routing tree
+similar to <a href="http://roda.jeremyevans.net/">RODA</a> in Ruby, <a href="https://doc.akka.io/docs/akka-http/current/index.html">Akka HTTP</a> in Scala or <a href="https://javalin.io/">Javalin</a> in Java.</p>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
 <p>Under development</p>
@@ -374,11 +374,11 @@ similar to RODA in Ruby, Akka HTTP in Scala or Javalin in Java.</p>
 <ul>
 <li>Marshalling / Unmarshalling of <code>data classes</code> (using types), <code>namedtuples</code>, <code>date</code>, <code>datetime</code>, <code>uuid</code>, ...   </li>
 <li>Routing tree definition</li>
-<li>Routing decorator similar to Flask</li>
+<li>Additional Routing decorators similar to Flask</li>
 <li>Well scoped objects (no global variables)</li>
 <li>Support for WSGI</li>
 </ul>
-<h1 id="quickstart">Quickstart</h1>
+<h1 id="getting-started">Getting started</h1>
 <p>First, make sure that you have Pytcher installed and up to date:</p>
 <div class="codehilite"><pre><span></span>$ pip install pytcher --upgrade
 </pre></div>
@@ -727,6 +727,79 @@ However using the <code class="codehilite"><span class="k">for</span></code> loo
 </pre></div>
 
 <h2 id="combining-route-and-routing-tree">Combining @route and routing tree</h2>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span> <span class="n">Integer</span>
+<span class="kn">from</span> <span class="nn">pytcher.app</span> <span class="kn">import</span> <span class="n">App</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">InventoryItem</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">unit_price</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;wine&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pizza&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cheese&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;peanuts&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ice-cream&#39;</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">InventoryItem</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span>
+        <span class="p">]</span>
+
+    <span class="nd">@route</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;/items&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">handle_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_index</span><span class="p">]:</span>
+            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
+
+            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">put</span><span class="p">:</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">entity</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="k">return</span> <span class="n">item</span>
+
+            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">item</span>
+
+        <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span>
+
+            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">post</span><span class="p">:</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">entity</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">item</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;This will get logged&#39;</span><span class="p">)</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRouter</span><span class="p">(),</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">()</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Try: curl localhost:8000/items&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Try: curl localhost:8000/items/2&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">()</span>
+
+    <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+
+<p>All the examples can be found in the <a href="https://github.com/chimpler/pytcher/tree/master/examples">examples folder</a>.</p>
                 
                   
                 

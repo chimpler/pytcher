@@ -2,42 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://chimpler.github.io/pytcher/</loc>
-     <lastmod>2019-04-12</lastmod>
+     <lastmod>2019-04-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/install/</loc>
-     <lastmod>2019-04-12</lastmod>
+     <lastmod>2019-04-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/route/</loc>
-     <lastmod>2019-04-12</lastmod>
+     <lastmod>2019-04-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/marshalling/</loc>
-     <lastmod>2019-04-12</lastmod>
+     <lastmod>2019-04-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/unmarshalling/</loc>
-     <lastmod>2019-04-12</lastmod>
+     <lastmod>2019-04-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/exception/</loc>
-     <lastmod>2019-04-12</lastmod>
+     <lastmod>2019-04-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/wsgi/</loc>
-     <lastmod>2019-04-12</lastmod>
+     <lastmod>2019-04-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://chimpler.github.io/pytcher/test/</loc>
-     <lastmod>2019-04-12</lastmod>
+     <lastmod>2019-04-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
