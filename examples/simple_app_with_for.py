@@ -1,5 +1,5 @@
 # flake8: noqa: E999
-from pytcher import Integer, Request
+from pytcher import route, Integer, Request
 from pytcher.app import App
 
 
@@ -7,6 +7,7 @@ class MyAppRouter(object):
     def __init__(self):
         self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
 
+    @route
     def route(self, r: Request):
         for _ in r / 'items':
             for _ in r.end:

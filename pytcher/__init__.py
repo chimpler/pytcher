@@ -1,8 +1,7 @@
 import re
 from collections import namedtuple
 from functools import reduce
-# module , clazz, method
-from typing import Callable
+from typing import Callable, Iterable
 
 from pytcher.matchers import Regex
 
@@ -87,7 +86,7 @@ def handle_exception(exception=Exception):
         return decorator_add_exception_handler
 
 
-def route(path=None, prefix=None, method='GET'):
+def route(path=None, prefix=None, method=None):
     def decorator_add_route(func):
         # path can be a path or the function itself if the annotation is simply @route
         # decorated function or method inside class
@@ -161,9 +160,19 @@ def get_routers(router):
     ]
 
 
-def run_router(request, router):
-    for matched_vars in request.path(*router.path):
-        return router.func(request, *matched_vars)
+from pytcher.request import Request  # noqa E402
+
+
+def run_router(request: Request, route: AnnotatedRoute):
+    if route.command:
+        if isinstance(route.command, Iterable):
+            if request.command not in route.command:
+                return None
+            elif request.command != route.command:
+                return None
+
+    for matched_vars in request.path(*route.path):
+        return route.func(request, *matched_vars)
 
 
 def get_exception_handlers(handler_exception):
@@ -204,5 +213,5 @@ Response = namedtuple('Response', ['body', 'status_code', 'headers'])
 Response.__new__.__defaults__ = (None, 200, {})
 
 from pytcher.app import App  # noqa: F401
-from pytcher.request import Request  # noqa: F401
+from pytcher.request import Request, Request, Request  # noqa: F401
 from pytcher.matchers import *  # noqa: F401,E402,F403
