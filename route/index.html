@@ -61,8 +61,6 @@
     <link rel="stylesheet" href="../assets/fonts/material-icons.css">
     
     
-      <link rel="stylesheet" href="../extra.css">
-    
     
       
     
@@ -247,6 +245,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../quickstart/" title="Getting Started" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="../install/" title="Install" class="md-nav__link">
       Install
     </a>
@@ -307,6 +317,68 @@
   <a href="#path-matcher" title="Path matcher" class="md-nav__link">
     Path matcher
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#integer-matcher" title="Integer matcher" class="md-nav__link">
+    Integer matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#float-matcher" title="Float matcher" class="md-nav__link">
+    Float matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#date-matcher" title="Date matcher" class="md-nav__link">
+    Date matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choice-matcher" title="Choice matcher" class="md-nav__link">
+    Choice matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#str-matcher" title="str matcher" class="md-nav__link">
+    str matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regex-matcher" title="Regex matcher" class="md-nav__link">
+    Regex matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#none-matcher" title="None matcher" class="md-nav__link">
+    None matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-using-path-matchers" title="Example using path matchers" class="md-nav__link">
+    Example using path matchers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -451,6 +523,68 @@
   <a href="#path-matcher" title="Path matcher" class="md-nav__link">
     Path matcher
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#integer-matcher" title="Integer matcher" class="md-nav__link">
+    Integer matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#float-matcher" title="Float matcher" class="md-nav__link">
+    Float matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#date-matcher" title="Date matcher" class="md-nav__link">
+    Date matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choice-matcher" title="Choice matcher" class="md-nav__link">
+    Choice matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#str-matcher" title="str matcher" class="md-nav__link">
+    str matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regex-matcher" title="Regex matcher" class="md-nav__link">
+    Regex matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#none-matcher" title="None matcher" class="md-nav__link">
+    None matcher
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-using-path-matchers" title="Example using path matchers" class="md-nav__link">
+    Example using path matchers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -638,14 +772,19 @@ For example <code class="codehilite"><span class="k">with</span> <span class="n"
 <td><code class="codehilite"><span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span></code></td>
 </tr>
 <tr>
-<td><code class="codehilite"><span class="n">Regex</span><span class="p">()</span></code></td>
+<td><code class="codehilite"><span class="n">Regex</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">data_types</span><span class="p">)</span></code></td>
 <td>Match a regex</td>
 <td><code class="codehilite"><span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;data&#39;</span> <span class="o">/</span> <span class="n">Regex</span><span class="p">(</span><span class="s1">&#39;(.*)-(.*)&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]]:</span></code></td>
 </tr>
 <tr>
 <td><code class="codehilite"><span class="bp">None</span></code></td>
 <td>Match the end of the path</td>
-<td><code class="codehilite"><span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span> <span class="o">/</span> <span class="bp">None</span></code></td>
+<td><code class="codehilite"><span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span> <span class="o">/</span> <span class="bp">None</span><span class="p">:</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="n">request</span><span class="o">.</span><span class="n">end</span></code></td>
+<td>match the end of the path</td>
+<td><code class="codehilite"><span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">end</span><span class="p">:</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -653,6 +792,38 @@ For example <code class="codehilite"><span class="k">with</span> <span class="n"
 <p class="admonition-title">Info</p>
 <p>If you use default parameters, you can use the matcher class or the instance. For example <code>Integer</code> or <code>Integer()</code></p>
 </div>
+<h4 id="integer-matcher">Integer matcher</h4>
+<p><code class="codehilite"><span class="n">Integer</span><span class="p">(</span><span class="nb">min</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="nb">max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span></code>: Matches if the path element is an integer. Optionally you can provide the boundaries (inclusive).</p>
+<h4 id="float-matcher">Float matcher</h4>
+<p><code class="codehilite"><span class="n">Float</span><span class="p">(</span><span class="nb">min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="nb">max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span></code>: Matches if the path element is a float. Optionally you can provide the boundaries (inclusive).</p>
+<h4 id="date-matcher">Date matcher</h4>
+<p><code class="codehilite"><span class="n">Date</span><span class="p">(</span><span class="n">format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span></code>: Matches if the path element is a date. By default the format is <code>%Y-%m-%d</code> (e.g., <code>2019-03-02</code>). For the format see the <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior">Python datetime page</a>. </p>
+<h4 id="choice-matcher">Choice matcher</h4>
+<p><code class="codehilite"><span class="n">Choice</span><span class="p">(</span><span class="n">choice1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">choice2</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">ignore_case</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span></code>: Matches if the path element is one of strings provided. By default it is case insensitive but one can set <code>ignore_case</code> to <code>False</code> to be case sensitive.</p>
+<h4 id="str-matcher">str matcher</h4>
+<p><code class="codehilite"><span class="nb">str</span></code>: Simply use a string for exact match, for example <code>r / 'items'</code> will match if the path element matches <code>items</code></p>
+<p><code class="codehilite"><span class="bp">None</span></code>: Indicate the end of the request URL. For example <code>r / 'items' / None</code> indicates that the URL ended at <code>items</code></p>
+<p><code class="codehilite"><span class="n">end</span></code>: Indicate the end of the request URL. For example <code>r.end</code> indicates that the URL ended</p>
+<h4 id="regex-matcher">Regex matcher</h4>
+<p>If no matching group is provided to the Regex matcher, it will return the whole string that matches.
+If a single capturing group is provided, it will return the string that matches the group
+If multiple capturing groups are provided, it will return an array of strings that matches the groups.</p>
+<p>It can also take care of type conversion by providing data_types which is an array of types the groups are supposed to be.
+For example:
+<div class="codehilite"><pre><span></span><span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Regex</span><span class="p">(</span><span class="s1">&#39;^fruit-(?P&lt;name&gt;.*)-(?P&lt;size&gt;\d+)$&#39;</span><span class="p">,</span> <span class="n">data_types</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="k">as</span> <span class="p">[</span><span class="n">name</span><span class="p">,</span> <span class="n">size</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;fruit&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+        <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">size</span>
+    <span class="p">}</span>
+</pre></div></p>
+<p>will bind the first group as a <code>str</code> and size as an <code>int</code>. The URL <code>/fruit-orange-15</code> will result in the following result:
+<div class="codehilite"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;fruit&quot;</span><span class="p">:</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;size&quot;</span><span class="p">:</span> <span class="mi">15</span>
+<span class="p">}</span>
+</pre></div></p>
+<h4 id="none-matcher">None matcher</h4>
+<h4 id="example-using-path-matchers">Example using path matchers</h4>
 <p>Here is an example of routing tree:
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">Request</span>
 
