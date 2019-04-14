@@ -1,4 +1,4 @@
-from pytcher import Choice, Float, Integer, NoMatch
+from pytcher import Choice, Float, Integer, NoMatch, Regex
 
 
 def test_matcher_integer():
@@ -35,3 +35,21 @@ def test_matcher_choice_non_case_sensitive():
     assert choice.match('') is NoMatch
     assert 'books' == choice.match('Books')
     assert 'novels' == choice.match('Novels')
+
+
+def test_matcher_simple_regex():
+    regex = Regex('^a.*e$')
+    assert 'apple' == regex.match('apple')
+    assert regex.match('apples') is NoMatch
+
+
+def test_matcher_one_group_regex():
+    regex = Regex('^fruit-(?P<apple>a.*e)$')
+    assert 'apple' == regex.match('fruit-apple')
+    assert regex.match('fruit-apples') is NoMatch
+
+
+def test_matcher_two_groups_regex():
+    regex = Regex('^fruit-(?P<apple>a.*e)-(?P<orange>o.*e)$')
+    assert ['apple', 'orange'] == regex.match('fruit-apple-orange')
+    assert regex.match('fruit-apple-strawberry') is NoMatch

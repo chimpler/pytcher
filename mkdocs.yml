@@ -6,6 +6,7 @@ repo_url: https://github.com/chimpler/pytcher
 site_name: pytcher
 nav:
     - Home: index.md
+    - Getting Started: quickstart.md
     - Install: install.md
     - Route: route.md
     - Marshalling: marshalling.md
@@ -20,6 +21,3 @@ markdown_extensions:
           guess_lang: false
     - pymdownx.superfences
     - pymdownx.inlinehilite
-
-
-extra_css: [extra.css]

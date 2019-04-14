@@ -101,11 +101,58 @@ Matcher | Description | Example
 `:::python Date(format='YYYY-MM-DD')` | Match a date | `:::python with r / 'data' / Date() as [date]:`
 `:::python Choice(value1, value2, ..., ignore_case=True])` | Match different strings | `:::python with r / Choice(['books', 'novels]) as [book_type]:`   
 `:::python str` | Match a string | `:::python with r / 'data':`
-`:::python Regex()` | Match a regex | `:::python with r / 'data' / Regex('(.*)-(.*)') as [[a, b]]:`
-`:::python None` | Match the end of the path | `:::python with r / 'items' / None`
+`:::python Regex(regex, flags, data_types)` | Match a regex | `:::python with r / 'data' / Regex('(.*)-(.*)') as [[a, b]]:`
+`:::python None` | Match the end of the path | `:::python with r / 'items' / None:`
+`:::python request.end` | match the end of the path | `:::python with r.end:`
 
 !!! Info
     If you use default parameters, you can use the matcher class or the instance. For example `Integer` or `Integer()`
+
+#### Integer matcher
+`:::python Integer(min: int = None, max: int = None)`: Matches if the path element is an integer. Optionally you can provide the boundaries (inclusive).
+
+#### Float matcher
+`:::python Float(min: float = None, max: float = None)`: Matches if the path element is a float. Optionally you can provide the boundaries (inclusive).
+
+#### Date matcher
+`:::python Date(format='%Y-%m-%d')`: Matches if the path element is a date. By default the format is `%Y-%m-%d` (e.g., `2019-03-02`). For the format see the [Python datetime page](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior). 
+
+#### Choice matcher
+`:::python Choice(choice1: str, choice2: str, ..., ignore_case: bool = True)`: Matches if the path element is one of strings provided. By default it is case insensitive but one can set `ignore_case` to `False` to be case sensitive.
+#### str matcher
+
+`:::python str`: Simply use a string for exact match, for example `r / 'items'` will match if the path element matches `items`
+
+`:::python None`: Indicate the end of the request URL. For example `r / 'items' / None` indicates that the URL ended at `items`
+
+`:::python end`: Indicate the end of the request URL. For example `r.end` indicates that the URL ended
+
+#### Regex matcher
+If no matching group is provided to the Regex matcher, it will return the whole string that matches.
+If a single capturing group is provided, it will return the string that matches the group
+If multiple capturing groups are provided, it will return an array of strings that matches the groups.
+
+It can also take care of type conversion by providing data_types which is an array of types the groups are supposed to be.
+For example:
+```python
+with r / Regex('^fruit-(?P<name>.*)-(?P<size>\d+)$', data_types=[str, int]) as [name, size]:
+    return {
+        'fruit': name,
+        'size': size
+    }
+``` 
+
+will bind the first group as a `str` and size as an `int`. The URL `/fruit-orange-15` will result in the following result:
+```json
+{
+  "fruit": "orange",
+  "size": 15
+}
+```
+
+#### None matcher
+
+#### Example using path matchers
 
 Here is an example of routing tree:
 ```python
