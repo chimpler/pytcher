@@ -60,7 +60,7 @@ class MyRouter(Router):
                     self._items.append(r.json)
                     return self._items[-1]
 
-            with r / Integer() as [item_id]:  # If the URL is /items/<integer> then bind item_id to the integer
+            with r / Integer() as item_id:  # If the URL is /items/<integer> then bind item_id to the integer
                 with r.get:  # If the request is a get request
                     return self._items[item_id]
 
@@ -129,7 +129,7 @@ For example:
 | using `with` |               using `for`                       |
 | ----------- | ------------------------------------------------- |
 | `:::py with r / 'items':`  | `:::py for _ in r / 'items':`          |
-| `:::py with r.get / 'items' / Integer() as [item_id]:`  | `:::py for item_id in r.get / 'items' / 'Integer':` |
+| `:::py with r.get / 'items' / Integer() as item_id:`  | `:::py for item_id in r.get / 'items' / 'Integer':` |
 
 !!! Info
     The author of Python did not approve requests to use `:::python with` statements to be conditional (i.e., execute the block
@@ -173,7 +173,7 @@ class MyRouter(object):
     @route
     def route(self, r: Request):
         with r / 'items':
-            with r / Integer() as [item_index]:
+            with r / Integer() as item_index:
                 with r.get:
                     return self._inventory[item_index]
 
@@ -380,7 +380,7 @@ class MyRouter(object):
 
     @route(prefix='/items')
     def handle_items(self, r: Request):
-        with r / Integer as [item_index]:
+        with r / Integer as item_index:
             with r.get:
                 return self._inventory[item_index]
 

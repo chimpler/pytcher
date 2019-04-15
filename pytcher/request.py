@@ -34,14 +34,17 @@ class Request(object):
         self.params = params
         self._path_stack = []
         self._remaining_stack = list(reversed(url.lstrip('/').split('/'))) if url != '/' else []  # skip first '/'
-        self._header_stack = []
         self._content = content
         self._unmarshaller = unmarshaller
 
     def __str__(self):
-        return '[Request: command={command} url={url}]'.format(
+        return '[Request: command={command} url={url} host={host} port={port} path_stack={path_stack} remaining_stack={remaining_stack}]'.format(
             command=self.command,
-            url=self.url
+            url=self.url,
+            host=self.host,
+            port=self.port,
+            path_stack=self._path_stack,
+            remaining_stack=self._remaining_stack
         )
 
     def __repr__(self):
@@ -323,7 +326,7 @@ class SkipWithBlock(Exception):
 class RequestMatch(object):
     __slots__ = ['_request', '_is_match', '_remaining_path', '_matched_path', '_matched_vars', '_first_time']
 
-    def __init__(self, request, is_match, remaining_path=[], matched_path=[], matched_vars=[]):
+    def __init__(self, request: Request, is_match: bool, remaining_path: List = [], matched_path: List = [], matched_vars: List = []):
         self._request = request
         self._is_match = is_match
         self._remaining_path = list(remaining_path)
@@ -335,7 +338,10 @@ class RequestMatch(object):
         # If it's a match, execute normally otherwise skip what is inside the with context
         if self._is_match:
             self._request._enter(self._matched_path)
-            return self._matched_vars
+            if len(self._matched_vars) == 1:
+                return self._matched_vars[0]
+            else:
+                return self._matched_vars
         else:
             sys.settrace(lambda *args, **keys: None)
             frame = sys._getframe(1)
@@ -374,9 +380,9 @@ class RequestMatch(object):
     def __truediv__(self, other):
         matched_path, matched_var = Request.match_path(self._remaining_path, [other])
         if matched_path:
-            self._matched_path += [other]
-            self._matched_vars += matched_var
-            self._remaining_path.pop()
+            if matched_path != [None]:
+                self._matched_vars += matched_var
+                self._matched_path.insert(0, self._remaining_path.pop())
         else:
             self._is_match = False
 
@@ -393,6 +399,7 @@ class RequestMatch(object):
                    matched_vars=', '.join([str(s) for s in self._matched_vars]))
 
     def __iter__(self):
+        self._first_time = True
         return self
 
     def __next__(self):
@@ -400,12 +407,19 @@ class RequestMatch(object):
             if self._first_time:
                 self._request._enter(self._matched_path)
                 self._first_time = False
-                return self._matched_vars
+                if len(self._matched_vars) == 1:
+                    return self._matched_vars[0]
+                else:
+                    return self._matched_vars
             else:
                 self._request._exit(self._matched_path)
                 raise StopIteration
         else:
             raise StopIteration
+
+    @property
+    def is_match(self):
+        return self._is_match
 
 
 class InvalidPathValue(Exception):

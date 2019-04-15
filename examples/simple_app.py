@@ -17,7 +17,7 @@ class MyRouter(object):
                     self._items.append(r.json)
                     return self._items[-1]
 
-            with r / Integer as [item_id]:
+            with r / Integer as item_id:
                 with r.get:
                     return self._items[item_id]
 
