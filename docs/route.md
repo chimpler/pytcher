@@ -54,7 +54,7 @@ from pytcher import route, Request, Integer
 @route
 def route(r: Request):
     with r / 'v1':
-        with r.get / 'items' / Integer as [item_id]:
+        with r.get / 'items' / Integer as item_id:
             return {
                 'Item': item_id
             }    
@@ -72,6 +72,26 @@ def route(r: Request):
             return {
                 'Item': item_id
             }    
+```
+
+Let's consider an example with 2 bindings. In this case, the binding will return a list instead of a single value.
+For example, the URL path `/books/2/pages/3` will match the route `:::python r / 'books' / Integer / 'pages' / Integer` and binds
+the 2 `int` to a list of 2 elements:
+```python
+with r / 'books' / Integer / 'pages' / Integer as [book_id, page]:
+    return {
+        'book_id': book_id,
+        'page': page
+    }
+```
+
+or using a `for` loop construction:
+```python
+for book_id, page in  r / 'books' / Integer / 'pages' / Integer:
+    return {
+        'book_id': book_id,
+        'page': page
+    }
 ```
 
 ### Method matcher
