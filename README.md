@@ -22,10 +22,6 @@ Pytcher is an HTTP routing DSL for Python. The main focus of Pytcher is to provi
 
 The routing tree can be defined as follows:
 ```python
-{!examples/simple_app.py!}
-```
-
-```python
 from pytcher import App, Request, Integer, route
 
 
