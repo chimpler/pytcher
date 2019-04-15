@@ -552,7 +552,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_id</span><span class="p">]:</span>  <span class="c1"># If the URL is /items/&lt;integer&gt; then bind item_id to the integer</span>
+            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="n">item_id</span><span class="p">:</span>  <span class="c1"># If the URL is /items/&lt;integer&gt; then bind item_id to the integer</span>
                 <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>  <span class="c1"># If the request is a get request</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span>
 
@@ -630,7 +630,7 @@ This can also be achieved using a <code>for</code> loop instead.</p>
 <td><code class="codehilite"><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span></code></td>
 </tr>
 <tr>
-<td><code class="codehilite"><span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_id</span><span class="p">]:</span></code></td>
+<td><code class="codehilite"><span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="n">item_id</span><span class="p">:</span></code></td>
 <td><code class="codehilite"><span class="k">for</span> <span class="n">item_id</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span> <span class="o">/</span> <span class="s1">&#39;Integer&#39;</span><span class="p">:</span></code></td>
 </tr>
 </tbody>
@@ -675,7 +675,7 @@ However using the <code class="codehilite"><span class="k">for</span></code> loo
     <span class="nd">@route</span>
     <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_index</span><span class="p">]:</span>
+            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="n">item_index</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
 
@@ -876,7 +876,7 @@ This can be a common pattern, especially when using multiple router classes (e.g
 
     <span class="nd">@route</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;/items&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">handle_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_index</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="n">item_index</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
 
