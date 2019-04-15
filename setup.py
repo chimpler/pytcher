@@ -71,10 +71,10 @@ setup(
         'json-path': [
             'jsonpath-ng'
         ],
-	'mkdocs': [
+        'mkdocs': [
             'mkdocs-material',
             'markdown-include'
-	]
+        ]
     },
     cmdclass={
         'install': CustomInstallCommand,
