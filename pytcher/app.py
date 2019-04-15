@@ -105,12 +105,21 @@ v{app_version} built on {build_on} ({commit})
             server = make_server(interface, port, self)
             server.serve_forever()
 
-    def _handle_request(self, command: str, uri: str, query_string: str, headers: Dict[str, str], body: str):
+    def _handle_request(
+            self,
+            command: str,
+            url_path: str,
+            host: str = 'localhost',
+            port: int = 80,
+            query_string: str = '',
+            headers: Dict[str, str] = {},
+            body: str = ''
+    ):
         # convert to charset
         content_type = headers.get('CONTENT_TYPE', 'application/json')
         unmarshaller = self._unmarshallers[content_type]
         params = urllib.parse.parse_qs(query_string) if query_string else {}
-        request = Request(command, uri, params, headers, body, unmarshaller)
+        request = Request(command, url_path, host, port, params, headers, body, unmarshaller)
         try:
             route_output = next(
                 (
@@ -156,10 +165,19 @@ v{app_version} built on {build_on} ({commit})
 
     def __call__(self, environ, start_response):
         # Replace HTTP_ABC=value to ABC=value
+        # TODO: filter some values
         headers = {
             key[5:] if key.startswith('HTTP_') else key: value
             for key, value in environ.items()
         }
+
+        server_host_port = environ['HTTP_HOST'].split(':')
+        if len(server_host_port) == 2:
+            server_host = server_host_port[0]
+            server_port = int(server_host_port[1])
+        else:
+            server_host = server_host_port[0]
+            server_port = 80
 
         body_size = environ.get('CONTENT_LENGTH')
         body = environ['wsgi.input'].read(int(body_size)) if body_size else None
@@ -168,6 +186,8 @@ v{app_version} built on {build_on} ({commit})
         response = self._handle_request(
             environ['REQUEST_METHOD'],
             environ['PATH_INFO'],
+            server_host,
+            server_port,
             environ['QUERY_STRING'],
             headers,
             body

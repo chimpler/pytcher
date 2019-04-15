@@ -20,10 +20,10 @@ class Request(object):
             self,
             command: str,
             url: str,
-            params: Dict[str, Any] = {},
-            headers: Dict[str, Any] = {},
             host: str = None,
             port: int = None,
+            params: Dict[str, Any] = {},
+            headers: Dict[str, Any] = {},
             content=None,
             unmarshaller: Unmarshaller = None):
         self.url = url
@@ -83,8 +83,7 @@ class Request(object):
 
     @property
     def json(self):
-        # TODO: make it lazy load
-        return json.loads(self._obj_type)
+        return json.loads(self._content)
 
     @property
     def end(self):

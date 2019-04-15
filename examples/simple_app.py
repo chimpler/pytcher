@@ -1,6 +1,6 @@
 # flake8: noqa: E999
 from pytcher import App, Request, Integer, route
-
+import http
 
 class MyRouter(object):
     def __init__(self):
@@ -15,7 +15,7 @@ class MyRouter(object):
 
                 with r.post:
                     self._items.append(r.json)
-                    return self._items[-1]
+                    return self._items[-1], http.HTTPStatus.CREATED
 
             with r / Integer as item_id:
                 with r.get:

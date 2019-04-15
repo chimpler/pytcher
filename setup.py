@@ -62,7 +62,8 @@ setup(
     ],
     install_requires=[
         'python-dateutil',
-        'pytz'
+        'pytz',
+        'watchdog'
     ],
     packages=[
         'pytcher',

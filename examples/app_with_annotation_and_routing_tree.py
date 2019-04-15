@@ -34,7 +34,7 @@ class MyRouter(object):
 
     @route(prefix='/items')
     def handle_items(self, r: Request):
-        with r / Integer as [item_index]:
+        with r / Integer as item_index:
             with r.get:
                 return self._inventory[item_index]
 
