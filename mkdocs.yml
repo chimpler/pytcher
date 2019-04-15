@@ -21,3 +21,4 @@ markdown_extensions:
           guess_lang: false
     - pymdownx.superfences
     - pymdownx.inlinehilite
+    - markdown_include.include

@@ -42,40 +42,8 @@ Let's create a more complex CRUD service with the endpoints:
     * `DELETE`: delete the item at position `<number>`
 
 ```python
-from pytcher import App, Router, Request, Integer, route
-
-
-class MyRouter(Router):
-    def __init__(self):
-        self._items = ['pizza', 'cheese', 'ice-cream', 'butter']
-
-    @route
-    def route(self, r: Request):
-        with r / 'items':  # if URL starts with /items
-            with r.end:  # if there is nothing after /items
-                with r.get:  # If it's a get request
-                    return self._items
-
-                with r.post:  # If request is a post request
-                    self._items.append(r.json)
-                    return self._items[-1]
-
-            with r / Integer() as item_id:  # If the URL is /items/<integer> then bind item_id to the integer
-                with r.get:  # If the request is a get request
-                    return self._items[item_id]
-
-                with r.put:  # If the request is a put request
-                    self._items[item_id] = r.json
-                    return self._items[item_id]
-
-                with r.delete:  # If the request is a delete request
-                    return self._items.pop(item_id)
-
-
-if __name__ == '__main__':
-    app = App(MyRouter())
-    app.start()
-``` 
+{!examples/simple_app.py!}
+```
 
 On another window, try the following commands:
 
@@ -141,66 +109,7 @@ For example:
 In this example, we will take advantage of the [data classes](https://docs.python.org/3/library/dataclasses.html) that were introduced in Python 3.7.
 
 ```python
-from dataclasses import dataclass
-
-from pytcher import Integer, Request, route
-from pytcher.app import App
-
-
-@dataclass
-class InventoryItem(object):
-    name: str
-    unit_price: float
-    quantity: int = 0
-
-
-class MyRouter(object):
-    def __init__(self):
-        words = [
-            'wine',
-            'pizza',
-            'cheese',
-            'peanuts',
-            'ice-cream'
-
-        ]
-        self._inventory = [
-            InventoryItem(word, 10 + i, i + 1)
-            for i in range(10)
-            for word in words
-        ]
-
-    @route
-    def route(self, r: Request):
-        with r / 'items':
-            with r / Integer() as item_index:
-                with r.get:
-                    return self._inventory[item_index]
-
-                with r.put:
-                    item = r.entity(InventoryItem)
-                    self._inventory[item_index] = item
-                    return item
-
-                with r.delete:
-                    item = self._inventory[item_index]
-                    del self._inventory[item_index]
-                    return item
-
-            with r.end:
-                with r.get:
-                    return self._inventory
-
-                with r.post:
-                    item = r.entity(InventoryItem)
-                    self._inventory.append(item)
-                    return item
-
-
-
-if __name__ == '__main__':
-    app = App(MyRouter())
-    app.start()
+{!examples/app_with_dataclass.py!}
 ```
 
 On another window, try the following commands:
@@ -281,62 +190,7 @@ $ curl localhost:8000/items/1 -XDELETE
 For those more used to using decorators like in Flask, one can decorate multiple methods using a path and method.
 
 ```python
-import logging
-from dataclasses import dataclass
-
-from pytcher import Request, route
-from pytcher.app import App
-
-logger = logging.getLogger(__name__)
-
-
-@dataclass
-class InventoryItem(object):
-    name: str
-    unit_price: float
-    quantity: int = 0
-
-
-class MyRouter(object):
-
-    def __init__(self):
-        words = [
-            'wine',
-            'pizza',
-            'cheese',
-            'peanuts',
-            'ice-cream'
-
-        ]
-        self._inventory = [
-            InventoryItem(word, 10 + i, i + 1)
-            for i in range(10)
-            for word in words
-        ]
-
-    @route(path='/items/<int:id>', method='GET')
-    def get_item(self, r: Request, id):
-        return self._inventory[id]
-
-    @route(path='/items', method='GET')
-    def list_items(self, request):
-        return self._inventory
-
-    @route(path='/items', method='POST')
-    def route(self, r: Request):
-        with r.post:
-            item = r.entity(InventoryItem)
-            self._inventory.append(item)
-            return item
-
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
-    logging.debug('This will get logged')
-
-    app = App(MyRouter(), debug=True)
-    app.start()
-
+{!examples/app_with_annotation.py!}
 ```
 
 ## Combining @route and routing tree
@@ -345,79 +199,8 @@ In this example, we combine the use of the `@route` decorator using the prefix `
 This can be a common pattern, especially when using multiple router classes (e.g., one class with `/admin` and another one to handle `items`).
 
 ```python
-import logging
-from dataclasses import dataclass
-
-from pytcher import Request, route, Integer
-from pytcher.app import App
-
-logger = logging.getLogger(__name__)
-
-
-@dataclass
-class InventoryItem(object):
-    name: str
-    unit_price: float
-    quantity: int = 0
-
-
-class MyRouter(object):
-
-    def __init__(self):
-        words = [
-            'wine',
-            'pizza',
-            'cheese',
-            'peanuts',
-            'ice-cream'
-        ]
-
-        self._inventory = [
-            InventoryItem(word, 10 + i, i + 1)
-            for i in range(10)
-            for word in words
-        ]
-
-    @route(prefix='/items')
-    def handle_items(self, r: Request):
-        with r / Integer as item_index:
-            with r.get:
-                return self._inventory[item_index]
-
-            with r.put:
-                item = r.entity(InventoryItem)
-                self._inventory[item_index] = item
-                return item
-
-            with r.delete:
-                item = self._inventory[item_index]
-                del self._inventory[item_index]
-                return item
-
-        with r.end:
-            with r.get:
-                return self._inventory
-
-            with r.post:
-                item = r.entity(InventoryItem)
-                self._inventory.append(item)
-                return item
-
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
-    logging.debug('This will get logged')
-
-    app = App(MyRouter(), debug=True)
-    print()
-    print('Try: curl localhost:8000/items')
-    print('Try: curl localhost:8000/items/2')
-    print()
-
-    app.start()
+{!examples/app_with_annotation_and_routing_tree.py!}
 ```
-
-All the examples can be found in the [examples folder](https://github.com/chimpler/pytcher/tree/master/examples).
 
 ## More features
 

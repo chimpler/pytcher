@@ -70,7 +70,11 @@ setup(
     extras_require={
         'json-path': [
             'jsonpath-ng'
-        ]
+        ],
+	'mkdocs': [
+            'mkdocs-material',
+            'markdown-include'
+	]
     },
     cmdclass={
         'install': CustomInstallCommand,
