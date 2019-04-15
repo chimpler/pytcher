@@ -534,38 +534,39 @@
 </ul>
 </li>
 </ul>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">route</span>
+<div class="codehilite"><pre><span></span><span class="c1"># flake8: noqa: E999</span>
+<span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">route</span>
 
 
-<span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="n">Router</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_items</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pizza&#39;</span><span class="p">,</span> <span class="s1">&#39;cheese&#39;</span><span class="p">,</span> <span class="s1">&#39;ice-cream&#39;</span><span class="p">,</span> <span class="s1">&#39;butter&#39;</span><span class="p">]</span>
 
     <span class="nd">@route</span>
     <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span>  <span class="c1"># if URL starts with /items</span>
-            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>  <span class="c1"># if there is nothing after /items</span>
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>  <span class="c1"># If it&#39;s a get request</span>
+        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">end</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span>
 
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">post</span><span class="p">:</span>  <span class="c1"># If request is a post request</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">post</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="n">item_id</span><span class="p">:</span>  <span class="c1"># If the URL is /items/&lt;integer&gt; then bind item_id to the integer</span>
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>  <span class="c1"># If the request is a get request</span>
+            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="n">item_id</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span>
 
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">put</span><span class="p">:</span>  <span class="c1"># If the request is a put request</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">put</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span>
 
-                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>  <span class="c1"># If the request is a delete request</span>
+                <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRouter</span><span class="p">())</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRouter</span><span class="p">(),</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>
 
@@ -643,7 +644,8 @@ However using the <code class="codehilite"><span class="k">for</span></code> loo
 </div>
 <h2 id="create-a-simple-web-service-using-dataclasses">Create a simple web service using dataclasses</h2>
 <p>In this example, we will take advantage of the <a href="https://docs.python.org/3/library/dataclasses.html">data classes</a> that were introduced in Python 3.7.</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<div class="codehilite"><pre><span></span><span class="c1"># flake8: noqa: E999</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
 <span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route</span>
 <span class="kn">from</span> <span class="nn">pytcher.app</span> <span class="kn">import</span> <span class="n">App</span>
@@ -674,8 +676,11 @@ However using the <code class="codehilite"><span class="k">for</span></code> loo
 
     <span class="nd">@route</span>
     <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
         <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="n">item_index</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">()</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_index</span><span class="p">]:</span>
                 <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
 
@@ -699,9 +704,14 @@ However using the <code class="codehilite"><span class="k">for</span></code> loo
                     <span class="k">return</span> <span class="n">item</span>
 
 
+<span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRouter</span><span class="p">())</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRouter</span><span class="p">())</span>
+    <span class="k">print</span><span class="p">()</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Try: curl localhost:8000/items&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Try: curl localhost:8000/items/2&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">()</span>
+
     <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>
 
@@ -781,7 +791,8 @@ However using the <code class="codehilite"><span class="k">for</span></code> loo
 </div>
 <h2 id="create-a-simple-web-service-using-annotation">Create a simple web service using annotation</h2>
 <p>For those more used to using decorators like in Flask, one can decorate multiple methods using a path and method.</p>
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<div class="codehilite"><pre><span></span><span class="c1"># flake8: noqa: E999</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
 <span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route</span>
@@ -835,13 +846,19 @@ However using the <code class="codehilite"><span class="k">for</span></code> loo
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;This will get logged&#39;</span><span class="p">)</span>
 
     <span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRouter</span><span class="p">(),</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">()</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Try: curl localhost:8000/items&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Try: curl localhost:8000/items/2&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">()</span>
+
     <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>
 
 <h2 id="combining-route-and-routing-tree">Combining @route and routing tree</h2>
 <p>In this example, we combine the use of the <code>@route</code> decorator using the prefix <code>/items</code> with a routing tree.
 This can be a common pattern, especially when using multiple router classes (e.g., one class with <code>/admin</code> and another one to handle <code>items</code>).</p>
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<div class="codehilite"><pre><span></span><span class="c1"># flake8: noqa: E999</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
 <span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span> <span class="n">Integer</span>
@@ -876,7 +893,7 @@ This can be a common pattern, especially when using multiple router classes (e.g
 
     <span class="nd">@route</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;/items&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">handle_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="n">item_index</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_index</span><span class="p">]:</span>
             <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
 
@@ -913,7 +930,6 @@ This can be a common pattern, especially when using multiple router classes (e.g
     <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>
 
-<p>All the examples can be found in the <a href="https://github.com/chimpler/pytcher/tree/master/examples">examples folder</a>.</p>
 <h2 id="more-features">More features</h2>
 <p>To use multiple routers, one can simply pass them to <code>App</code>. For example:
 <div class="codehilite"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">([</span><span class="n">AdminRouter</span><span class="p">(),</span> <span class="n">ItemRouter</span><span class="p">()])</span>
