@@ -679,7 +679,7 @@ The routing tree can be defined using <code class="codehilite"><span class="k">w
 <span class="nd">@route</span>
 <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;v1&#39;</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_id</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span> <span class="o">/</span> <span class="s1">&#39;items&#39;</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="n">item_id</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s1">&#39;Item&#39;</span><span class="p">:</span> <span class="n">item_id</span>
             <span class="p">}</span>    
@@ -697,6 +697,22 @@ The routing tree can be defined using <code class="codehilite"><span class="k">w
             <span class="p">}</span>    
 </pre></div>
 
+<p>Let's consider an example with 2 bindings. In this case, the binding will return a list instead of a single value.
+For example, the URL path <code>/books/2/pages/3</code> will match the route <code class="codehilite"><span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;books&#39;</span> <span class="o">/</span> <span class="n">Integer</span> <span class="o">/</span> <span class="s1">&#39;pages&#39;</span> <span class="o">/</span> <span class="n">Integer</span></code> and binds
+the 2 <code>int</code> to a list of 2 elements:
+<div class="codehilite"><pre><span></span><span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;books&#39;</span> <span class="o">/</span> <span class="n">Integer</span> <span class="o">/</span> <span class="s1">&#39;pages&#39;</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="p">[</span><span class="n">book_id</span><span class="p">,</span> <span class="n">page</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;book_id&#39;</span><span class="p">:</span> <span class="n">book_id</span><span class="p">,</span>
+        <span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="n">page</span>
+    <span class="p">}</span>
+</pre></div></p>
+<p>or using a <code>for</code> loop construction:
+<div class="codehilite"><pre><span></span><span class="k">for</span> <span class="n">book_id</span><span class="p">,</span> <span class="n">page</span> <span class="ow">in</span>  <span class="n">r</span> <span class="o">/</span> <span class="s1">&#39;books&#39;</span> <span class="o">/</span> <span class="n">Integer</span> <span class="o">/</span> <span class="s1">&#39;pages&#39;</span> <span class="o">/</span> <span class="n">Integer</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;book_id&#39;</span><span class="p">:</span> <span class="n">book_id</span><span class="p">,</span>
+        <span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="n">page</span>
+    <span class="p">}</span>
+</pre></div></p>
 <h3 id="method-matcher">Method matcher</h3>
 <p>The HTTP methods can be matched as follows:</p>
 <table>
