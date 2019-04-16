@@ -279,8 +279,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#creating-a-more-complex-web-service-using-a-routing-tree" title="Creating a more complex web service using a routing tree" class="md-nav__link">
-    Creating a more complex web service using a routing tree
+  <a href="#creating-a-routing-tree" title="Creating a routing tree" class="md-nav__link">
+    Creating a routing tree
   </a>
   
 </li>
@@ -436,8 +436,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#creating-a-more-complex-web-service-using-a-routing-tree" title="Creating a more complex web service using a routing tree" class="md-nav__link">
-    Creating a more complex web service using a routing tree
+  <a href="#creating-a-routing-tree" title="Creating a routing tree" class="md-nav__link">
+    Creating a routing tree
   </a>
   
 </li>
@@ -520,7 +520,7 @@
 </pre></div>
 
 
-<h2 id="creating-a-more-complex-web-service-using-a-routing-tree">Creating a more complex web service using a routing tree</h2>
+<h2 id="creating-a-routing-tree">Creating a routing tree</h2>
 <p>Let's create a more complex CRUD service with the endpoints:</p>
 <ul>
 <li><code>/items</code><ul>
@@ -536,7 +536,7 @@
 </ul>
 <div class="codehilite"><pre><span></span><span class="c1"># flake8: noqa: E999</span>
 <span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">route</span>
-
+<span class="kn">import</span> <span class="nn">http</span>
 
 <span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -551,7 +551,7 @@
 
                 <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">post</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">http</span><span class="o">.</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">CREATED</span>
 
             <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="n">item_id</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
@@ -893,7 +893,7 @@ This can be a common pattern, especially when using multiple router classes (e.g
 
     <span class="nd">@route</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;/items&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">handle_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="p">[</span><span class="n">item_index</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="n">r</span> <span class="o">/</span> <span class="n">Integer</span> <span class="k">as</span> <span class="n">item_index</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inventory</span><span class="p">[</span><span class="n">item_index</span><span class="p">]</span>
 
