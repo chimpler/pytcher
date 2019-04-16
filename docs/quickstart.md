@@ -30,7 +30,7 @@ On another window:
     
     "Hello World!"
     
-## Creating a more complex web service using a routing tree
+## Creating a routing tree
 
 Let's create a more complex CRUD service with the endpoints:
 

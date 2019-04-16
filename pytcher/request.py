@@ -4,7 +4,7 @@ from abc import abstractmethod
 from typing import Iterable, Tuple, List, Any, Dict
 
 import pytcher
-from pytcher import convert_str_to_path_elements
+from pytcher import convert_str_to_path_elements, Url
 from pytcher.matchers import is_type, NoMatch, PathMatcher, to_type
 from pytcher.unmarshallers import Unmarshaller
 
@@ -19,21 +19,17 @@ class Request(object):
     def __init__(
             self,
             command: str,
-            url: str,
-            host: str = None,
-            port: int = None,
+            url: Url,
             params: Dict[str, Any] = {},
             headers: Dict[str, Any] = {},
             content=None,
             unmarshaller: Unmarshaller = None):
         self.url = url
-        self.host = host
-        self.port = port
         self.headers = headers
         self.command = command
         self.params = params
         self._path_stack = []
-        self._remaining_stack = list(reversed(url.lstrip('/').split('/'))) if url != '/' else []  # skip first '/'
+        self._remaining_stack = list(reversed(url.path.lstrip('/').split('/'))) if url.path != '/' else []  # skip first '/'
         self._content = content
         self._unmarshaller = unmarshaller
 

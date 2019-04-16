@@ -1,5 +1,6 @@
 import re
 from collections import namedtuple
+from dataclasses import dataclass
 from functools import reduce
 from typing import Callable, Iterable
 
@@ -158,6 +159,56 @@ def get_routers(router):
             else get_annotated_routes(obj_dict)
         )
     ]
+
+
+@dataclass
+class Url(object):
+    scheme: str = 'http'
+    host: str = 'localhost'
+    port: int = 80
+    script: str = ''
+    path: str = '/'
+    query_string: str = ''
+
+    @classmethod
+    def from_environ(cls, environ):
+        scheme = environ['wsgi.url_scheme']
+
+        server_host_port = environ.get('HTTP_HOST').split(':')
+        if len(server_host_port) == 2:
+            host = server_host_port[0]
+            port = int(server_host_port[1])
+        else:
+            host = server_host_port[0]
+            port = 80 if scheme == 'http' else 443
+
+        return cls(
+            scheme,
+            host,
+            port,
+            environ['SCRIPT_NAME'],
+            environ['PATH_INFO'],
+            environ['QUERY_STRING']
+        )
+
+    @property
+    def url(self):
+        return '{scheme}://{host}{port}{script_name}{path_info}{query_string}'.format(
+            scheme=self.scheme,
+            host=self.host,
+            port=(':' + str(self.port)) if (self.scheme == 'http' and self.port != 80 or self.port != 443) else '',
+            script_name=self.script,
+            path_info=self.path,
+            query_string=('?' + self.query_string) if self.query_string else ''
+        )
+
+    @property
+    def host_url(self):
+        return '{scheme}://{host}{port}/'.format(
+            scheme=self.scheme,
+            host=self.host,
+            port=(':' + str(self.port)) if (self.scheme == 'http' and self.port != 80 or self.port != 443) else ''
+        )
 
 
 from pytcher.request import Request  # noqa E402

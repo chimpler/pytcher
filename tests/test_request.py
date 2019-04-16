@@ -1,9 +1,9 @@
-from pytcher import Integer, Request
+from pytcher import Integer, Request, Url
 from tests.utils import is_set
 
 
 def test_raw_request_matcher():
-    request = Request(Request.GET, '/items/5')
+    request = Request(Request.GET, Url(path='/items/5'))
     assert (request / 'items').is_match is True
     assert (request / 'books').is_match is False
     assert (request / 'items' / Integer()).is_match is True
@@ -13,7 +13,7 @@ def test_raw_request_matcher():
 
 
 def test_raw_multiple_request_matcher():
-    request = Request(Request.GET, '/books/1/pages/2')
+    request = Request(Request.GET, Url(path='/books/1/pages/2'))
     assert (request / 'books').is_match is True
     assert (request / 'books' / Integer).is_match is True
     assert (request / 'books' / Integer / 'pages').is_match is True
@@ -21,7 +21,7 @@ def test_raw_multiple_request_matcher():
 
 
 def test_with_request_matcher():
-    r = Request(Request.GET, '/items/5')
+    r = Request(Request.GET, Url(path='/items/5'))
 
     with is_set() as flag:
         with r / 'items':
@@ -53,7 +53,7 @@ def test_with_request_matcher():
 
 
 def test_with_multiple_request_matcher():
-    r = Request(Request.GET, '/books/1/pages/2')
+    r = Request(Request.GET, Url(path='/books/1/pages/2'))
 
     with is_set() as flag:
         with r / 'books':
@@ -83,7 +83,7 @@ def test_with_multiple_request_matcher():
 
 
 def test_for_request_matcher():
-    r = Request(Request.GET, '/items/5')
+    r = Request(Request.GET, Url(path='/items/5'))
 
     with is_set() as flag:
         for _ in r / 'items':
@@ -115,7 +115,7 @@ def test_for_request_matcher():
 
 
 def test_for_multiple_request_matcher():
-    r = Request(Request.GET, '/books/1/pages/2')
+    r = Request(Request.GET, Url(path='/books/1/pages/2'))
 
     with is_set() as flag:
         for _ in r / 'books':
