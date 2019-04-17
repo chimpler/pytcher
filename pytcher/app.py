@@ -1,6 +1,8 @@
 import http
 import logging
 import os
+import subprocess
+import sys
 import urllib
 from typing import Callable, Dict, Iterable, List, Union
 from wsgiref.simple_server import make_server
@@ -15,6 +17,7 @@ from pytcher.marshallers.xml_marshaller import XMLMarshaller
 from pytcher.request import Request
 from pytcher.unmarshallers import Unmarshaller
 from pytcher.unmarshallers.json_unmarshaller import JSONUnmarshaller
+from pytcher.watcher import Watcher
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +29,9 @@ class App(object):
                  marshallers: Dict[str, Marshaller] = None,
                  unmarshallers: Dict[str, Unmarshaller] = None,
                  debug: bool = True):
+        self._server = None
+        self._debug = debug
+
         handler_list = (
             handlers if isinstance(handlers, Iterable) else [handlers]
         ) + [
@@ -49,8 +55,6 @@ class App(object):
 
         for exception_handler in self._exception_handlers:
             logger.debug('Registered exception handler %s', exception_handler.func.__name__)
-
-        self._debug = debug
 
         if marshallers:
             self._marshallers = marshallers
@@ -99,11 +103,27 @@ v{app_version} built on {build_on} ({commit})
         )
         )
 
-    def start(self, interface='0.0.0.0', port=8000):
-        self.motd()
+    def start(self, interface: str = '0.0.0.0', port: int = 8000, autoreload: bool = True):
         if not self._has_wsgi:
-            server = make_server(interface, port, self)
-            server.serve_forever()
+            # run a new process with watchdog
+            if self._debug and autoreload and '__PYTCHER_CHILD_PROCESS__' not in os.environ:
+                watcher = Watcher(self)
+                watcher.start()
+                while True:
+                    self._process = subprocess.Popen(['python', *sys.argv], env={**os.environ, '__PYTCHER_CHILD_PROCESS__': '1'})
+                    self._process.wait()
+            else:
+                self.motd()
+                self._server = make_server(interface, port, self)
+                self._server.serve_forever()
+
+    def restart(self):
+        self._process.kill()
+
+    def stop(self):
+        if self._server:
+            logger.info('Shutting down...')
+            self._server.shutdown()
 
     def _handle_request(
             self,
@@ -159,6 +179,14 @@ v{app_version} built on {build_on} ({commit})
         else:
             return Response('Accept {type} not supported'.format(type=accept_type), http.HTTPStatus.NOT_ACCEPTABLE)
         return Response(marshaller(output), status_code, headers)
+
+    @property
+    def route_handlers(self):
+        return self._routers
+
+    @property
+    def exception_handlers(self):
+        return self._exception_handlers
 
     def __call__(self, environ, start_response):
         # Replace HTTP_ABC=value to ABC=value
