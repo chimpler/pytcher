@@ -1,6 +1,8 @@
 # flake8: noqa: E999
-from pytcher import App, Request, Integer, route
 import http
+
+from pytcher import App, Integer, Request, route
+
 
 class MyRouter(object):
     def __init__(self):
@@ -29,6 +31,7 @@ class MyRouter(object):
                     return self._items.pop(item_id)
 
 
+app = App(MyRouter())
+
 if __name__ == '__main__':
-    app = App(MyRouter())
     app.start()

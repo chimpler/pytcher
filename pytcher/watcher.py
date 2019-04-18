@@ -13,7 +13,6 @@ class Watcher(FileSystemEventHandler):
         self.app = app
 
     def on_modified(self, event):
-        logger.info('File change detected. Restarting app...')
         self.app.restart()
 
     def start(self):

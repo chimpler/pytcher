@@ -29,6 +29,12 @@ class App(object):
                  marshallers: Dict[str, Marshaller] = None,
                  unmarshallers: Dict[str, Unmarshaller] = None,
                  debug: bool = True):
+        """
+        :param handlers: function/class or list of functions/classes that are decorated with @route
+        :param marshallers: dictionary of marshallers to use for conversion from input data to python object. By default it supports `application/json`
+        :param unmarshallers: dictionary of marshallers to use for conversion from python object to output. By default it supports `application/json`
+        :param debug: if debug is enabled, it will use a simple web server and allow autoreload
+        """
         self._server = None
         self._debug = debug
 
@@ -86,7 +92,7 @@ class App(object):
         else:
             self._has_wsgi = False
 
-    def motd(self):
+    def motd(self, autoreload=False):
         print(r"""             _       _
  _ __  _   _| |_ ___| |__   ___ _ __
 | '_ \| | | | __/ __| '_ \ / _ \ '__|
@@ -95,15 +101,24 @@ class App(object):
 |_|    |___/
 v{app_version} built on {build_on} ({commit})
 {debug}
+{autoreload}
 """.format(
             app_version=_version.app_version,
             build_on=_version.built_at,
             commit=_version.git_version,
-            debug='\n***WARNING: DEBUG is set to true. DISABLE IT FOR PRODUCTION ***' if self._debug else ''
+            debug='\n*** WARNING: DEBUG is set to true. DISABLE IT FOR PRODUCTION ***' if self._debug else '',
+            autoreload='*** Autoreload is on' if autoreload else ''
         )
         )
 
     def start(self, interface: str = '0.0.0.0', port: int = 8000, autoreload: bool = True):
+        """
+        Start the web server if it is not run from a WSGI server, otherwise it does not do anything
+        :param interface: listening address (default is 0.0.0.0)
+        :param port: listening port (default 8000)
+        :param autoreload: if set to true, the server restarts j vpfppppp--- 9iiiooyh6ytwhen a file is updated in the current directory (default True)
+        :return:
+        """
         if not self._has_wsgi:
             # run a new process with watchdog
             if self._debug and autoreload and '__PYTCHER_CHILD_PROCESS__' not in os.environ:
@@ -113,11 +128,12 @@ v{app_version} built on {build_on} ({commit})
                     self._process = subprocess.Popen(['python', *sys.argv], env={**os.environ, '__PYTCHER_CHILD_PROCESS__': '1'})
                     self._process.wait()
             else:
-                self.motd()
+                self.motd(autoreload)
                 self._server = make_server(interface, port, self)
                 self._server.serve_forever()
 
     def restart(self):
+        logger.info('File change detected. Restarting app...')
         self._process.kill()
 
     def stop(self):
@@ -133,7 +149,8 @@ v{app_version} built on {build_on} ({commit})
             body: str = ''
     ):
         # convert to charset
-        content_type = headers.get('CONTENT_TYPE', 'application/json')
+        content_type = headers.get('CONTENT_TYPE') or 'application/json'
+
         unmarshaller = self._unmarshallers[content_type]
         params = urllib.parse.parse_qs(url.query_string) if url.query_string else {}
         request = Request(command, url, params, headers, body, unmarshaller)

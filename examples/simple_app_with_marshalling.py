@@ -53,13 +53,5 @@ class MyAppRouter(AppRouter):
 
 app = App(MyAppRouter())
 
-
 if __name__ == '__main__':
-    print()
-    print('Try: curl localhost:8000/items')
-    print('Try: curl localhost:8000/items/2')
-    print()
-
     app.start()
-
-# https://stackoverflow.com/questions/6578986/how-to-convert-json-data-into-a-python-object

@@ -61,9 +61,4 @@ class MyRouter(object):
 app = App(MyRouter())
 
 if __name__ == '__main__':
-    print()
-    print('Try: curl localhost:8000/items')
-    print('Try: curl localhost:8000/items/2')
-    print()
-
     app.start()

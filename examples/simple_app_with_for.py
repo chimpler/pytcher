@@ -30,6 +30,7 @@ class MyAppRouter(object):
                     return self._items.pop(item_id)
 
 
+app = App(MyAppRouter())
+
 if __name__ == '__main__':
-    app = App(MyAppRouter())
     app.start()

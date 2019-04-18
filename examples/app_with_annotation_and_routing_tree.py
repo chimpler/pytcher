@@ -58,14 +58,7 @@ class MyRouter(object):
                 return item
 
 
+app = App(MyRouter(), debug=True)
+
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
-    logging.debug('This will get logged')
-
-    app = App(MyRouter(), debug=True)
-    print()
-    print('Try: curl localhost:8000/items')
-    print('Try: curl localhost:8000/items/2')
-    print()
-
     app.start()
