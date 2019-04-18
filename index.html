@@ -437,8 +437,10 @@ similar to <a href="http://roda.jeremyevans.net/">RODA</a> in Ruby, <a href="htt
 </div>
 <h2 id="example-of-routing-tree">Example of routing tree</h2>
 <div class="codehilite"><pre><span></span><span class="c1"># flake8: noqa: E999</span>
-<span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">route</span>
 <span class="kn">import</span> <span class="nn">http</span>
+
+<span class="kn">from</span> <span class="nn">pytcher</span> <span class="kn">import</span> <span class="n">App</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route</span>
+
 
 <span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -467,8 +469,9 @@ similar to <a href="http://roda.jeremyevans.net/">RODA</a> in Ruby, <a href="htt
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
 
 
+<span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRouter</span><span class="p">())</span>
+
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">(</span><span class="n">MyRouter</span><span class="p">(),</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>
 
