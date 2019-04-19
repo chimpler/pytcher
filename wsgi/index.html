@@ -344,19 +344,6 @@
     Running pytcher using uWSGI
   </a>
   
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#uwsgi-configuration" title="uWSGI configuration" class="md-nav__link">
-    uWSGI configuration
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -376,13 +363,6 @@
         <li class="md-nav__item">
   <a href="#running-pytcher-using-twisted" title="Running pytcher using Twisted" class="md-nav__link">
     Running pytcher using Twisted
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#docker-deployment" title="Docker deployment" class="md-nav__link">
-    Docker deployment
   </a>
   
 </li>
@@ -433,19 +413,6 @@
     Running pytcher using uWSGI
   </a>
   
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#uwsgi-configuration" title="uWSGI configuration" class="md-nav__link">
-    uWSGI configuration
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -465,13 +432,6 @@
         <li class="md-nav__item">
   <a href="#running-pytcher-using-twisted" title="Running pytcher using Twisted" class="md-nav__link">
     Running pytcher using Twisted
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#docker-deployment" title="Docker deployment" class="md-nav__link">
-    Docker deployment
   </a>
   
 </li>
@@ -497,9 +457,10 @@
                 
                   <h1>WSGI</h1>
                 
-                <p>Pytcher can be run as a WSGI application. In this page, we will describe how to use <a href="https://uwsgi-docs.readthedocs.io/en/latest/">uWSGI</a>.</p>
+                <p>Pytcher can be run as a WSGI application. 
+In this page, we will describe how to use various WSGI implementations to run with pytcher.</p>
 <h2 id="running-pytcher-using-uwsgi">Running pytcher using uWSGI</h2>
-<p>Install uWSGI:</p>
+<p>Install <a href="https://uwsgi-docs.readthedocs.io/en/latest/">uWSGI</a>:</p>
 <div class="codehilite"><pre><span></span>$ pip install uwsgi
 </pre></div>
 
@@ -509,18 +470,8 @@
 </pre></div>
 
 
-<h3 id="uwsgi-configuration">uWSGI configuration</h3>
-<p>Minimal configuration</p>
-<div class="codehilite"><pre><span></span><span class="k">[uwsgi]</span>
-<span class="na">module</span> <span class="o">=</span> <span class="s">simple_app</span>
-<span class="na">callable</span> <span class="o">=</span> <span class="s">app</span>
-<span class="na">master</span> <span class="o">=</span> <span class="s">true</span>
-<span class="na">processes</span> <span class="o">=</span> <span class="s">5</span>
-<span class="na">socket</span> <span class="o">=</span> <span class="s">uwsgi.sock</span>
-</pre></div>
-
 <h2 id="running-pytcher-using-gunicorn">Running pytcher using Gunicorn</h2>
-<p>Install uWSGI:</p>
+<p>Install <a href="https://gunicorn.org/">Gunicorn</a>:</p>
 <div class="codehilite"><pre><span></span>$ pip install uwsgi
 </pre></div>
 
@@ -531,7 +482,7 @@
 
 
 <h2 id="running-pytcher-using-gevent">Running pytcher using Gevent</h2>
-<p>Install gevent:</p>
+<p>Install <a href="http://www.gevent.org/">gevent</a>:</p>
 <div class="codehilite"><pre><span></span>$ pip install gevent
 </pre></div>
 
@@ -545,7 +496,7 @@
 </pre></div></p>
 <p>And execute it.</p>
 <h2 id="running-pytcher-using-twisted">Running pytcher using Twisted</h2>
-<p>Install Twisted:</p>
+<p>Install <a href="https://twistedmatrix.com/trac/">Twisted</a>:</p>
 <div class="codehilite"><pre><span></span>$ pip install twisted
 </pre></div>
 
@@ -553,9 +504,6 @@
 <p>To run it:</p>
 <div class="codehilite"><pre><span></span>$ twistd -n web --port tcp:8000 --wsgi examples.simple_app.app
 </pre></div>
-
-
-<h2 id="docker-deployment">Docker deployment</h2>
                 
                   
                 

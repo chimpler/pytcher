@@ -505,6 +505,39 @@ need to be unmarshalled to an object. This can be achieved using the <code>entit
 <p>To parse <code>datetime</code>, <code>date</code> and <code>time</code> we rely on the library <a href="https://dateutil.readthedocs.io/en/stable/">dateutil</a> and
 for parsing <code>timezone</code>, we use the library <a href="https://pythonhosted.org/pytz/">pytz</a>.</p>
 </div>
+<p>In addition it supports the types specified in the Python package <a href="https://docs.python.org/3/library/typing.html">typing</a>:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="codehilite"><span class="n">List</span></code></td>
+<td>List</td>
+<td><code class="codehilite"><span class="n">List</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="n">Dict</span></code></td>
+<td>Dictionary</td>
+<td><code class="codehilite"><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="n">Union</span></code></td>
+<td>Union</td>
+<td><code class="codehilite"><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span></code></td>
+</tr>
+<tr>
+<td><code class="codehilite"><span class="n">Optional</span></code></td>
+<td>Optional (Optional[int] same as Union[int, None])</td>
+<td><code class="codehilite"><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span></code></td>
+</tr>
+</tbody>
+</table>
+<p>One can nest these structures combining them with data classes (e.g., <code class="codehilite"><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Item</span><span class="p">]</span></code>)</p>
 <h2 id="example">Example</h2>
 <p>We consider Item to be a data class defined as follows:
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
