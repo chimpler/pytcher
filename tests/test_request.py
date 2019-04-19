@@ -1,5 +1,5 @@
 import pytest
-from typing import Dict
+from typing import Dict, Union
 
 from pytcher import Integer, List, Request, Url
 from pytcher.unmarshallers.json_unmarshaller import JSONUnmarshaller
@@ -156,7 +156,9 @@ def test_for_multiple_request_matcher():
         ('null', str, None),
         ('[1,2,3]', List, [1, 2, 3]),
         ('[1,2,3]', List[float], [1, 2, 3]),
-        ('{"a":1,"b":2}', Dict[str, int], {'a': 1, 'b': 2})
+        ('{"a":1,"b":2}', Dict[str, int], {'a': 1, 'b': 2}),
+        ('{"a":[2,3],"b":[1,2]}', Dict[str, List[int]], {'a': [2, 3], 'b': [1, 2]}),
+        ('{"a":1,"b":[1,2]}', Dict[str, Union[int, List[int]]], {'a': 1, 'b': [1, 2]})
     ]
 )
 def test_entity_without_path(test_input, obj_type, expected):

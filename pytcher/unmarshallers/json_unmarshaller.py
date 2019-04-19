@@ -1,6 +1,6 @@
 import dataclasses
 import json
-from typing import TypeVar
+from typing import TypeVar, Union
 
 from pytcher import UnmarshallException
 from pytcher.unmarshallers import decode
@@ -10,6 +10,7 @@ class JSONUnmarshaller(object):
     def __init__(self, decoders=[]):
         self._decoders = decoders
 
+    # Typing: https://docs.python.org/3/library/typing.html#typing.Union
     def make_obj(self, obj_type, obj):
         if obj_type is None:
             return obj
@@ -26,6 +27,15 @@ class JSONUnmarshaller(object):
         elif obj_type.__module__ == 'typing':
             if isinstance(obj_type, TypeVar):
                 return obj
+            elif obj_type.__origin__ == Union:
+                for arg_type in obj_type.__args__:
+                    try:
+                        return self.make_obj(arg_type, obj)
+                    except UnmarshallException:
+                        pass
+                else:
+                    raise UnmarshallException(
+                        "Cannot decode '{obj}' with type '{type}'".format(obj=obj, type=obj_type.__name__))
             elif obj_type.__origin__ is list:
                 return [
                     self.make_obj(obj_type.__args__[0], e)

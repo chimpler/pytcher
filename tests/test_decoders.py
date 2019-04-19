@@ -1,22 +1,31 @@
-from datetime import datetime, date, time, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from enum import Enum
 from uuid import UUID
 
+import pytest
 import pytz
 
 from pytcher.unmarshallers import decode
 
 
-def test_default_decoders():
-    class Color(Enum):
-        RED = 1
-        GREEN = 2
+class Color(Enum):
+    RED = 1
+    GREEN = 2
 
-    assert Color.RED == decode(Color, 'RED')
-    assert datetime(2019, 2, 1, 4, 3, 1) == decode(datetime, '2019-02-01T04:03:01.000000')
-    assert pytz.timezone('US/Pacific').localize(datetime(2019, 2, 1, 4, 3, 1)) == decode(datetime, '2019-02-01T04:03:01.000000-0800')
-    assert date(2019, 2, 1) == decode(date, '2019-02-01')
-    assert time(13, 43, 12) == decode(time, '13:43:12.000000')
-    assert pytz.timezone('US/Pacific') == decode(timezone, 'US/Pacific')
-    assert timedelta(days=2, hours=10, minutes=27, seconds=12, microseconds=34) == decode(timedelta, 'P2DT10H27M12.000034S')
-    assert UUID('7e7bcd85-920c-456d-911c-7a4ad2b242e7') == decode(UUID, '7e7bcd85-920c-456d-911c-7a4ad2b242e7')
+
+@pytest.mark.parametrize(
+    "test_input, obj_type, expected",
+    [
+        ('RED', Color, Color.RED),
+        ('2019-02-01T04:03:01.000000', datetime, datetime(2019, 2, 1, 4, 3, 1)),
+        ('2019-02-01T04:03:01.000000-0800', datetime, pytz.timezone('US/Pacific').localize(datetime(2019, 2, 1, 4, 3, 1))),
+        ('2019-02-01', date, date(2019, 2, 1)),
+        ('13:43:12.000000', time, time(13, 43, 12)),
+        ('US/Pacific', timezone, pytz.timezone('US/Pacific')),
+        ('P2DT10H27M12.000034S', timedelta, timedelta(days=2, hours=10, minutes=27, seconds=12, microseconds=34)),
+        ('7e7bcd85-920c-456d-911c-7a4ad2b242e7', UUID, UUID('7e7bcd85-920c-456d-911c-7a4ad2b242e7'))
+
+    ]
+)
+def test_default_decoders(test_input, obj_type, expected):
+    assert expected == decode(obj_type, test_input)

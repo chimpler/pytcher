@@ -24,6 +24,17 @@ namedtuple | named tuple | dictionary representing the named tuple
 !!! info
     To parse `datetime`, `date` and `time` we rely on the library [dateutil](https://dateutil.readthedocs.io/en/stable/) and
     for parsing `timezone`, we use the library [pytz](https://pythonhosted.org/pytz/).
+    
+In addition it supports the types specified in the Python package [typing](https://docs.python.org/3/library/typing.html):
+
+Type | Description | Example
+-----|-------------|--------
+`:::python List`  | List | `:::python List, List[int], List[List[int]]`
+`:::python Dict`  | Dictionary     | `:::python Dict[str, int], Dict[str, List[int]]`
+`:::python Union`  | Union     | `:::python Union[int, str]`
+`:::python Optional`  | Optional (Optional[int] same as Union[int, None])    | `:::python3 Optional[int]`
+
+One can nest these structures combining them with data classes (e.g., `:::python Dict[int, Item]`)
 
 ## Example
 
