@@ -42,7 +42,7 @@ def create_version_file():
 
 setup(
     name='pytcher',
-    version='0.0.1',
+    version='0.0.2',
     description='Micro framework for Python',
     long_description='Micro framework for Python',
     keywords='python rest routing framework',
