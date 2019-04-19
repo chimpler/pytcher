@@ -36,6 +36,7 @@ class App(object):
         :param debug: if debug is enabled, it will use a simple web server and allow autoreload
         """
         self._server = None
+        self._process = None
         self._debug = debug
 
         handler_list = (
@@ -134,7 +135,8 @@ v{app_version} built on {build_on} ({commit})
 
     def restart(self):
         logger.info('File change detected. Restarting app...')
-        self._process.kill()
+        if self._process:
+            self._process.kill()
 
     def stop(self):
         if self._server:

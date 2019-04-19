@@ -57,8 +57,7 @@ def encode(obj, extra_encoders=[]):
             encode(obj)
             for condition, encode in extra_encoders + default_encoders
             if condition(obj)
-        ),
-        None
+        )
     )
 
 

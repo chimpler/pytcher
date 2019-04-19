@@ -49,6 +49,5 @@ def decode(obj_type, value, extra_decoders=[]):
             decode(obj_type, value)
             for condition, decode in extra_decoders + default_decoders
             if condition(obj_type, value)
-        ),
-        value
+        )
     )

@@ -25,7 +25,10 @@ class EntityJSONEncoder(JSONEncoder):
                 self.default(child) for child in obj
             ]
         else:
-            return encode(obj, encoders)
+            try:
+                return encode(obj, encoders)
+            except StopIteration as e:
+                return str(e)
 
     def encode_dict(self, dict_obj):
         return {

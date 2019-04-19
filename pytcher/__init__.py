@@ -21,6 +21,10 @@ class RouteException(Exception):
     pass
 
 
+class UnmarshallException(Exception):
+    pass
+
+
 RE_PATH_ELT = re.compile(r'<(?:(?P<type>.+?):)?(?P<name>.+?)>')
 
 

@@ -1,4 +1,8 @@
-from pytcher import Integer, Request, Url
+import pytest
+from typing import Dict
+
+from pytcher import Integer, List, Request, Url
+from pytcher.unmarshallers.json_unmarshaller import JSONUnmarshaller
 from tests.utils import is_set
 
 
@@ -142,3 +146,24 @@ def test_for_multiple_request_matcher():
             assert 1 == book_id
             assert 2 == page
             flag.set()
+
+
+@pytest.mark.parametrize(
+    "test_input, obj_type, expected",
+    [
+        ('"test"', str, 'test'),
+        ('32', int, 32),
+        ('null', str, None),
+        ('[1,2,3]', List, [1, 2, 3]),
+        ('[1,2,3]', List[float], [1, 2, 3]),
+        ('{"a":1,"b":2}', Dict[str, int], {'a': 1, 'b': 2})
+    ]
+)
+def test_entity_without_path(test_input, obj_type, expected):
+    r = Request(
+        Request.POST,
+        Url(path='/path'),
+        content=test_input,
+        unmarshaller=JSONUnmarshaller().unmarshall
+    )
+    assert expected == r.entity(obj_type)
