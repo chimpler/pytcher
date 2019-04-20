@@ -4,14 +4,14 @@ from email import encoders
 from json import JSONEncoder
 from typing import Iterable
 
-from pytcher.marshallers import Marshaller, encode
+from pytcher.marshallers import encode, Marshaller
 
 
 class EntityJSONEncoder(JSONEncoder):
 
     def __init__(self, *args, encoders=[], **kwargs):
-        self._encoders = encoders
         super(EntityJSONEncoder, self).__init__(*args, **kwargs)
+        self._encoders = encoders
 
     def default(self, obj):
         if obj is None or isinstance(obj, (bool, int, float, str)):
@@ -38,16 +38,15 @@ class EntityJSONEncoder(JSONEncoder):
 
 
 class EntityJSONEncoderBuilder(object):
-    def __init__(self, encoders, **kwargs):
-        self._encoders = encoders
-        self._extra_args = kwargs
+    def __init__(self, **kwargs):
+        super(EntityJSONEncoderBuilder, self).__init__()
+        self._kwargs = kwargs
 
-    def __call__(self, *args, encoders=[], **kwargs):
-        return EntityJSONEncoder(*args, encoders=encoders, **{**kwargs, **self._extra_args})
+    def __call__(self, *args, **kwargs):
+        return EntityJSONEncoder(*args, **{**kwargs, **self._kwargs})
 
 
 class JSONMarshaller(Marshaller):
-
     def marshall(self, obj):
         return json.dumps(
             obj,

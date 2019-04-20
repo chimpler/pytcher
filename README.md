@@ -18,7 +18,8 @@ Pytcher is an HTTP routing DSL for Python. The main focus of Pytcher is to provi
 
 ### Features
 * Routing tree definition using `with` or `for` construction
-* Marshalling / Unmarshalling of data classes (using types), namedtuples, date, datetime, uuid, ...
+* Marshalling of Python objects (data classes, namedtuples, date, datetime, uuid, ...) that supports custom encoders
+* Unmarshalling of JSON to Python objects (data classes, namedtuples, date, datetime, uuid, ...) supporting `typing` (e.g., `Dict[str, MyDataClass]`) syntax and custom decoders. 
 * Additional Routing decorators similar to Flask
 * Well scoped objects (no global variables)
 * Support for WSGI

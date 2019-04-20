@@ -15,10 +15,16 @@ from pytcher import App, Request, route
 
 @route
 def route(request: Request):
-    return 'Hello world'
+    return 'Hello world!'
     
 app = App([route])
 app.run()
+```
+
+In this example, all the requests will return the string `Hello world!`. By default the HTTP status code
+returned is `http.HTTPStatus.OK` (`200`). One can return a different code using a tuple instead (`data, HTTP status code`) as follows:
+```python
+return'Hello world', http.HTTPStatus.CREATED
 ```
 
 Also, like Flask, one can also pass the expected HTTP method (default to `GET`) and the

@@ -5,16 +5,6 @@ from enum import Enum
 from typing import Callable, List, Tuple
 
 
-class Marshaller(object):
-
-    def __init__(self, encoders: List[Tuple[Callable, Callable]] = []):
-        self._encoders = encoders
-
-    @abstractmethod
-    def marshall(self, obj):
-        pass
-
-
 def format_timedelta(d: datetime.timedelta):
     result = ''
     if d.days != 0:
@@ -59,6 +49,16 @@ def encode(obj, extra_encoders=[]):
             if condition(obj)
         )
     )
+
+
+class Marshaller(object):
+
+    def __init__(self, encoders: List[Tuple[Callable, Callable]] = default_encoders):
+        self._encoders = encoders
+
+    @abstractmethod
+    def marshall(self, obj):
+        pass
 
 
 class MarshallerException(Exception):

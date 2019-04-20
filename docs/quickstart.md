@@ -107,6 +107,7 @@ For example:
 ## Create a simple web service using dataclasses
 
 In this example, we will take advantage of the [data classes](https://docs.python.org/3/library/dataclasses.html) that were introduced in Python 3.7.
+The data type `Item` will be marshalled to JSON automatically and the JSON payload used to create a new `Item` will be unmarshalled automatically using the types specified in the data class `Item`. 
 
 ```python
 {!examples/app_with_dataclass.py!}
@@ -202,7 +203,7 @@ This can be a common pattern, especially when using multiple router classes (e.g
 {!examples/app_with_annotation_and_routing_tree.py!}
 ```
 
-## More features
+## Notes
 
 To use multiple routers, one can simply pass them to `App`. For example:
 ```python
