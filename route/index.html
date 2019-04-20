@@ -649,10 +649,14 @@ as parameter a request object.</p>
 
 <span class="nd">@route</span>
 <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-    <span class="k">return</span> <span class="s1">&#39;Hello world&#39;</span>
+    <span class="k">return</span> <span class="s1">&#39;Hello world!&#39;</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">([</span><span class="n">route</span><span class="p">])</span>
 <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div></p>
+<p>In this example, all the requests will return the string <code>Hello world!</code>. By default the HTTP status code
+returned is <code>http.HTTPStatus.OK</code> (<code>200</code>). One can return a different code using a tuple instead (<code>data, HTTP status code</code>) as follows:
+<div class="codehilite"><pre><span></span><span class="k">return</span><span class="s1">&#39;Hello world&#39;</span><span class="p">,</span> <span class="n">http</span><span class="o">.</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">CREATED</span>
 </pre></div></p>
 <p>Also, like Flask, one can also pass the expected HTTP method (default to <code>GET</code>) and the
 path (that can contain binding variables) that defaults to <code>/</code>.</p>

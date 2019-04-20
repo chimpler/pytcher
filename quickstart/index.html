@@ -307,8 +307,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#more-features" title="More features" class="md-nav__link">
-    More features
+  <a href="#notes" title="Notes" class="md-nav__link">
+    Notes
   </a>
   
 </li>
@@ -464,8 +464,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#more-features" title="More features" class="md-nav__link">
-    More features
+  <a href="#notes" title="Notes" class="md-nav__link">
+    Notes
   </a>
   
 </li>
@@ -646,7 +646,8 @@ if a certain condition occurs). We implemented it to make it work on cpython and
 However using the <code class="codehilite"><span class="k">for</span></code> loop construction is perfectly fine and does not violate the Python standard.</p>
 </div>
 <h2 id="create-a-simple-web-service-using-dataclasses">Create a simple web service using dataclasses</h2>
-<p>In this example, we will take advantage of the <a href="https://docs.python.org/3/library/dataclasses.html">data classes</a> that were introduced in Python 3.7.</p>
+<p>In this example, we will take advantage of the <a href="https://docs.python.org/3/library/dataclasses.html">data classes</a> that were introduced in Python 3.7.
+The data type <code>Item</code> will be marshalled to JSON automatically and the JSON payload used to create a new <code>Item</code> will be unmarshalled automatically using the types specified in the data class <code>Item</code>. </p>
 <div class="codehilite"><pre><span></span><span class="c1"># flake8: noqa: E999</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
@@ -914,7 +915,7 @@ This can be a common pattern, especially when using multiple router classes (e.g
     <span class="n">app</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </pre></div>
 
-<h2 id="more-features">More features</h2>
+<h2 id="notes">Notes</h2>
 <p>To use multiple routers, one can simply pass them to <code>App</code>. For example:
 <div class="codehilite"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">App</span><span class="p">([</span><span class="n">AdminRouter</span><span class="p">(),</span> <span class="n">ItemRouter</span><span class="p">()])</span>
 <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
