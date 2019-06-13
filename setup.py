@@ -72,9 +72,11 @@ setup(
         'json-path': [
             'jsonpath-ng'
         ],
-        'mkdocs': [
+        'docs': [
             'mkdocs-material',
-            'markdown-include'
+            'markdown-include',
+            'sphinx',
+            'recommonmark'
         ]
     },
     cmdclass={

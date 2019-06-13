@@ -5,15 +5,23 @@ repo_url: https://github.com/chimpler/pytcher
 site_name: pytcher
 nav:
     - Home: index.md
-    - Getting Started: quickstart.md
-    - Install: install.md
-    - Route: route.md
-    - Marshalling: marshalling.md
-    - Unmarshalling: unmarshalling.md
-    - Exception: exception.md
-    - WSGI: wsgi.md
-    - Test: test.md
+    - User Guide:
+        - Getting Started: quickstart.md
+        - Install: install.md
+        - Route: route.md
+        - Marshalling: marshalling.md
+        - Unmarshalling: unmarshalling.md
+        - Exception: exception.md
+        - WSGI: wsgi.md
+        - Test: test.md
+    - API:
+        - Pytcher: api/pytcher.md
+        - App: api/app.md
+        - Request: api/request.md
+        - Matchers: api/matchers.md
+        - Test: api/app.md
 theme: material
+extra_javascript: [extra.js]
 markdown_extensions:
     - markdown.extensions.admonition
     - markdown.extensions.codehilite:

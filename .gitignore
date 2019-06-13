@@ -52,3 +52,4 @@ docs/_build/
 
 # custom filters
 _version.py
+docs/api/

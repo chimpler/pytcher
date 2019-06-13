@@ -24,6 +24,16 @@ class Request(object):
             headers: Dict[str, Any] = {},
             content=None,
             unmarshaller: Unmarshaller = None):
+        """
+
+        Args:
+            command (str): HTTP command (GET, POST, PUT, PATCH or DELETE)
+            url (str):
+            params:
+            headers:
+            content:
+            unmarshaller:
+        """
         self.url = url
         self.headers = headers
         self.command = command

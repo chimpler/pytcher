@@ -6,15 +6,10 @@
 [![License](https://img.shields.io/pypi/l/Pyhocon.svg)](https://pypi.python.org/pypi/pyhocon/)
 [![Requirements Status](https://requires.io/github/chimpler/pytcher/requirements.svg?branch=master)](https://requires.io/github/chimpler/pytcher/requirements/?branch=master)
 
-```
-
-WORK IN PROGRESS
-
-```
-
 ### Pytcher
 
-Pytcher is an HTTP routing DSL for Python. The main focus of Pytcher is to provide a human readable router syntax that supports complex path matching, parameter matching and header matching using nested routes.
+Pytcher is a REST micro-framework for Python 3 that relies on a routing tree
+similar to [RODA](http://roda.jeremyevans.net/) in Ruby, [Akka HTTP](https://doc.akka.io/docs/akka-http/current/index.html) in Scala or [Javalin](https://javalin.io/) in Java.
 
 ### Features
 * Routing tree definition using `with` or `for` construction
@@ -23,6 +18,7 @@ Pytcher is an HTTP routing DSL for Python. The main focus of Pytcher is to provi
 * Additional Routing decorators similar to Flask
 * Well scoped objects (no global variables)
 * Support for WSGI
+* Auto reload when code change is detected in debug mode
 
 The routing tree can be defined as follows:
 ```python
@@ -44,7 +40,8 @@ class MyRouter(object):
                     self._items.append(r.json)
                     return self._items[-1]
 
-            with r / Integer() as item_id:  # If the URL is /items/<integer> then bind item_id to the integer
+            # If the URL is /items/<integer> then bind item_id to the integer
+            with r / Integer() as item_id:
                 with r.get:  # If the request is a get request
                     return self._items[item_id]
 

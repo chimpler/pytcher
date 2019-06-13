@@ -30,11 +30,21 @@ class App(object):
                  unmarshallers: Dict[str, Unmarshaller] = None,
                  debug: bool = True):
         """
-        :param handlers: function/class or list of functions/classes that are decorated with @route
-        :param marshallers: dictionary of marshallers to use for conversion from input data to python object. By default it supports `application/json`
-        :param unmarshallers: dictionary of marshallers to use for conversion from python object to output. By default it supports `application/json`
-        :param debug: if debug is enabled, it will use a simple web server and allow autoreload
+        App that handles routes and exceptions
+
+        Args:
+            handlers (Union[class, Callable, List[Union[class, Callable]]]): Description of arg1
+            marshallers : dict[str, Marshaller]
+                dictionary of marshallers to use for conversion from input data to python object. By default it supports `application/json`
+            unmarshallers (dict[str, Unmarshaller]): dictionary of marshallers to use for conversion from python object to output.
+              By default it supports `application/json`
+            debug (bool): if debug is enabled, it will use a simple web server and allow autoreload
+
+        Returns
+        -------
+            int: Description of return value
         """
+
         self._server = None
         self._process = None
         self._debug = debug
@@ -93,7 +103,14 @@ class App(object):
         else:
             self._has_wsgi = False
 
-    def motd(self, autoreload=False):
+    def _motd(self, autoreload=False):
+        """
+        print motd
+
+        Args:
+        autoreload (bool): show that it autoreloads
+        """
+
         print(r"""             _       _
  _ __  _   _| |_ ___| |__   ___ _ __
 | '_ \| | | | __/ __| '_ \ / _ \ '__|
@@ -115,10 +132,15 @@ v{app_version} built on {build_on} ({commit})
     def start(self, interface: str = '0.0.0.0', port: int = 8000, autoreload: bool = True):
         """
         Start the web server if it is not run from a WSGI server, otherwise it does not do anything
-        :param interface: listening address (default is 0.0.0.0)
-        :param port: listening port (default 8000)
-        :param autoreload: if set to true, the server restarts j vpfppppp--- 9iiiooyh6ytwhen a file is updated in the current directory (default True)
-        :return:
+
+        #### Parameters
+        * interface: str
+            listening address (default is 0.0.0.0)
+        * port: int
+            listening port (default 8000)
+        * autoreload: bool
+            if set to true, the server restarts j vpfppppp--- 9iiiooyh6ytwhen a file is updated in the current directory (default True)
+
         """
         if not self._has_wsgi:
             # run a new process with watchdog
@@ -129,16 +151,23 @@ v{app_version} built on {build_on} ({commit})
                     self._process = subprocess.Popen(['python', *sys.argv], env={**os.environ, '__PYTCHER_CHILD_PROCESS__': '1'})
                     self._process.wait()
             else:
-                self.motd(autoreload)
+                self._motd(autoreload)
                 self._server = make_server(interface, port, self)
                 self._server.serve_forever()
 
     def restart(self):
+        """
+        Restart the web server if it is not run from WSGI server
+        """
         logger.info('File change detected. Restarting app...')
         if self._process:
             self._process.kill()
 
     def stop(self):
+        """
+        Stop the web server if it is not run from WSGI server
+        """
+
         if self._server:
             logger.info('Shutting down...')
             self._server.shutdown()
@@ -201,13 +230,30 @@ v{app_version} built on {build_on} ({commit})
 
     @property
     def route_handlers(self):
+        """
+        List of route handled by the app
+        """
+
         return self._routers
 
     @property
     def exception_handlers(self):
+        """
+        List of exception handlers handled by the app
+        """
+
         return self._exception_handlers
 
     def __call__(self, environ, start_response):
+        """
+        Method invoked by WSGI
+
+        Args:
+            environ (Dict[str, str]): environment variable dictionary
+            start_response: object used to send response code
+        Returns:
+            Iterable: Iterable of response
+        """
         # Replace HTTP_ABC=value to ABC=value
         # TODO: filter some values
         headers = {
